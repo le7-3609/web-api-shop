@@ -1,6 +1,16 @@
 ﻿const openNewUser = document.querySelector(".addUser")
 const newUserBox = document.querySelector(".newUser")
 
+
+function toggleNewUser() {
+    const newUserDiv = document.querySelector('.newUser');
+    if (newUserDiv.style.display === 'flex') {
+        newUserDiv.style.display = 'none';
+    } else {
+        newUserDiv.style.display = 'flex';
+    }
+}
+
 openNewUser.addEventListener("click", e => {
     openNewUser.style.color = "red"
     newUserBox.style.display = "flex"

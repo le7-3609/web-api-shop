@@ -5,6 +5,16 @@ const updatedUserBox = document.querySelector(".updatedUser")
 
 text.textContent = `שלום ${oldUser.firstName}`
 
+ function toggleUpdate() {
+            const updatedUserDiv = document.querySelector('.updatedUser');
+            if (updatedUserDiv.style.display === 'flex') {
+                updatedUserDiv.style.display = 'none';
+            } else {
+                updatedUserDiv.style.display = 'flex';
+                updatedUserDiv.style.flexDirection = 'column';
+            }
+        }
+
 updatedUserOpen.addEventListener("click", e => {
     updatedUserOpen.style.color = "red"
     updatedUserBox.style.display = "flex"
