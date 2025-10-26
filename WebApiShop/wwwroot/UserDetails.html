@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <script defer src="UpDateDetails.js"></script>
+    <title>עדכון פרטי משתמש</title>
+    <style>
+        .continer {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+            margin: 3vw;
+        }
+        .updatedUser {
+            display: none;
+            flex-direction: column;
+            width: 20vw;
+            margin: 3vw;
+        }
+        .open {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="continer">
+        <h3 class="text"></h3>
+        <div class="open"><u>לעדכון פרטים</u></div>
+        <div class="updatedUser">
+            <h3 class="text"></h3>
+            <br />
+            <lable for="userName"> שם משתמש</lable>
+            <input type="email" placeholder="כתובת מייל" id="userName" />
+            <br />
+            <lable for="firstName"> שם פרטי</lable>
+            <input type="text" placeholder="שם פרטי" id="firstName" />
+            <br />
+            <lable for="lastName"> שם משפחה</lable>
+            <input type="text" placeholder="שם משפחה" id="lastName" />
+            <br />
+            <lable for="password"> סיסמא</lable>
+            <input type="text" placeholder="סיסמא" id="password" />
+            <br />
+            <button onclick="updateUserDetails()"> עדכן</button>
+        </div>
+    </div>
+</body>
+</html>

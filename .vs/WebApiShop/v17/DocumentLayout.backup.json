@@ -1,0 +1,203 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\WEB API\\WebApiShop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\wwwroot\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\wwwroot\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\wwwroot\\index.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\users.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\users.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\wwwroot\\updatedetails.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\wwwroot\\updatedetails.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\wwwroot\\userdetails.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\wwwroot\\userdetails.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\usersfile.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\usersfile.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\.editorconfig||{68B46364-D378-42F2-9E72-37D86C5F4468}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\.editorconfig||{68B46364-D378-42F2-9E72-37D86C5F4468}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\existuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\existuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|e:\\web api\\webapishop\\webapishop\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{6D90B215-32BF-45A1-82EC-3C1DB827A6EB}|WebApiShop\\WebApiShop.csproj|solutionrelative:webapishop\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 435,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": ".editorconfig",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\.editorconfig",
+              "RelativeDocumentMoniker": "WebApiShop\\.editorconfig",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\.editorconfig",
+              "RelativeToolTip": "WebApiShop\\.editorconfig",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2025-10-24T09:35:44.792Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "WebApiShop\\Controllers\\UsersController.cs",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "WebApiShop\\Controllers\\UsersController.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAnwDsAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T09:15:26.09Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "usersFile.txt",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\usersFile.txt",
+              "RelativeDocumentMoniker": "WebApiShop\\usersFile.txt",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\usersFile.txt",
+              "RelativeToolTip": "WebApiShop\\usersFile.txt",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAABjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-10-23T10:15:31.765Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "UpDateDetails.js",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\UpDateDetails.js",
+              "RelativeDocumentMoniker": "WebApiShop\\wwwroot\\UpDateDetails.js",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\UpDateDetails.js",
+              "RelativeToolTip": "WebApiShop\\wwwroot\\UpDateDetails.js",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAACsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-10-23T10:41:33.209Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "index.js",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\index.js",
+              "RelativeDocumentMoniker": "WebApiShop\\wwwroot\\index.js",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\index.js",
+              "RelativeToolTip": "WebApiShop\\wwwroot\\index.js",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAABUAAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-09-11T09:17:28.636Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UserDetails.html",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\UserDetails.html",
+              "RelativeDocumentMoniker": "WebApiShop\\wwwroot\\UserDetails.html",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\UserDetails.html",
+              "RelativeToolTip": "WebApiShop\\wwwroot\\UserDetails.html",
+              "ViewState": "AgIAACAAAAAAAAAAAAAAACIAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2025-10-23T10:39:34.237Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "index.html",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\index.html",
+              "RelativeDocumentMoniker": "WebApiShop\\wwwroot\\index.html",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\wwwroot\\index.html",
+              "RelativeToolTip": "WebApiShop\\wwwroot\\index.html",
+              "ViewState": "AgIAABkAAAAAAAAAAAAAACcAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2025-09-11T09:17:06.373Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ExistUser.cs",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\ExistUser.cs",
+              "RelativeDocumentMoniker": "WebApiShop\\ExistUser.cs",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\ExistUser.cs",
+              "RelativeToolTip": "WebApiShop\\ExistUser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T09:47:13.469Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Users.cs",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\Users.cs",
+              "RelativeDocumentMoniker": "WebApiShop\\Users.cs",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\Users.cs",
+              "RelativeToolTip": "WebApiShop\\Users.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAAAA0AAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-10-23T09:44:30.781Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\Program.cs",
+              "RelativeDocumentMoniker": "WebApiShop\\Program.cs",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\Program.cs",
+              "RelativeToolTip": "WebApiShop\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-11T09:27:15.935Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "E:\\WEB API\\WebApiShop\\WebApiShop\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "WebApiShop\\Properties\\launchSettings.json",
+              "ToolTip": "E:\\WEB API\\WebApiShop\\WebApiShop\\Properties\\launchSettings.json",
+              "RelativeToolTip": "WebApiShop\\Properties\\launchSettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-09-11T09:27:53.223Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

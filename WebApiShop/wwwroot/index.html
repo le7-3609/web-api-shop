@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>דף כניסה</title>
+    <script src="index.js" defer></script>
+    <style>
+        .continer {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .existingUser {
+            display: flex;
+            flex-direction: column;
+            width: 20vw;
+            margin: 3vw;
+        }
+
+        .newUser {
+            flex-direction: column;
+            width: 20vw;
+            margin: 3vw;
+            display: none;
+        }
+
+        .addUser {
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="continer">
+        <div class="existingUser">
+            <h3>משתמש רשום</h3>
+
+            <lable for="existingUserName">שם משתמש</lable>
+            <input type="email" placeholder="כתובת מייל" id="existingUserName" required />
+            <br />
+            <lable for="existingUserPassword">סיסמא</lable>
+            <input type="password" placeholder="סיסמא" id="existingUserPassword" required />
+            <br />
+            <button onClick="login()">התחברות</button>
+            <br />
+            <div class="addUser"><u>משתמש חדש</u></div>
+        </div>
+
+        <div class="newUser">
+            <h3>משתמש חדש</h3>
+
+            <lable for="userName">שם משתמש</lable>
+            <input type="email" placeholder="כתובת מייל" id="userName" name="userName" required />
+            <br />
+            <lable for="firstName">שם פרטי</lable>
+            <input type="text" placeholder="שם פרטי" id="firstName" name="firstName" required />
+            <br />
+            <lable for="lastName">שם משפחה</lable>
+            <input type="text" placeholder="שם משפחה" id="lastName" name="lastName" required />
+            <br />
+            <lable for="password">סיסמא</lable>
+            <input type="password" placeholder="סיסמא" id="password" name="password" required />
+            <br />
+            <button onClick="createUser()">רישום</button>
+        </div>
+    </div>
+</body>
+
+</html>
