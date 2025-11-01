@@ -11,7 +11,7 @@ namespace WebApiShope.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        string _filePath = "E:\\WEB API\\WebApiShop\\WebApiShop\\usersFile.txt";
+        string _filePath = "..\\WebApiShop\\usersFile.txt";
 
         // GET: api/<UsersController>
         [HttpGet]
