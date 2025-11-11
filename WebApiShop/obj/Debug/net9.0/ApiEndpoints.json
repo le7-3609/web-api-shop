@@ -1,26 +1,6 @@
 [
   {
     "ContainingType": "WebApiShope.Controllers.UsersController",
-    "Method": "Get",
-    "RelativePath": "api/Users",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": [
-      {
-        "Type": "System.Collections.Generic.List\u00601[[WebApiShop.Controllers.Users, WebApiShop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
-        "MediaTypes": [
-          "text/plain",
-          "application/json",
-          "text/json"
-        ],
-        "StatusCode": 200
-      }
-    ]
-  },
-  {
-    "ContainingType": "WebApiShope.Controllers.UsersController",
     "Method": "Post",
     "RelativePath": "api/Users",
     "HttpMethod": "POST",
@@ -29,13 +9,13 @@
     "Parameters": [
       {
         "Name": "user",
-        "Type": "WebApiShop.Controllers.Users",
+        "Type": "Entities.Users",
         "IsRequired": true
       }
     ],
     "ReturnTypes": [
       {
-        "Type": "WebApiShop.Controllers.Users",
+        "Type": "Entities.Users",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -61,7 +41,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "WebApiShop.Controllers.Users",
+        "Type": "Entities.Users",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -86,7 +66,7 @@
       },
       {
         "Name": "userToUpdate",
-        "Type": "WebApiShop.Controllers.Users",
+        "Type": "Entities.Users",
         "IsRequired": true
       }
     ],
@@ -130,13 +110,13 @@
     "Parameters": [
       {
         "Name": "oldUser",
-        "Type": "WebApiShop.Controllers.ExistUser",
+        "Type": "Entities.ExistUser",
         "IsRequired": true
       }
     ],
     "ReturnTypes": [
       {
-        "Type": "WebApiShop.Controllers.Users",
+        "Type": "Entities.Users",
         "MediaTypes": [
           "text/plain",
           "application/json",
