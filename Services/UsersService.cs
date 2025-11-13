@@ -7,29 +7,49 @@ namespace Services
     public class UsersService
     {
         UsersRepository _usersRepository = new UsersRepository();
-        public Users UsersServiceGetById(int id)
+        PasswordValidityService _passwordValidityService = new PasswordValidityService();
+
+        public Users GetById(int id)
         {
-            return _usersRepository.UsersRepositoryGetById(id);
+            return _usersRepository.GetById(id);
         }
 
-        public Users UsersServicePost(Users user)
+        public Users Post(Users user)
         {
-            return _usersRepository.UsersRepositoryPost(user);
+            if (_passwordValidityService.PasswordStrength(user.Password).strength >= 2)
+            {
+                return _usersRepository.Post(user);
+            }
+            return null;
         }
 
-        public Users UsersServiceLogin(ExistUser oldUser)
+        public Users Login(ExistUser oldUser)
         {
-            return _usersRepository.UsersRepositoryLogin(oldUser);
+            return _usersRepository.Login(oldUser);
         }
 
-        public void UsersServicePut(int id, Users userToUpdate)
+        public void Put(int id, Users userToUpdate)
         {
-            _usersRepository.UsersRepositoryPut(id, userToUpdate);
+            Users existingUser = _usersRepository.GetById(id);
+            if (existingUser == null)
+                throw new Exception("User not found");
+            PasswordValidity result = _passwordValidityService.PasswordStrength(userToUpdate.Password);
+            if (result.strength >= 2)
+            {
+                _usersRepository.Put(id, userToUpdate);
+            }
+            else
+            {
+                userToUpdate.Password = existingUser.Password;
+                _usersRepository.Put(id, userToUpdate);
+                throw new Exception("Password was not updated because it is too weak.");
+
+            }
         }
 
-        public void UsersServiceDelete(int id)
+        public void Delete(int id)
         {
-            _usersRepository.UsersRepositoryDelete(id);
+            _usersRepository.Delete(id);
         }
     }
 }

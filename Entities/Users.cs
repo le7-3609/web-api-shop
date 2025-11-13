@@ -15,7 +15,7 @@ namespace Entities
         public string? LastName { get; set; }
         public int UserId { get; set; }
 
-        [StringLength(8, ErrorMessage = "password Can be between 4 till 8 chars", MinimumLength = 4), Required]
+        [Required]
         public required string Password { get; set; }
 
     }

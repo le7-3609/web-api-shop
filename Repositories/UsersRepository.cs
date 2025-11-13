@@ -7,7 +7,7 @@ namespace Repositories
     public class UsersRepository
     {
         string _filePath = "..\\usersDitels.txt";
-        public Users UsersRepositoryGetById(int id)
+        public Users GetById(int id)
         {
             using (StreamReader reader = System.IO.File.OpenText(_filePath))
             {
@@ -22,7 +22,7 @@ namespace Repositories
             return null; 
         }
 
-        public Users UsersRepositoryPost(Users user)
+        public Users Post(Users user)
         {
             int numberOfUsers = System.IO.File.ReadLines(_filePath).Count();
             user.UserId = numberOfUsers + 1;
@@ -31,7 +31,7 @@ namespace Repositories
             return user;
         }
 
-        public Users UsersRepositoryLogin(ExistUser oldUser)
+        public Users Login(ExistUser oldUser)
         {
             using (StreamReader reader = System.IO.File.OpenText(_filePath))
             {
@@ -46,7 +46,7 @@ namespace Repositories
             return null;
         }
 
-        public void UsersRepositoryPut(int id, Users userToUpdate)
+        public void Put(int id, Users userToUpdate)
         {
             string textToReplace = string.Empty;
             using (StreamReader reader = System.IO.File.OpenText(_filePath))
@@ -68,7 +68,7 @@ namespace Repositories
             }
         }
 
-        public void UsersRepositoryDelete(int id)
+        public void Delete(int id)
         {
         }
     }

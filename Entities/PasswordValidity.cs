@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace Entities
 {
-    public class ExistUser
+    public class PasswordValidity
     {
-        [EmailAddress, Required]
-        public string Email { get; set; }
         [Required]
         public string Password { get; set; }
+        public int strength { get; set; }
     }
 }

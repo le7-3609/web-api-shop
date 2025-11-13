@@ -37,7 +37,7 @@ namespace WebApiShope.Controllers
         [HttpGet("{id}")]
         public ActionResult<Users> Get(int id)
         {
-            Users user = _usersService.UsersServiceGetById(id);
+            Users user = _usersService.GetById(id);
             if(user == null) {
                 return NoContent();
             }
@@ -48,16 +48,20 @@ namespace WebApiShope.Controllers
         [HttpPost]
         public ActionResult<Users> Post([FromBody] Users user)
         {
-            Users newUser = _usersService.UsersServicePost(user);
-            return CreatedAtAction(nameof(Get), new { id = user.UserId }, newUser);
+            Users newUser = _usersService.Post(user);
+            if (newUser != null)
+            {
+                return CreatedAtAction(nameof(Get), new { id = user.UserId }, newUser);
+            }
+            return BadRequest("Too weak password");
         }
 
         [HttpPost("login")]
         public ActionResult<Users> Login([FromBody] ExistUser oldUser)
         {
-            Users user = _usersService.UsersServiceLogin(oldUser);
+            Users user = _usersService.Login(oldUser);
             if(user != null) {
-                return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
+                return Ok(user);
             }
             return NoContent();
         }
@@ -66,14 +70,14 @@ namespace WebApiShope.Controllers
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] Users userToUpdate)
         {
-            _usersService.UsersServicePut(id, userToUpdate);
+            _usersService.Put(id, userToUpdate);
         }
 
         // DELETE api/<UsersController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            _usersService.UsersServiceDelete(id);
+            _usersService.Delete(id);
         }
     }
 }

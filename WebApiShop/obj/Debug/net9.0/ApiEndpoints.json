@@ -1,5 +1,31 @@
 [
   {
+    "ContainingType": "WebApiShop.Controllers.PasswordValidityController",
+    "Method": "PasswordStrength",
+    "RelativePath": "api/PasswordValidity/passwordStrength",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "password",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "Entities.PasswordValidity",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "WebApiShope.Controllers.UsersController",
     "Method": "Post",
     "RelativePath": "api/Users",

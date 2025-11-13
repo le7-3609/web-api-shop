@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
     <title>דף כניסה</title>
     <script src="index.js" defer></script>
+    <script src="checkPassword.js" defer></script>
+    <!--<script src="bower_components/zxcvbn/dist/zxcvbn.js" defer></script>-->
     <style>
-        /* Reset בסיסי */
         * {
             box-sizing: border-box;
         }
-
         body {
             font-family: Arial, Helvetica, sans-serif;
             background-color: #f5f7fa;
@@ -22,7 +22,6 @@
             align-items: center;
             height: 100vh;
         }
-
         .container {
             background: white;
             padding: 30px 40px;
@@ -32,21 +31,18 @@
             display: flex;
             gap: 40px;
         }
-
         h3 {
             margin-bottom: 25px;
             text-align: center;
             font-weight: 600;
             color: #222;
         }
-
         label {
             display: block;
             margin-bottom: 6px;
             font-weight: 500;
             font-size: 14px;
         }
-
         input[type="text"],
         input[type="email"],
         input[type="password"] {
@@ -58,7 +54,6 @@
             font-size: 14px;
             transition: border-color 0.3s ease;
         }
-
         input[type="text"]:focus,
         input[type="email"]:focus,
         input[type="password"]:focus {
@@ -66,7 +61,6 @@
             outline: none;
             background-color: #f0f7ff;
         }
-
         button {
             width: 100%;
             padding: 12px 0;
@@ -78,22 +72,19 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            margin-bottom: 5px;
         }
-
         button:hover {
             background-color: #004999;
         }
-
         .existingUser, .newUser {
             width: 320px;
             display: flex;
             flex-direction: column;
         }
-
         .newUser {
             display: none;
         }
-
         .addUser {
             text-align: center;
             color: #0066cc;
@@ -103,10 +94,17 @@
             user-select: none;
             margin-top: 10px;
         }
+        .bar {
+            width: 100%;
+            display:none;
+            margin-bottom:5px;
+        }
+
     </style>
 </head>
 <body>
     <div class="container">
+
         <div class="existingUser">
             <h3>משתמש רשום</h3>
 
@@ -136,8 +134,9 @@
             <label for="password">סיסמא</label>
             <input type="password" placeholder="סיסמא" id="password" name="password" required />
 
+            <button id="checkBtn" type="button" onClick="checkPassword()">בדוק חוזק סיסמא</button>
+            <progress class="bar" max="100"></progress>
             <button onClick="createUser()">רישום</button>
         </div>
-    </div>
 </body>
 </html>

@@ -191,6 +191,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "PDFsharp": {
+              "target": "Package",
+              "version": "[6.2.2, )"
+            },
             "zxcvbn-core": {
               "target": "Package",
               "version": "[7.0.92, )"
