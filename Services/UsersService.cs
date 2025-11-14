@@ -28,23 +28,14 @@ namespace Services
             return _usersRepository.Login(oldUser);
         }
 
-        public void Put(int id, Users userToUpdate)
+        public bool Put(int id, Users userToUpdate)
         {
-            Users existingUser = _usersRepository.GetById(id);
-            if (existingUser == null)
-                throw new Exception("User not found");
-            PasswordValidity result = _passwordValidityService.PasswordStrength(userToUpdate.Password);
-            if (result.strength >= 2)
+            if (_passwordValidityService.PasswordStrength(userToUpdate.Password).strength >= 2)
             {
                 _usersRepository.Put(id, userToUpdate);
+                return true;
             }
-            else
-            {
-                userToUpdate.Password = existingUser.Password;
-                _usersRepository.Put(id, userToUpdate);
-                throw new Exception("Password was not updated because it is too weak.");
-
-            }
+            return false;
         }
 
         public void Delete(int id)

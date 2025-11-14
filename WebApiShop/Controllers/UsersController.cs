@@ -68,9 +68,14 @@ namespace WebApiShope.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] Users userToUpdate)
+        public IActionResult Put(int id, [FromBody] Users userToUpdate)
         {
-            _usersService.Put(id, userToUpdate);
+            bool isUpdat=_usersService.Put(id, userToUpdate);
+            if (!isUpdat)
+            {
+                return NoContent();
+            }
+            return Ok(userToUpdate);
         }
 
         // DELETE api/<UsersController>/5
