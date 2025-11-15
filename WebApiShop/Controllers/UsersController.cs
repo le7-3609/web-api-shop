@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-//using WebApiShop.Controllers;
 using Entities;
 using Repositories;
 using Services;
@@ -14,7 +13,13 @@ namespace WebApiShope.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        UsersService _usersService = new UsersService();
+        private readonly IUsersService _iusersService;
+
+        public UsersController(IUsersService usersService)
+        {
+            _iusersService = usersService;
+        }
+
         // GET: api/<UsersController>
         //[HttpGet]
         //public List<Users> Get()
@@ -37,7 +42,7 @@ namespace WebApiShope.Controllers
         [HttpGet("{id}")]
         public ActionResult<Users> Get(int id)
         {
-            Users user = _usersService.GetById(id);
+            Users user = _iusersService.GetById(id);
             if(user == null) {
                 return NoContent();
             }
@@ -48,7 +53,7 @@ namespace WebApiShope.Controllers
         [HttpPost]
         public ActionResult<Users> Post([FromBody] Users user)
         {
-            Users newUser = _usersService.Post(user);
+            Users newUser = _iusersService.Post(user);
             if (newUser != null)
             {
                 return CreatedAtAction(nameof(Get), new { id = user.UserId }, newUser);
@@ -59,7 +64,7 @@ namespace WebApiShope.Controllers
         [HttpPost("login")]
         public ActionResult<Users> Login([FromBody] ExistUser oldUser)
         {
-            Users user = _usersService.Login(oldUser);
+            Users user = _iusersService.Login(oldUser);
             if(user != null) {
                 return Ok(user);
             }
@@ -70,7 +75,7 @@ namespace WebApiShope.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Users userToUpdate)
         {
-            bool isUpdat=_usersService.Put(id, userToUpdate);
+            bool isUpdat=_iusersService.Put(id, userToUpdate);
             if (!isUpdat)
             {
                 return NoContent();
@@ -82,7 +87,7 @@ namespace WebApiShope.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
-            _usersService.Delete(id);
+            _iusersService.Delete(id);
         }
     }
 }

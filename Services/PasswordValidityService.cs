@@ -10,11 +10,11 @@ using Zxcvbn;
 
 namespace Services
 {
-    public class PasswordValidityService
+    public class PasswordValidityService : IPasswordValidityService
     {
         public PasswordValidity PasswordStrength(string password)
         {
-            if (password != null && password !="")
+            if (password != null && password != "")
             {
                 var result = Zxcvbn.Core.EvaluatePassword(password);
                 if (result != null)

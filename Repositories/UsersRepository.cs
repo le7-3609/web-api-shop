@@ -4,9 +4,9 @@ using Entities;
 namespace Repositories
 {
 
-    public class UsersRepository
+    public class UsersRepository : IUsersRepository
     {
-        string _filePath = "..\\usersDitels.txt";
+        string _filePath = "..\\usersDetails.txt";
         public Users GetById(int id)
         {
             using (StreamReader reader = System.IO.File.OpenText(_filePath))
@@ -19,7 +19,7 @@ namespace Repositories
                         return user;
                 }
             }
-            return null; 
+            return null;
         }
 
         public Users Post(Users user)
