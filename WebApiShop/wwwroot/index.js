@@ -51,7 +51,7 @@ async function createUser() {
         }
 
         const dataPost = await responsePost.json();
-        alert(" נרשמת בהצלחה")
+        alert("נרשמת בהצלחה! תוכל כעת להתחבר עם הפרטים שהזנת")
     }
     catch (e) {
         console.log(e)
@@ -73,7 +73,7 @@ async function login() {
             throw new Error(`HTTP error! status:${responsePost.status}`)
         }
         if (responsePost.status == 204) {
-            alert("שם משתמש לא קיים")
+            alert("שם המשתמש או הסיסמה שגויים. נסה שוב")
         }
         else {
             const dataPost = await responsePost.json();
