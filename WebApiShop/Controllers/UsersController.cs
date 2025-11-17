@@ -2,23 +2,20 @@
 using System.Text.Json;
 using WebApiShop.Controllers;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace WebApiShope.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        string _filePath = "..\\WebApiShop\\usersFile.txt";
+        private const string UsersFilePath = "..\\WebApiShop\\usersFile.txt";
 
         // GET: api/<UsersController>
         [HttpGet]
         public List<Users> Get()
         {
             List<Users> allUsers = new();
-            using (StreamReader reader = System.IO.File.OpenText(_filePath))
+            using (StreamReader reader = System.IO.File.OpenText(UsersFilePath))
             {
                 string? currentUserInFile;
                 while ((currentUserInFile = reader.ReadLine()) != null)
@@ -30,12 +27,11 @@ namespace WebApiShope.Controllers
             return allUsers;
         }
 
-
         // GET api/<UsersController>/5
         [HttpGet("{id}")]
         public ActionResult<Users> Get(int id)
         {
-            using (StreamReader reader = System.IO.File.OpenText(_filePath))
+            using (StreamReader reader = System.IO.File.OpenText(UsersFilePath))
             {
                 string? currentUserInFile;
                 while ((currentUserInFile = reader.ReadLine()) != null)
@@ -45,34 +41,34 @@ namespace WebApiShope.Controllers
                         return Ok(user);
                 }
             }
-            return NoContent(); //write in c# code
+            return NotFound();
         }
 
         // POST api/<UsersController>
         [HttpPost]
         public ActionResult<Users> Post([FromBody] Users user)
         {
-            int numberOfUsers = System.IO.File.ReadLines(_filePath).Count();
+            int numberOfUsers = System.IO.File.ReadLines(UsersFilePath).Count();
             user.UserId = numberOfUsers + 1;
             string userJson = JsonSerializer.Serialize(user);
-            System.IO.File.AppendAllText(_filePath, userJson + Environment.NewLine);
+            System.IO.File.AppendAllText(UsersFilePath, userJson + Environment.NewLine);
             return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
         }
 
         [HttpPost("login")]
         public ActionResult<Users> Login([FromBody] ExistUser oldUser)
         {
-            using (StreamReader reader = System.IO.File.OpenText(_filePath))
+            using (StreamReader reader = System.IO.File.OpenText(UsersFilePath))
             {
                 string? currentUserInFile;
                 while ((currentUserInFile = reader.ReadLine()) != null)
                 {
                     Users user = JsonSerializer.Deserialize<Users>(currentUserInFile);
                     if (user.Email == oldUser.Email && user.Password == oldUser.Password)
-                        return CreatedAtAction(nameof(Get), new { user.UserId }, user);
+                        return Ok(user);
                 }
             }
-            return NoContent();
+            return Unauthorized();
         }
 
         // PUT api/<UsersController>/5
@@ -80,7 +76,7 @@ namespace WebApiShope.Controllers
         public void Put(int id, [FromBody] Users userToUpdate)
         {
             string textToReplace = string.Empty;
-            using (StreamReader reader = System.IO.File.OpenText(_filePath))
+            using (StreamReader reader = System.IO.File.OpenText(UsersFilePath))
             {
                 string currentUserInFile;
                 while ((currentUserInFile = reader.ReadLine()) != null)
@@ -93,9 +89,9 @@ namespace WebApiShope.Controllers
 
             if (textToReplace != string.Empty)
             {
-                string text = System.IO.File.ReadAllText(_filePath);
+                string text = System.IO.File.ReadAllText(UsersFilePath);
                 text = text.Replace(textToReplace, JsonSerializer.Serialize(userToUpdate));
-                System.IO.File.WriteAllText(_filePath, text);
+                System.IO.File.WriteAllText(UsersFilePath, text);
             }
         }
 

@@ -20,7 +20,7 @@ updatedUserOpen.addEventListener("click", e => {
     updatedUserBox.style.display = "flex"
 })
 
-const getDataRfomForm = () => { 
+const getDataFromForm = () => {
     const updatedUser = {
         Email: document.querySelector("#userName").value || oldUser.email,
         FirstName: document.querySelector("#firstName").value || oldUser.firstName,
@@ -29,10 +29,8 @@ const getDataRfomForm = () => {
         UserId: oldUser.userId
     }
     return updatedUser
-}
-
-const updateUserDetails = async () => {
-    const updatedUser = getDataRfomForm();
+}const updateUserDetails = async () => {
+    const updatedUser = getDataFromForm();
     try {
         const responsePost = await fetch(`api/users/${oldUser.userId}`, {
             method: 'Put',
