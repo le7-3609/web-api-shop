@@ -1,8 +1,0 @@
-wwwroot\index.html
-wwwroot\UpDateDetails.js
-wwwroot\UserDetails.html
-wwwroot\index.js
-C:\Users\e0527\OneDrive\מסמכים\Studies\second year\git\ex\WebApiShop\WebApiShop\wwwroot\index.html
-C:\Users\e0527\OneDrive\מסמכים\Studies\second year\git\ex\WebApiShop\WebApiShop\wwwroot\index.js
-C:\Users\e0527\OneDrive\מסמכים\Studies\second year\git\ex\WebApiShop\WebApiShop\wwwroot\UserDetails.html
-C:\Users\e0527\OneDrive\מסמכים\Studies\second year\git\ex\WebApiShop\WebApiShop\wwwroot\UpDateDetails.js

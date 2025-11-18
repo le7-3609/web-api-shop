@@ -40,11 +40,16 @@ const getDataFromForm = () => {
             body: JSON.stringify(updatedUser)
 
         });
-        if (!responsePost.ok) {
+        if (responsePost.status == 204) {
+            alert("סיסמא מדי קלה, העדכון נכשל")
+        }
+        else if (!responsePost.ok) {
             throw new Error(`HTTP error! status:${responsePost.status}`)
         }
-        sessionStorage.setItem("User", JSON.stringify(updatedUser))
-        alert("הפרטים עודכנו בהצלחה")
+        else {
+            sessionStorage.setItem("User", JSON.stringify(updatedUser))
+            alert("הפרטים עודכנו בהצלחה")
+        }
     }
     catch (error) {
         console.log(error)
