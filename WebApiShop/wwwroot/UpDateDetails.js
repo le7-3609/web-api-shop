@@ -6,14 +6,14 @@ const updatedUserBox = document.querySelector(".updatedUser")
 text.textContent = `שלום ${oldUser.firstName}`
 
  function toggleUpdate() {
-            const updatedUserDiv = document.querySelector('.updatedUser');
-            if (updatedUserDiv.style.display === 'flex') {
-                updatedUserDiv.style.display = 'none';
-            } else {
-                updatedUserDiv.style.display = 'flex';
-                updatedUserDiv.style.flexDirection = 'column';
-            }
-        }
+    const updatedUserDiv = document.querySelector('.updatedUser');
+    if (updatedUserDiv.style.display === 'flex') {
+        updatedUserDiv.style.display = 'none';
+    } else {
+        updatedUserDiv.style.display = 'flex';
+        updatedUserDiv.style.flexDirection = 'column';
+    }
+ }
 
 updatedUserOpen.addEventListener("click", e => {
     updatedUserOpen.style.color = "red"
@@ -29,7 +29,9 @@ const getDataFromForm = () => {
         UserId: oldUser.userId
     }
     return updatedUser
-}const updateUserDetails = async () => {
+}
+
+const updateUserDetails = async () => {
     const updatedUser = getDataFromForm();
     try {
         const responsePost = await fetch(`api/users/${oldUser.userId}`, {
@@ -41,7 +43,10 @@ const getDataFromForm = () => {
 
         });
         if (responsePost.status == 204) {
-            alert("סיסמא מדי קלה, העדכון נכשל")
+            alert("סיסמא מדי קלה או שהשם מייל תפוס ע\"י משתמש אחר, העדכון נכשל")
+        }
+        else if (responsePost.status  == 400) {
+            alert("שדה הדוא\"ל אינו תקין")
         }
         else if (!responsePost.ok) {
             throw new Error(`HTTP error! status:${responsePost.status}`)

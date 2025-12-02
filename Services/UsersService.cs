@@ -6,7 +6,7 @@ namespace Services
 {
     public class UsersService : IUsersService
     {
-        private readonly IUsersRepository _iusersRepository ;
+        private readonly IUsersRepository _iusersRepository;
         private readonly IPasswordValidityService _ipasswordValidityService;
 
         public UsersService(IUsersRepository usersRepository, IPasswordValidityService passwordValidityService)
@@ -14,38 +14,39 @@ namespace Services
             _iusersRepository = usersRepository;
             _ipasswordValidityService = passwordValidityService;
         }
-        public Users GetById(int id)
+
+        public async Task<User> GetByIdAsync(int id)
         {
-            return _iusersRepository.GetById(id);
+            return await _iusersRepository.GetByIdAsync(id);
         }
 
-        public Users Post(Users user)
+        public async Task<User> RegisterAsync(User user)
         {
             if (_ipasswordValidityService.PasswordStrength(user.Password).strength >= 2)
             {
-                return _iusersRepository.Post(user);
+                return await _iusersRepository.RegisterAsync(user);
             }
             return null;
         }
 
-        public Users Login(ExistUser oldUser)
+        public async Task<User> LoginAsync(ExistUser oldUser)
         {
-            return _iusersRepository.Login(oldUser);
+            return await _iusersRepository.LoginAsync(oldUser);
         }
 
-        public bool Put(int id, Users userToUpdate)
+        public async Task<bool> UpdateAsync(int id, User userToUpdate)
         {
             if (_ipasswordValidityService.PasswordStrength(userToUpdate.Password).strength >= 2)
             {
-                _iusersRepository.Put(id, userToUpdate);
-                return true;
+                var updateUser = await _iusersRepository.UpdateAsync(id, userToUpdate);
+                if(updateUser != null)
+                    return true;
             }
             return false;
         }
-
-        public void Delete(int id)
-        {
-            _iusersRepository.Delete(id);
-        }
+        //public void Delete(int id)
+        //{
+        //    _iusersRepository.Delete(id);
+        //}
     }
 }

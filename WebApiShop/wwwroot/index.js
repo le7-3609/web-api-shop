@@ -46,10 +46,12 @@ async function createUser() {
             },
             body: JSON.stringify(newUser)
         });
+        if (Math.floor(responsePost.status / 100) == 4) {
+            alert("שם המשתמש או הסיסמה אינם תקינים : נדרש שם משתמש מסוג דוא\"ל וסיסמא בחוזקה 2 לפחות")
+        }
         if (!responsePost.ok) {
             throw new Error(`HTTP error! status:${responsePost.status}`)
         }
-
         const dataPost = await responsePost.json();
         alert("נרשמת בהצלחה! תוכל כעת להתחבר עם הפרטים שהזנת")
     }
@@ -69,11 +71,14 @@ async function login() {
             },
             body: JSON.stringify(existUser)
         });
-        if (!responsePost.ok) {
-            throw new Error(`HTTP error! status:${responsePost.status}`)
-        }
         if (responsePost.status == 204) {
             alert("שם המשתמש או הסיסמה שגויים. נסה שוב")
+        }
+        else if (Math.floor(responsePost.status /100) == 4) {
+            alert("שם המשתמש או הסיסמה שגויים או חסרים. נסה שוב")
+        }
+        if (!responsePost.ok) {
+            throw new Error(`HTTP error! status:${responsePost.status}`)
         }
         else {
             const dataPost = await responsePost.json();

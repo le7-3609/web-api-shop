@@ -4,10 +4,10 @@ namespace Repositories
 {
     public interface IUsersRepository
     {
-        void Delete(int id);
-        Users GetById(int id);
-        Users Login(ExistUser oldUser);
-        Users Post(Users user);
-        void Put(int id, Users userToUpdate);
+        //void Delete(int id);
+        public Task<User> GetByIdAsync(int id);
+        public Task<User> LoginAsync(ExistUser oldUser);
+        public Task<User> RegisterAsync(User user);
+        public Task<User> UpdateAsync(int id, User userToUpdate);
     }
 }
