@@ -1,0 +1,10 @@
+# Ignore Visual Studio temporary files
+.vs/
+*.user
+*.suo
+*.vsidx
+bin/
+obj/
+Debug/
+Release/
+usersDetails.txt
