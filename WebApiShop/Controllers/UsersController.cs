@@ -17,6 +17,7 @@ namespace WebApiShope.Controllers
         }
 
         // GET api/<UsersController>/5
+        [ActionName("GetByIdAsync")]
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetByIdAsync(int id)
         {
@@ -35,7 +36,7 @@ namespace WebApiShope.Controllers
             User newUser = await _iusersService.RegisterAsync(user);
             if (newUser != null)
             {
-                return CreatedAtAction(nameof(RegisterAsync), new { id = user.UserId }, newUser);
+                return CreatedAtAction(nameof(GetByIdAsync), new { id = newUser.UserId }, newUser);
             }
             return BadRequest("Too weak password or email already in use by another user.");
         }
