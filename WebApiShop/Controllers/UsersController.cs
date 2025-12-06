@@ -3,17 +3,17 @@ using System.Text.Json;
 using Entities;
 using Services;
 
-namespace WebApiShope.Controllers
+namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersService _iusersService;
+        private readonly IUsersService _usersService;
 
         public UsersController(IUsersService usersService)
         {
-            _iusersService = usersService;
+            _usersService = usersService;
         }
 
         // GET api/<UsersController>/5
@@ -21,10 +21,10 @@ namespace WebApiShope.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetByIdAsync(int id)
         {
-            User user = await _iusersService.GetByIdAsync(id);
+            User user = await _usersService.GetByIdAsync(id);
             if (user == null)
             {
-                return NoContent();
+                return NotFound($"User with ID {id} not found");
             }
             return Ok(user);
         }
@@ -33,7 +33,7 @@ namespace WebApiShope.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> RegisterAsync([FromBody] User user)
         {
-            User newUser = await _iusersService.RegisterAsync(user);
+            User newUser = await _usersService.RegisterAsync(user);
             if (newUser != null)
             {
                 return CreatedAtAction(nameof(GetByIdAsync), new { id = newUser.UserId }, newUser);
@@ -45,22 +45,22 @@ namespace WebApiShope.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<User>> LoginAsync([FromBody] ExistUser oldUser)
         {
-            User user = await _iusersService.LoginAsync(oldUser);
+            User user = await _usersService.LoginAsync(oldUser);
             if (user != null)
             {
                 return Ok(user);
             }
-            return Unauthorized();
+            return Unauthorized("Invalid email or password");
         }
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] User userToUpdate)
         {
-            bool isUpdat = await _iusersService.UpdateAsync(id, userToUpdate);
-            if (!isUpdat)
+            bool isUpdated = await _usersService.UpdateAsync(id, userToUpdate);
+            if (!isUpdated)
             {
-                return NoContent();
+                return NotFound($"User with ID {id} not found or update failed due to weak password");
             }
             return Ok(userToUpdate);
         }

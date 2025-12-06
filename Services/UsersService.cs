@@ -6,39 +6,39 @@ namespace Services
 {
     public class UsersService : IUsersService
     {
-        private readonly IUsersRepository _iusersRepository;
-        private readonly IPasswordValidityService _ipasswordValidityService;
+        private readonly IUsersRepository _usersRepository;
+        private readonly IPasswordValidityService _passwordValidityService;
 
         public UsersService(IUsersRepository usersRepository, IPasswordValidityService passwordValidityService)
         {
-            _iusersRepository = usersRepository;
-            _ipasswordValidityService = passwordValidityService;
+            _usersRepository = usersRepository;
+            _passwordValidityService = passwordValidityService;
         }
 
         public async Task<User> GetByIdAsync(int id)
         {
-            return await _iusersRepository.GetByIdAsync(id);
+            return await _usersRepository.GetByIdAsync(id);
         }
 
         public async Task<User> RegisterAsync(User user)
         {
-            if (_ipasswordValidityService.PasswordStrength(user.Password).strength >= 2)
+            if (_passwordValidityService.PasswordStrength(user.Password).strength >= 2)
             {
-                return await _iusersRepository.RegisterAsync(user);
+                return await _usersRepository.RegisterAsync(user);
             }
             return null;
         }
 
         public async Task<User> LoginAsync(ExistUser oldUser)
         {
-            return await _iusersRepository.LoginAsync(oldUser);
+            return await _usersRepository.LoginAsync(oldUser);
         }
 
         public async Task<bool> UpdateAsync(int id, User userToUpdate)
         {
-            if (_ipasswordValidityService.PasswordStrength(userToUpdate.Password).strength >= 2)
+            if (_passwordValidityService.PasswordStrength(userToUpdate.Password).strength >= 2)
             {
-                var updateUser = await _iusersRepository.UpdateAsync(id, userToUpdate);
+                var updateUser = await _usersRepository.UpdateAsync(id, userToUpdate);
                 if(updateUser != null)
                     return true;
             }
