@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repositories
 {
-    public class UsersRepository : IUsersRepository
+    public class UserRepository : IUserRepository
     {
         MyShopContext _myShopContext;
 
-        public UsersRepository(MyShopContext shopContext)
+        public UserRepository(MyShopContext shopContext)
         {
             _myShopContext = shopContext;
         }

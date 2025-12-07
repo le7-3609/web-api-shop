@@ -2,7 +2,7 @@
 
 namespace Services
 {
-    public interface IUsersService
+    public interface IUserService
     {
         //void Delete(int id);
         Task<User> GetByIdAsync(int id);

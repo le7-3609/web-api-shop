@@ -9,11 +9,11 @@ namespace WebApiShope.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersService _iusersService;
+        private readonly IUserService _usersService;
 
-        public UsersController(IUsersService usersService)
+        public UsersController(IUserService usersService)
         {
-            _iusersService = usersService;
+            _usersService = usersService;
         }
 
         // GET api/<UsersController>/5
@@ -21,7 +21,7 @@ namespace WebApiShope.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetByIdAsync(int id)
         {
-            User user = await _iusersService.GetByIdAsync(id);
+            User user = await _usersService.GetByIdAsync(id);
             if (user == null)
             {
                 return NoContent();
@@ -33,7 +33,7 @@ namespace WebApiShope.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> RegisterAsync([FromBody] User user)
         {
-            User newUser = await _iusersService.RegisterAsync(user);
+            User newUser = await _usersService.RegisterAsync(user);
             if (newUser != null)
             {
                 return CreatedAtAction(nameof(GetByIdAsync), new { id = newUser.UserId }, newUser);
@@ -45,7 +45,7 @@ namespace WebApiShope.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<User>> LoginAsync([FromBody] ExistUser oldUser)
         {
-            User user = await _iusersService.LoginAsync(oldUser);
+            User user = await _usersService.LoginAsync(oldUser);
             if (user != null)
             {
                 return Ok(user);
@@ -57,7 +57,7 @@ namespace WebApiShope.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] User userToUpdate)
         {
-            bool isUpdat = await _iusersService.UpdateAsync(id, userToUpdate);
+            bool isUpdat = await _usersService.UpdateAsync(id, userToUpdate);
             if (!isUpdat)
             {
                 return NoContent();
@@ -69,7 +69,7 @@ namespace WebApiShope.Controllers
         //[HttpDelete("{id}")]
         //public void Delete(int id)
         //{
-        //    _iusersService.Delete(id);
+        //    _usersService.Delete(id);
         //}
     }
 }
