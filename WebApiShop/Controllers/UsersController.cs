@@ -24,7 +24,7 @@ namespace WebApiShope.Controllers
             User user = await _usersService.GetByIdAsync(id);
             if (user == null)
             {
-                return NoContent();
+                NotFound($"User with ID {id} not found");
             }
             return Ok(user);
         }
@@ -50,26 +50,19 @@ namespace WebApiShope.Controllers
             {
                 return Ok(user);
             }
-            return Unauthorized();
+            return Unauthorized("Invalid email or password");
         }
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id, [FromBody] User userToUpdate)
         {
-            bool isUpdat = await _usersService.UpdateAsync(id, userToUpdate);
-            if (!isUpdat)
+            bool isUpdated = await _usersService.UpdateAsync(id, userToUpdate);
+            if (!isUpdated)
             {
-                return NoContent();
+                return NotFound($"User with ID {id} not found or update failed due to weak password");
             }
             return Ok(userToUpdate);
         }
-
-        // DELETE api/<UsersController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //    _usersService.Delete(id);
-        //}
     }
 }

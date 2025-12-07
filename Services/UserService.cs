@@ -44,9 +44,5 @@ namespace Services
             }
             return false;
         }
-        //public void Delete(int id)
-        //{
-        //    _usersRepository.Delete(id);
-        //}
     }
 }

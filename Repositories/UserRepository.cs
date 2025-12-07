@@ -46,10 +46,6 @@ namespace Repositories
             _myShopContext.Users.Update(userToUpdate);
             await _myShopContext.SaveChangesAsync();
             return userToUpdate;
-        
         }
-        //public async Task<User> DeleteAsync(int id)
-        //{
-        //}
     }
 }
