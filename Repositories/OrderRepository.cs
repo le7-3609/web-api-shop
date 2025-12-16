@@ -19,7 +19,7 @@ namespace Repositories
 
         public async Task<Order> AddOrderAsync(Order order)
         {
-            await _myShopContext.AddAsync(order);
+            await _myShopContext.Orders.AddAsync(order);
             await _myShopContext.SaveChangesAsync();
             return order;
         }

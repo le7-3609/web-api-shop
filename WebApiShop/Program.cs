@@ -23,8 +23,8 @@ builder.Services.AddTransient<IOrderService, OrderService>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer
-("Data Source=ELISHEVA;Initial Catalog=MyShop;Integrated Security=True;Encrypt=True;Trust Server Certificate=True"));
-//("Data Source=SRV2\\PUPILS;Initial Catalog=MyShop;Integrated Security=True;Trust Server Certificate=True"));
+//("Data Source=ELISHEVA;Initial Catalog=MyShop;Integrated Security=True;Encrypt=True;Trust Server Certificate=True"));
+("Data Source=SRV2\\PUPILS;Initial Catalog=MyShop;Integrated Security=True;Trust Server Certificate=True"));
 
 var app = builder.Build();
 
