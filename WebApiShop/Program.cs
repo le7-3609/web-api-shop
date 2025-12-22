@@ -1,4 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using NLog.Web;
 using Repositories;
 using Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -6,13 +10,18 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Host.UseNLog();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddScoped<IPasswordValidityService, PasswordValidityService>();
 
-builder.Services.AddTransient<IProductRepository, ProductRepository>();
-builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+
+builder.Services.AddTransient<ISiteTypeRepository, SiteTypeRepository>();
+builder.Services.AddTransient<ISiteTypeService, SiteTypeService>();
 
 builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
@@ -22,10 +31,13 @@ builder.Services.AddTransient<IOrderService, OrderService>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer
-//("Data Source=ELISHEVA;Initial Catalog=MyShop;Integrated Security=True;Encrypt=True;Trust Server Certificate=True"));
-("Data Source=SRV2\\PUPILS;Initial Catalog=MyShop;Integrated Security=True;Trust Server Certificate=True"));
-
+builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Home")));
+//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(cfg =>
+{
+    // cfg.LicenseKey = "YOUR_LICENSE_KEY_HERE";
+    cfg.AddMaps(typeof(Services.Mapper).Assembly);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

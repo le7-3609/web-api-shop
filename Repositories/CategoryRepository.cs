@@ -12,15 +12,15 @@ namespace Repositories
             _myShopContext = context;
         }
 
-        public async Task<IEnumerable<Category>> GetAsync()
+        public async Task<IEnumerable<MainCategory>> GetAsync()
         {
-            return await _myShopContext.Categories.ToListAsync();
-            //return await _myShopContext.Categories.Include(category => category.Products).ToListAsync();
+            return await _myShopContext.MainCategories.ToListAsync();
+            //return await _context.Categories.Include(category => category.Products).ToListAsync();
         }
 
-        public async Task<Category> GetByIdAsync(int id)
+        public async Task<MainCategory> GetByIdAsync(int id)
         {
-            return await _myShopContext.Categories.FirstOrDefaultAsync(category => category.CategoryId == id);
+            return await _myShopContext.MainCategories.FirstOrDefaultAsync(category => category.MainCategoryId == id);
         }
     }
 }

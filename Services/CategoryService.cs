@@ -13,12 +13,12 @@ namespace Services
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<Category> GetByIdAsync(int id)
+        public async Task<MainCategory> GetByIdAsync(int id)
         {
             return await _categoryRepository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<Category>> GetAsync()
+        public async Task<IEnumerable<MainCategory>> GetAsync()
         {
             return await _categoryRepository.GetAsync();
         }

@@ -19,7 +19,19 @@
    "T4TemplatePath": null,
    "Tables": [
       {
-         "Name": "[dbo].[Categories]",
+         "Name": "[dbo].[BasicSites]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[BasicSitesPlatforms]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[CartItems]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MainCategories]",
          "ObjectType": 0
       },
       {
@@ -31,7 +43,27 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Platforms]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Products]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Review]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SiteTypes]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Statuses]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SubCategories]",
          "ObjectType": 0
       },
       {

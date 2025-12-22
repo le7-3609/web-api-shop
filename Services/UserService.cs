@@ -1,4 +1,6 @@
-﻿using Entities;
+﻿using AutoMapper;
+using DTO;
+using Entities;
 using Repositories;
 using System.Text.Json;
 
@@ -6,43 +8,85 @@ namespace Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _usersRepository;
-        private readonly IPasswordValidityService _passwordValidityService;
+        private readonly IUserRepository _userRepository;
+        private readonly IPasswordValidityService _passwordService;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository usersRepository, IPasswordValidityService passwordValidityService)
+        public UserService(IUserRepository userRepository,IPasswordValidityService passwordService, IMapper mapper)
         {
-            _usersRepository = usersRepository;
-            _passwordValidityService = passwordValidityService;
+            _userRepository = userRepository;
+            _passwordService = passwordService;
+            _mapper = mapper;
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<IEnumerable<UserProfileDTO>?> GetAllAsync()
         {
-            return await _usersRepository.GetByIdAsync(id);
+            var users = await _userRepository.GetAllAsync();
+
+            if (users == null)
+                return null;
+
+            return _mapper.Map<IEnumerable<UserProfileDTO>>(users);
+        }
+        public async Task<UserProfileDTO?> RegisterAsync(RegisterAndUpdateDTO dto)
+        {
+            if (_passwordService.PasswordStrength(dto.Password).Strength < 2)
+                return null;
+
+            var existing = await _userRepository.GetByEmailAsync(dto.Email, -1);
+            if (existing != null)
+                return null;
+
+            User user = _mapper.Map<User>(dto);
+            var created = await _userRepository.RegisterAsync(user);
+
+            return _mapper.Map<UserProfileDTO>(created);
         }
 
-        public async Task<User> RegisterAsync(User user)
+        public async Task<UserProfileDTO?> LoginAsync(LoginDTO dto)
         {
-            if (_passwordValidityService.PasswordStrength(user.Password).strength >= 2)
-            {
-                return await _usersRepository.RegisterAsync(user);
-            }
-            return null;
+            var user = await _userRepository.LoginAsync(dto.Email, dto.Password);
+            //return user == null ? null : _mapper.Map<UserProfileDTO>(user);
+            return _mapper.Map<UserProfileDTO>(user);
+
         }
 
-        public async Task<User> LoginAsync(ExistUser oldUser)
+        public async Task<UserProfileDTO?> UpdateAsync(int id, RegisterAndUpdateDTO dto)
         {
-            return await _usersRepository.LoginAsync(oldUser);
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user == null)
+                return null;
+
+            if (_passwordService.PasswordStrength(dto.Password).Strength < 2)
+                return null;
+
+            var existing = await _userRepository.GetByEmailAsync(dto.Email, id);
+            if (existing != null)
+                return null;
+
+            _mapper.Map(dto, user);
+            var updated = await _userRepository.UpdateAsync(user);
+
+            return _mapper.Map<UserProfileDTO>(updated);
+        }
+        public async Task<UserProfileDTO?> GetByIdAsync(int id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user == null)
+                return null;
+
+            return _mapper.Map<UserProfileDTO>(user);
         }
 
-        public async Task<bool> UpdateAsync(int id, User userToUpdate)
+        public async Task<IEnumerable<OrderSummaryDTO>?> GetAllOrdersAsync(int userId)
         {
-            if (_passwordValidityService.PasswordStrength(userToUpdate.Password).strength >= 2)
-            {
-                var updateUser = await _usersRepository.UpdateAsync(id, userToUpdate);
-                if(updateUser != null)
-                    return true;
-            }
-            return false;
+            var UserOrders = await _userRepository.GetAllOrdersAsync(userId);
+
+            if (UserOrders == null)
+                return null;
+
+            return _mapper.Map<IEnumerable<OrderSummaryDTO>>(UserOrders);
         }
     }
 }

@@ -4,7 +4,7 @@ namespace Repositories
 {
     public interface ICategoryRepository
     {
-        Task<IEnumerable<Category>> GetAsync();
-        Task<Category> GetByIdAsync(int id);
+        Task<IEnumerable<MainCategory>> GetAsync();
+        Task<MainCategory> GetByIdAsync(int id);
     }
 }
