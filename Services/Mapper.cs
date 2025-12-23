@@ -34,6 +34,29 @@ namespace Services
             CreateMap<Order, OrderItemDTO>();
             CreateMap<SiteTypeDTO, SiteType>();
             CreateMap<SiteType, SiteTypeDTO>();
+            CreateMap<MainCategory, MainCategoryDTO>().ReverseMap();
+            CreateMap<ManegerMainCategoryDTO, MainCategory>();
+            CreateMap<SubCategory, SubCategoryDTO>().ReverseMap();
+            CreateMap<AddSubCategoryDTO, SubCategory>();
+            CreateMap<Platform, PlatformsDTO>().ReverseMap();
+            CreateMap<AddPlatformDTO, Platform>();
+            CreateMap<Product, ProductDTO>()
+            .ForMember(
+            dest => dest.CategoryName,
+            opts => opts.MapFrom(src => src.SubCategory.SubCategoryName))
+             .ForMember(
+            dest => dest.ImgUrl,
+            opts => opts.MapFrom(src => src.SubCategory.ImageUrl));
+            CreateMap<ProductDTO, Product>();
+            CreateMap<AddProductDTO, Product>();
+            CreateMap<UpdateProductDTO, Product>()
+           .ForMember(
+            dest => dest.ProductId,
+            opts => opts.MapFrom(src => src.ProductId));
+            CreateMap<BasicSite, BasicSiteDTO>();
+            CreateMap<AddBasicSiteDTO, BasicSite>();
+            CreateMap<UpdateBasicSiteDTO, BasicSite>();
+
         }
     }
 }

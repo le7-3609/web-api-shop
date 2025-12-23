@@ -6,19 +6,31 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
-    public record SiteTypeDTO(
-        int SiteTypeId,
+    public record BasicSiteDTO
+    (
+        int BasicSiteId,
+        string SiteName,
+        string UserDescreption,
         string SiteTypeName,
-        float Price,
-        string SiteTypeDescription
+        string PlatformName,
+        int PlatformId,
+        int SiteTypeId,
+        string SiteTypeDescreption
     );
 
-    public record MngSiteTypeDTO(
-       int SiteTypeId,
-       string SiteTypeName,
-       float Price,
-       string SiteTypeDescription,
-       string SiteTypeNamePrompt,
-       string SiteTypeDescriptionPrompt
-   );
+    public record UpdateBasicSiteDTO
+    (
+        int BasicSiteId,
+        string SiteName,
+        string UserDescreption,
+        int SiteTypeId,
+        int PlatformId
+    );
+    public record AddBasicSiteDTO
+    (
+        string SiteName,
+        string UserDescreption,
+        int SiteTypeId,
+        int PlatformId
+    );
 }

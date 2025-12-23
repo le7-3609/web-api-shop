@@ -23,8 +23,21 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddTransient<ISiteTypeRepository, SiteTypeRepository>();
 builder.Services.AddTransient<ISiteTypeService, SiteTypeService>();
 
-builder.Services.AddTransient<ICategoryRepository, CategoryRepository>();
-builder.Services.AddTransient<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
+builder.Services.AddScoped<IPlatformService, PlatformService>();
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+
+
+builder.Services.AddScoped<IBasicSiteRepository, BasicSiteRepository>();
+builder.Services.AddScoped<IBasicSiteService, BasicSiteService>();
+
+builder.Services.AddScoped<IMainCategoryRepository, MainCategoryRepository>();
+builder.Services.AddScoped<IMainCategoryService, MainCategoryService>();
+
+builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
 builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 builder.Services.AddTransient<IOrderService, OrderService>();

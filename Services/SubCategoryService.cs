@@ -1,0 +1,63 @@
+﻿using AutoMapper;
+using DTO;
+using Entities;
+using Microsoft.EntityFrameworkCore;
+using Repositories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Services
+{
+    public class SubCategoryService : ISubCategoryService
+    {
+        private readonly ISubCategoryRepository _subCategoryRepository;
+        private readonly IMapper _mapper;
+        public SubCategoryService(ISubCategoryRepository subCategoryRepository, IMapper mapper)
+        {
+            _mapper = mapper;
+            this._subCategoryRepository = subCategoryRepository;
+        }
+
+        async public Task<IEnumerable<SubCategoryDTO>> GetSubCategoryAsync(int paging, int limit, string? search, int? minPrice, int? MaxPrice, int? mainCategoryID)
+        {
+
+            var subCategories = await _subCategoryRepository.GetSubCategoryAsync(paging, limit, search, minPrice, MaxPrice, mainCategoryID);
+            return _mapper.Map<IEnumerable<SubCategoryDTO>>(subCategories);
+        }
+
+        async public Task<SubCategoryDTO> GetSubCategoryByIdAsync(int id)
+        {
+            SubCategory category = await _subCategoryRepository.GetSubCategoryByIdAsync(id);
+            return _mapper.Map<SubCategoryDTO>(category);
+
+        }
+
+        async public Task UpdateSubCategoryAsync(int id, SubCategoryDTO dto)
+        {
+            SubCategory category = _mapper.Map<SubCategory>(dto);
+            //למלא פרומפט עם gemini
+            category.SubCategoryPrompt = "vfsghhfg";
+            await _subCategoryRepository.UpdateSubCategoryAsync(id, category);
+
+        }
+
+
+        async public Task<SubCategoryDTO> AddSubCategoryAsync(AddSubCategoryDTO dto)
+        {
+            SubCategory category = _mapper.Map<SubCategory>(dto);
+            //למלא פרומפט עם gemini
+            category.SubCategoryPrompt = "gfasdfghfh";
+            category = await _subCategoryRepository.AddSubCategoryAsync(category);
+
+            return _mapper.Map<SubCategoryDTO>(category);
+        }
+        async public Task<bool> DeleteSubCategoryAsync(int id)
+        {
+
+            return await _subCategoryRepository.DeleteSubCategoryAsync(id);
+        }
+    }
+}
