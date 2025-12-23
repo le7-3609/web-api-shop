@@ -9,10 +9,12 @@ namespace WebApiShope.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        ILogger<UsersController> _logger;
 
-        public UsersController(IUserService usersService)
+        public UsersController(IUserService usersService, ILogger<UsersController> logger)
         {
             _userService = usersService;
+            _logger = logger;
         }
 
         // GET api/<UsersController>
@@ -55,6 +57,8 @@ namespace WebApiShope.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserProfileDTO>> LoginAsync([FromBody] LoginDTO dto)
         {
+            //_logger.LogError("\nFrom Login\n");
+            _logger.LogInformation($"Login attempted with User Name , {dto.Email} and password {dto.Password}");
             UserProfileDTO user = await _userService.LoginAsync(dto);
             if (user != null)
             {
