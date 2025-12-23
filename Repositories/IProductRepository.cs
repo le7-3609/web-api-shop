@@ -4,6 +4,9 @@ namespace Repositories
 {
     public interface IProductRepository
     {
-        Task<IEnumerable<Product>> GetAsync(int position, int skip, string? name, int? minPrice, int? maxPrice, int?[] categoriesId);
+        Task<Product> AddProductAsync(Product product);
+        Task<bool> DeleteProductAsync(int id);
+        Task<IEnumerable<Product>> GetProductsBySubCategoryIdAsync(int categoryID);
+        Task UpdateProductAsync(int id, Product product);
     }
 }

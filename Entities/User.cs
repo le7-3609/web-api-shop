@@ -9,6 +9,8 @@ public partial class User
 {
     public int UserId { get; set; }
 
+    public int? BasicSiteId { get; set; }
+
     public string Email { get; set; }
 
     public string Password { get; set; }
@@ -16,6 +18,12 @@ public partial class User
     public string FirstName { get; set; }
 
     public string LastName { get; set; }
+
+    public string Phone { get; set; }
+
+    public virtual BasicSite BasicSite { get; set; }
+
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

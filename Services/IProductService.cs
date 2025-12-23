@@ -1,9 +1,12 @@
-﻿using Entities;
+﻿using DTO;
 
 namespace Services
 {
     public interface IProductService
     {
-        Task<IEnumerable<Product>> GetAsync(int position, int skip, string? name, int? minPrice, int? maxPrice, int?[] categoriesId);
+        Task<ProductDTO> AddProductAsync(AddProductDTO dto);
+        Task<bool> DeleteProductAsync(int id);
+        Task<IEnumerable<ProductDTO>> GetProductsBySubCategoryIdAsync(int categoryId);
+        Task UpdateProductAsync(int id, UpdateProductDTO dto);
     }
 }

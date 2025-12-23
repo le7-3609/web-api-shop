@@ -1,12 +1,15 @@
-﻿using Entities;
+﻿using DTO;
+using Entities;
 
 namespace Services
 {
     public interface IUserService
     {
-        Task<User> GetByIdAsync(int id);
-        Task<User> LoginAsync(ExistUser oldUser);
-        Task<User> RegisterAsync(User user);
-        Task<bool> UpdateAsync(int id, User userToUpdate);
+        Task<IEnumerable<UserProfileDTO>?> GetAllAsync();
+        Task<UserProfileDTO?> GetByIdAsync(int id);
+        Task<UserProfileDTO?> LoginAsync(LoginDTO dto);
+        Task<UserProfileDTO?> RegisterAsync(RegisterAndUpdateDTO user);
+        Task<UserProfileDTO?> UpdateAsync(int id, RegisterAndUpdateDTO dto);
+        Task<IEnumerable<OrderSummaryDTO>?> GetAllOrdersAsync(int userId);
     }
 }

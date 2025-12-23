@@ -9,13 +9,25 @@ public partial class Order
 {
     public int OrderId { get; set; }
 
+    public int BasicSiteId { get; set; }
+
     public DateOnly? OrderDate { get; set; }
 
-    public int OrderSum { get; set; }
+    public double OrderSum { get; set; }
+
+    public int Status { get; set; }
 
     public int UserId { get; set; }
 
+    public string OrderPromt { get; set; }
+
+    public virtual BasicSite BasicSite { get; set; }
+
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+    public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    public virtual Status StatusNavigation { get; set; }
 
     public virtual User User { get; set; }
 }

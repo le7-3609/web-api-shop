@@ -14,91 +14,240 @@ public partial class MyShopContext : DbContext
     {
     }
 
-    public virtual DbSet<Category> Categories { get; set; }
+    public virtual DbSet<BasicSite> BasicSites { get; set; }
+
+    public virtual DbSet<BasicSitesPlatform> BasicSitesPlatforms { get; set; }
+
+    public virtual DbSet<CartItem> CartItems { get; set; }
+
+    public virtual DbSet<MainCategory> MainCategories { get; set; }
 
     public virtual DbSet<Order> Orders { get; set; }
 
     public virtual DbSet<OrderItem> OrderItems { get; set; }
 
+    public virtual DbSet<Platform> Platforms { get; set; }
+
     public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<Review> Reviews { get; set; }
+
+    public virtual DbSet<SiteType> SiteTypes { get; set; }
+
+    public virtual DbSet<Status> Statuses { get; set; }
+
+    public virtual DbSet<SubCategory> SubCategories { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Category>(entity =>
+        modelBuilder.Entity<BasicSite>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A0B5E8BC93F");
+            entity.HasKey(e => e.BasicSiteId).HasName("PK__BasicSit__FFB1C8002596ED96");
 
-            entity.Property(e => e.CategoryName)
+            entity.Property(e => e.SiteName).HasMaxLength(500);
+            entity.Property(e => e.SiteTypeId).HasColumnName("SiteTypeID");
+
+            entity.HasOne(d => d.SiteType).WithMany(p => p.BasicSites)
+                .HasForeignKey(d => d.SiteTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__BasicSite__SiteT__44FF419A");
+        });
+
+        modelBuilder.Entity<BasicSitesPlatform>(entity =>
+        {
+            entity.HasKey(e => e.BasicSitePlatformId).HasName("PK__BasicSit__0289435A4580C0E0");
+
+            entity.Property(e => e.PlatformPrompt).IsRequired();
+
+            entity.HasOne(d => d.BasicSite).WithMany(p => p.BasicSitesPlatforms)
+                .HasForeignKey(d => d.BasicSiteId)
+                .HasConstraintName("FK__BasicSite__Basic__4AB81AF0");
+
+            entity.HasOne(d => d.Platform).WithMany(p => p.BasicSitesPlatforms)
+                .HasForeignKey(d => d.PlatformId)
+                .HasConstraintName("FK__BasicSite__Platf__4BAC3F29");
+        });
+
+        modelBuilder.Entity<CartItem>(entity =>
+        {
+            entity.HasKey(e => e.CartId).HasName("PK__CartItem__51BCD7B7A586A8EE");
+
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+            entity.HasOne(d => d.BasicSitesPlatform).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.BasicSitesPlatformId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CartItems__Basic__6D0D32F4");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CartItems__Produ__6C190EBB");
+
+            entity.HasOne(d => d.User).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CartItems__UserI__6B24EA82");
+        });
+
+        modelBuilder.Entity<MainCategory>(entity =>
+        {
+            entity.HasKey(e => e.MainCategoryId).HasName("PK__MainCate__0290BDD69943B7D7");
+
+            entity.HasIndex(e => e.MainCategoryName, "UQ__MainCate__121AD3E3A000C7EF").IsUnique();
+
+            entity.Property(e => e.MainCategoryName)
                 .IsRequired()
-                .IsUnicode(false);
+                .HasMaxLength(200);
+            entity.Property(e => e.MainCategoryPrompt).IsRequired();
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCFA264C60F");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCFE4633A0C");
 
             entity.Property(e => e.OrderDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.Status).HasDefaultValue(1);
+
+            entity.HasOne(d => d.BasicSite).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.BasicSiteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Orders__BasicSit__70DDC3D8");
+
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.Status)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Orders__Status__73BA3083");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders__UserId__4316F928");
+                .HasConstraintName("FK__Orders__UserId__74AE54BC");
         });
 
         modelBuilder.Entity<OrderItem>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED068125354299");
+            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED0681DF108BDF");
+
+            entity.HasOne(d => d.BasicSitesPlatform).WithMany(p => p.OrderItems)
+                .HasForeignKey(d => d.BasicSitesPlatformId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__OrderItem__Basic__02084FDA");
 
             entity.HasOne(d => d.Order).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__OrderItem__Order__46E78A0C");
+                .HasConstraintName("FK__OrderItem__Order__01142BA1");
 
             entity.HasOne(d => d.Product).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__OrderItem__Produ__45F365D3");
+                .HasConstraintName("FK__OrderItem__Produ__00200768");
+        });
+
+        modelBuilder.Entity<Platform>(entity =>
+        {
+            entity.HasKey(e => e.PlatformId).HasName("PK__Platform__F559F6FAA91E9826");
+
+            entity.HasIndex(e => e.PlatformName, "UQ__Platform__85614BEE5390F5EF").IsUnique();
+
+            entity.Property(e => e.PlatformName)
+                .IsRequired()
+                .HasMaxLength(100);
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CD3FD9F4CD");
+            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CDF6C84FFE");
 
-            entity.Property(e => e.ImageUrl)
-                .IsUnicode(false)
-                .HasColumnName("ImageURL");
-            entity.Property(e => e.ProductDescription).IsUnicode(false);
+            entity.HasIndex(e => e.ProductName, "UQ__Products__DD5A978A984E34BE").IsUnique();
+
             entity.Property(e => e.ProductName)
                 .IsRequired()
-                .IsUnicode(false);
+                .HasMaxLength(200);
+            entity.Property(e => e.ProductPrompt).IsRequired();
 
-            entity.HasOne(d => d.Category).WithMany(p => p.Products)
-                .HasForeignKey(d => d.CategoryId)
-                .HasConstraintName("FK__Products__Catego__398D8EEE");
+            entity.HasOne(d => d.SubCategory).WithMany(p => p.Products)
+                .HasForeignKey(d => d.SubCategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Products__SubCat__3F466844");
+        });
+
+        modelBuilder.Entity<Review>(entity =>
+        {
+            entity.HasKey(e => e.ReviewId).HasName("PK__Review__74BC79CE2CB5BD0C");
+
+            entity.ToTable("Review");
+
+            entity.Property(e => e.ReviewImageUrl).HasMaxLength(200);
+
+            entity.HasOne(d => d.Order).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Review__OrderId__778AC167");
+        });
+
+        modelBuilder.Entity<SiteType>(entity =>
+        {
+            entity.HasKey(e => e.SiteTypeId).HasName("PK__SiteType__85A71CE614D2E8BE");
+
+            entity.HasIndex(e => e.SiteTypeName, "UQ__SiteType__3AB6FDCAE479BC80").IsUnique();
+
+            entity.Property(e => e.SiteTypeDescriptionPrompt).IsRequired();
+            entity.Property(e => e.SiteTypeName)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.SiteTypeNamePrompt).IsRequired();
+        });
+
+        modelBuilder.Entity<Status>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__Statuses__C8EE20630BDA7637");
+
+            entity.Property(e => e.StatusName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<SubCategory>(entity =>
+        {
+            entity.HasKey(e => e.SubCategoryId).HasName("PK__SubCateg__26BE5B19625D0ABD");
+
+            entity.HasIndex(e => e.SubCategoryName, "UQ__SubCateg__0BBDA28B575C3AB4").IsUnique();
+
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(1000)
+                .HasColumnName("ImageURL");
+            entity.Property(e => e.SubCategoryName)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.SubCategoryPrompt).IsRequired();
+
+            entity.HasOne(d => d.MainCategory).WithMany(p => p.SubCategories)
+                .HasForeignKey(d => d.MainCategoryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__SubCatego__MainC__3B75D760");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C133633A2");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4CE2A57E5B");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D1053404627884").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__Users__A9D105343469A5BC").IsUnique();
 
             entity.Property(e => e.Email)
                 .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.FirstName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.LastName)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+                .HasMaxLength(100);
+            entity.Property(e => e.FirstName).HasMaxLength(100);
+            entity.Property(e => e.LastName).HasMaxLength(100);
             entity.Property(e => e.Password)
                 .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
+                .HasMaxLength(100);
+            entity.Property(e => e.Phone).HasMaxLength(50);
+
+            entity.HasOne(d => d.BasicSite).WithMany(p => p.Users)
+                .HasForeignKey(d => d.BasicSiteId)
+                .HasConstraintName("FK__Users__BasicSite__4F7CD00D");
         });
 
         OnModelCreatingPartial(modelBuilder);

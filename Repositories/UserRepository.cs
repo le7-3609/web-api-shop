@@ -5,47 +5,50 @@ namespace Repositories
 {
     public class UserRepository : IUserRepository
     {
-        MyShopContext _myShopContext;
+        private readonly MyShopContext _context;
 
-        public UserRepository(MyShopContext shopContext)
+        public UserRepository(MyShopContext context)
         {
-            _myShopContext = shopContext;
+            _context = context;
         }
-
+        public async Task<IEnumerable<User>?> GetAllAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
         public async Task<User> GetByIdAsync(int id)
         {
-            return await _myShopContext.Users.FirstOrDefaultAsync(user => user.UserId == id);
+            return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+        }
+
+        public async Task<User?> GetByEmailAsync(string email,int id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.UserId != id);
         }
 
         public async Task<User> RegisterAsync(User user)
         {
-            var existingUser = await _myShopContext.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
-
-            if (existingUser != null)
-            {
-                return null;
-            }
-            await _myShopContext.AddAsync(user);
-            await _myShopContext.SaveChangesAsync();
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
             return user;
         }
 
-        public async Task<User> LoginAsync(ExistUser oldUser)
+        public async Task<User?> LoginAsync(string email, string password)
         {
-            return await _myShopContext.Users.FirstOrDefaultAsync(user => user.Email == oldUser.Email && user.Password == oldUser.Password);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
         }
 
-        public async Task<User> UpdateAsync(int id, User userToUpdate)
+        public async Task<User?> UpdateAsync(User user)
         {
-            var existingUser = await _myShopContext.Users.FirstOrDefaultAsync(u => u.Email == userToUpdate.Email && u.UserId != id);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
 
-            if (existingUser != null)
-            {
-                return null;
-            }
-            _myShopContext.Users.Update(userToUpdate);
-            await _myShopContext.SaveChangesAsync();
-            return userToUpdate;
+        public async Task<IEnumerable<Order>?> GetAllOrdersAsync(int userId)
+        {
+            return await _context.Orders
+                .Where(o=>o.UserId == userId)
+                .ToListAsync();
         }
     }
 }

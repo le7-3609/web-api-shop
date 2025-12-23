@@ -1,10 +1,11 @@
-﻿using System;
+﻿using DTO;
+using Entities;
+using Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Entities;
-using Repositories;
 using Zxcvbn;
 
 
@@ -12,7 +13,7 @@ namespace Services
 {
     public class PasswordValidityService : IPasswordValidityService
     {
-        public PasswordValidity PasswordStrength(string password)
+        public PasswordDTO PasswordStrength(string password)
         {
             if (password != null && password != "")
             {
@@ -20,10 +21,10 @@ namespace Services
                 if (result != null)
                 {
                     int score = result.Score;
-                    PasswordValidity passwordValidity = new PasswordValidity();
-                    passwordValidity.Password = password;
-                    passwordValidity.strength = score;
-                    return passwordValidity;
+                    PasswordDTO dto = new PasswordDTO();
+                    dto.Password = password;
+                    dto.Strength = score;
+                    return dto;
                 }
             }
             return null;
