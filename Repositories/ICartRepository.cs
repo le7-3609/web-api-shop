@@ -8,7 +8,7 @@ namespace Repositories
         Task<bool> DeleteUserCartAsync(int cartItemId);
         Task<IEnumerable<CartItem>> GetUserCartAsync(int userId);
         Task<CartItem> UpdateUserCartAsync(CartItem cartItem);
-        Task<CartItem> GetByUserAndProductIdAsync(int userId, int productId);
+        Task<CartItem> GetByCartAndProductIdAsync(int userId, int productId);
         Task<CartItem> GetByIdAsync(int id);
     }
 }

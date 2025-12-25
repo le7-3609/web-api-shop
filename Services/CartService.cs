@@ -36,9 +36,9 @@ namespace Services
             return _mapper.Map<IEnumerable<CartItemDTO>>(cartItems);
         }
 
-        public async Task<CartItemDTO> CreateUserCartAsync(AddCartItemDTO dto)
+        public async Task<CartItemDTO> CreateCartItemAsync(AddCartItemDTO dto)
         {
-            var existing = await _cartRepository.GetByUserAndProductIdAsync(dto.UserId, dto.ProductId);
+            var existing = await _cartRepository.GetByCartAndProductIdAsync(dto.CartId, dto.ProductId);
             if (existing != null)
                 throw new Exception("Cart item already exists for this user and product.");
 

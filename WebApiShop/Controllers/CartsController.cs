@@ -33,7 +33,7 @@ namespace WebApiShop.Controllers
         [HttpPost]
         public async Task<ActionResult<CartItemDTO>> CreateUserCartAsync([FromBody] AddCartItemDTO dto)
         {
-            CartItemDTO newCartItem = await _cartService.CreateUserCartAsync(dto);
+            CartItemDTO newCartItem = await _cartService.CreateCartItemAsync(dto);
             if (newCartItem != null)
             {
                 return CreatedAtAction(nameof(GetByIdAsync), new { id = newCartItem.CartId }, newCartItem);

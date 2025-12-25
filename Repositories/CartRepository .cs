@@ -12,10 +12,10 @@ namespace Repositories
             _context = shopContext;
         }
 
-        public async Task<IEnumerable<CartItem>> GetUserCartAsync(int userId)
+        public async Task<IEnumerable<CartItem>> GetUserCartAsync(int cartId)
         {
             return await _context.CartItems
-                .Where(ci => ci.UserId == userId)
+                .Where(ci => ci.CartId == cartId)
                 .ToListAsync();
         }
 
@@ -43,9 +43,9 @@ namespace Repositories
             return true;
         }
 
-        public async Task<CartItem?> GetByUserAndProductIdAsync(int userId, int productId)
+        public async Task<CartItem?> GetByCartAndProductIdAsync(int userId, int productId)
         {
-            return await _context.CartItems.FirstOrDefaultAsync(c => c.UserId == userId && c.ProductId == productId);
+            return await _context.CartItems.FirstOrDefaultAsync(c => c.CartId == userId && c.ProductId == productId);
         }
 
         public async Task<CartItem?> GetByIdAsync(int id)

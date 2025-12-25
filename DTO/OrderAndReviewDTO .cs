@@ -14,18 +14,11 @@ namespace DTO
         string UserDescription
     );
 
-    public record CreateOrderDTO(
-        int UserId,
-        int OrderSum,//לשנות לdecimal 
-        List<AddCartItemDTO> CartItem,
-        string SiteName,
-        string SiteTypeId
-    );
     public record OrderSummaryDTO(
         int OrderId,
         DateTime OrderDate,
-        float TotalAmount,
-        string OrderStatus,
+        float OrderSum,
+        string StatusName,
         int OrderItemsCount
     );
 

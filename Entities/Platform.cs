@@ -11,5 +11,7 @@ public partial class Platform
 
     public string PlatformName { get; set; }
 
-    public virtual ICollection<BasicSitesPlatform> BasicSitesPlatforms { get; set; } = new List<BasicSitesPlatform>();
+    public virtual ICollection<BasicSite> BasicSites { get; set; } = new List<BasicSite>();
+
+    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }
