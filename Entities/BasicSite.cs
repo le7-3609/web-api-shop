@@ -13,13 +13,15 @@ public partial class BasicSite
 
     public int SiteTypeId { get; set; }
 
+    public int? PlatformId { get; set; }
+
     public string UserDescreption { get; set; }
 
-    public virtual ICollection<BasicSitesPlatform> BasicSitesPlatforms { get; set; } = new List<BasicSitesPlatform>();
+    public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual SiteType SiteType { get; set; }
+    public virtual Platform Platform { get; set; }
 
-    public virtual ICollection<User> Users { get; set; } = new List<User>();
+    public virtual SiteType SiteType { get; set; }
 }

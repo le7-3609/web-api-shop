@@ -23,11 +23,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[BasicSitesPlatforms]",
+         "Name": "[dbo].[CartItems]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[CartItems]",
+         "Name": "[dbo].[Carts]",
          "ObjectType": 0
       },
       {

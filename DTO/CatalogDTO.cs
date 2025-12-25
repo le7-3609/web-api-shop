@@ -7,31 +7,7 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
-    public record ProductSummaryDTO(
-        int ProductId,
-        string ProductName,
-        float Price,
-        string SubCategoryName
-    );
-
-    public record AdminProductDetailsDTO(
-        int ProductId,
-        string ProductName,
-        float Price,
-        string SubCategoryName,
-        string ProductPrompt,
-        int SubCategoryId
-        ): ProductSummaryDTO(ProductId, ProductName, Price, SubCategoryName);
-
-    public record SubCategoryDTO(
-        int SubCategoryId,
-        int MainCategoryId,
-        string SubCategoryName, 
-        string ImageUrl,
-        string SubCategoryDescription
-        );
-
-    public record MainCategoryDTO(
+   public record MainCategoryDTO(
         int MainCategoryId,
         string MainCategoryName
     );
@@ -40,13 +16,31 @@ namespace DTO
         string MainCategoryName
     );
 
+    public record SubCategoryDTO(
+        int SubCategoryId,
+        int MainCategoryId,
+        string SubCategoryName,
+        string ImageUrl,
+        string SubCategoryDescription
+    );
+    public record AddSubCategoryDTO
+    (
+        [Required]
+        int MainCategoryId,
+        [Required]
+        string CategoryName,
+        [Required]
+        string ImgUrl,
+        [Required]
+        string CategoryDescreption
+    );
+
     public record ProductDTO
     (
         int ProductId,
         int CategoryId,
         string ProductsName,
         string CategoryName,
-        string ImgUrl,
         float Price
     );
 
@@ -66,16 +60,5 @@ namespace DTO
     public record AddPlatformDTO
     (
         string PlatformName
-    );
-    public record AddSubCategoryDTO
-    (
-        [Required]
-        int MainCategoryId,
-        [Required]
-        string CategoryName,
-        [Required]
-        string ImgUrl,
-        [Required]
-        string CategoryDescreption
     );
 }

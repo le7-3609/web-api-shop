@@ -13,13 +13,13 @@ public partial class OrderItem
 
     public int OrderId { get; set; }
 
-    public int BasicSitesPlatformId { get; set; }
+    public int PlatformId { get; set; }
 
     public string UserDescription { get; set; }
 
-    public virtual BasicSitesPlatform BasicSitesPlatform { get; set; }
-
     public virtual Order Order { get; set; }
+
+    public virtual Platform Platform { get; set; }
 
     public virtual Product Product { get; set; }
 }

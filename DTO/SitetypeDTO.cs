@@ -20,5 +20,14 @@ namespace DTO
        string SiteTypeDescription,
        string SiteTypeNamePrompt,
        string SiteTypeDescriptionPrompt
-   );
+   ):SiteTypeDTO(SiteTypeId,SiteTypeName,Price,SiteTypeDescription);
+    
+    public record AddSiteTypeDTO
+    (
+        string SiteTypeName,
+        float Price,
+        string SiteTypeDescription,
+        string SiteTypeNamePrompt,
+        string SiteTypeDescriptionPrompt
+    );
 }

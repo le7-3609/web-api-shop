@@ -6,9 +6,19 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
-    public record CartItemDTO(
+    public record CartDTO(
         int CartId,
         int UserId,
+        List<CartItemDTO> CartItems,
+        float TotalPrice,
+        int BasicSiteId,
+        string BasicSiteName,
+        string BasicSiteUserDescription
+    );
+
+    public record CartItemDTO(
+        int CartItemId,
+        int CartId,
         string SubCategoryName,
         string ProductName,
         string ImageUrl,
@@ -20,7 +30,7 @@ namespace DTO
     );
 
     public record AddCartItemDTO(
-        int UserId,
+        int CartId,
         int ProductId,
         int BasicSitesPlatformId,
         string UserDescription

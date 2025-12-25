@@ -7,21 +7,17 @@ namespace Entities;
 
 public partial class CartItem
 {
+    public int CartItemId { get; set; }
+
     public int CartId { get; set; }
 
-    public int UserId { get; set; }
-
     public int ProductId { get; set; }
-
-    public int BasicSitesPlatformId { get; set; }
 
     public bool? IsActive { get; set; }
 
     public string UserDescription { get; set; }
 
-    public virtual BasicSitesPlatform BasicSitesPlatform { get; set; }
+    public virtual Cart Cart { get; set; }
 
     public virtual Product Product { get; set; }
-
-    public virtual User User { get; set; }
 }
