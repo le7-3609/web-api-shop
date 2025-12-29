@@ -8,6 +8,5 @@ namespace Repositories
         Task<bool> DeleteSubCategoryAsync(int id);
         Task<SubCategory?> GetSubCategoryByIdAsync(int id);
         Task UpdateSubCategoryAsync(int id, SubCategory category);
-        Task<IEnumerable<SubCategory>> GetSubCategoryAsync(int paging, int limit, string? search, int? minPrice, int? MaxPrice, int? mainCategoryID);
-    }
+        Task<(IEnumerable<SubCategory>, int TotalCount)> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds);    }
 }

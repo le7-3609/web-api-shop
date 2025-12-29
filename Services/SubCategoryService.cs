@@ -21,11 +21,11 @@ namespace Services
             this._subCategoryRepository = subCategoryRepository;
         }
 
-        async public Task<IEnumerable<SubCategoryDTO>> GetSubCategoryAsync(int paging, int limit, string? search, int? minPrice, int? MaxPrice, int? mainCategoryID)
+        async public Task<(IEnumerable<SubCategoryDTO>, int TotalCount)> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds)
         {
-
-            var subCategories = await _subCategoryRepository.GetSubCategoryAsync(paging, limit, search, minPrice, MaxPrice, mainCategoryID);
-            return _mapper.Map<IEnumerable<SubCategoryDTO>>(subCategories);
+            var (subCategories, totalCount) = await _subCategoryRepository.GetSubCategoryAsync(position, skip, desc, mainCategoryIds);
+            var subCategoriesRes = _mapper.Map<IEnumerable<SubCategoryDTO>>(subCategories);
+            return (subCategoriesRes, TotalCount: totalCount);
         }
 
         async public Task<SubCategoryDTO> GetSubCategoryByIdAsync(int id)

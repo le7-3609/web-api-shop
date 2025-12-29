@@ -4,10 +4,11 @@ namespace Services
 {
     public interface ICartService
     {
-        Task<CartItemDTO?> GetByIdAsync(int id);
-        Task<CartItemDTO> CreateCartItemAsync(AddCartItemDTO dto);
-        Task<bool> DeleteUserCartAsync(int cartItemId);
-        Task<IEnumerable<CartItemDTO>> GetUserCartAsync(int userId);
-        Task<CartItemDTO> UpdateUserCartAsync(CartItemDTO dto);
+        Task<bool> ClearCartAsync(int cartId);
+        Task<CartItemDTO> AddCartItemAsync(AddCartItemDTO dto);
+        Task<bool> DeleteCartItemAsync(int cartItemId);
+        Task<CartItemDTO?> GetCartItemByIdAsync(int id);
+        Task<IEnumerable<CartItemDTO>?> GetCartItemsByCartIdAsync(int cartId);
+        Task<CartItemDTO> UpdateCartItemAsync(CartItemDTO dto);
     }
 }

@@ -21,9 +21,9 @@ namespace WebApiShope.Controllers
       
         // GET api/<BasicSiteController>/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<BasicSiteDTO>> GetByBasicSiteIdAsync(int id)
+        public async Task<ActionResult<BasicSiteDTO>> GetBasicSiteByIdAsync(int id)
         {
-            BasicSiteDTO basicSite = await _basicSiteService.GetByBasicSiteIdAsync(id);
+            BasicSiteDTO basicSite = await _basicSiteService.GetBasicSiteByIdAsync(id);
             if (basicSite == null)
             {
                 return NoContent();
@@ -36,7 +36,7 @@ namespace WebApiShope.Controllers
         async public Task<ActionResult<BasicSiteDTO>> AddBasicSiteAsync([FromBody] AddBasicSiteDTO basicSite)
         {
             BasicSiteDTO basicSiteConstructedObject = await _basicSiteService.AddBasicSiteAsync(basicSite);
-            return CreatedAtAction(nameof(GetByBasicSiteIdAsync), new { id = basicSiteConstructedObject.BasicSiteId }, basicSiteConstructedObject);
+            return CreatedAtAction(nameof(GetBasicSiteByIdAsync), new { id = basicSiteConstructedObject.BasicSiteId }, basicSiteConstructedObject);
         
         }
 

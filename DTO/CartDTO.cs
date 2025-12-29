@@ -35,4 +35,9 @@ namespace DTO
         int BasicSitesPlatformId,
         string UserDescription
     );
+
+    public record AddCartDTO(
+        int UserId,
+        int BasicSiteId
+    );
 }

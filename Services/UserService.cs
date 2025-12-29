@@ -46,8 +46,7 @@ namespace Services
         public async Task<UserProfileDTO?> LoginAsync(LoginDTO dto)
         {
             var user = await _userRepository.LoginAsync(dto.Email, dto.Password);
-            //return user == null ? null : _mapper.Map<UserProfileDTO>(user);
-            return _mapper.Map<UserProfileDTO>(user);
+            return user == null ? null : _mapper.Map<UserProfileDTO>(user);
 
         }
 

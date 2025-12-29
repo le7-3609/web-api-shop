@@ -9,6 +9,7 @@ namespace Repositories;
 
 public partial class MyShopContext : DbContext
 {
+    public MyShopContext() { }
     public MyShopContext(DbContextOptions<MyShopContext> options)
         : base(options)
     {

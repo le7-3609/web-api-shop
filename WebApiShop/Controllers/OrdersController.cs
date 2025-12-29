@@ -18,7 +18,7 @@ namespace WebApiShope.Controllers
         }
 
         // GET api/<OrdersController>/5
-        [ActionName("GetByIdAsync")]
+        [ActionName("GetCartItemByIdAsync")]
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDetailsDTO>> GetByIdAsync([FromBody] int id)
         {

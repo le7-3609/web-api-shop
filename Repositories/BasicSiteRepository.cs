@@ -16,7 +16,7 @@ namespace Repositories
             _context = context;
         }
 
-        async public Task<BasicSite?> GetByBasicSiteIdAsync(int id)
+        async public Task<BasicSite?> GetBasicSiteByIdAsync(int id)
         {
             return await _context.BasicSites.Include(x => x.Platform)
                 .Include(x => x.SiteType)
@@ -28,7 +28,6 @@ namespace Repositories
         {
             _context.BasicSites.Update(basicSite);
             await _context.SaveChangesAsync();
-
         }
 
         async public Task<BasicSite> AddBasicSiteAsync(BasicSite basicSite)

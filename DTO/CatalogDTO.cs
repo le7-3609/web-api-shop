@@ -9,7 +9,8 @@ namespace DTO
 {
    public record MainCategoryDTO(
         int MainCategoryId,
-        string MainCategoryName
+        string MainCategoryName,
+        string MainCategoryPrompt
     );
     public class ManegerMainCategoryDTO
     (

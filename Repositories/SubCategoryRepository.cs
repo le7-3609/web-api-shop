@@ -11,9 +11,22 @@ namespace Repositories
             _context = context;
         }
 
-        async public Task<IEnumerable<SubCategory>> GetSubCategoryAsync(int paging, int limit, string? search, int? minPrice, int? MaxPrice, int? mainCategoryID)
+        async public Task<(IEnumerable<SubCategory>, int TotalCount)> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds)
         {
-            return await _context.SubCategories.ToListAsync();
+            var query = _context.SubCategories.Where(subCategory =>
+                        (desc == null ? (true) : (subCategory.CategoryDescription.Contains(desc)))
+                        && ((mainCategoryIds.Length == 0) ? (true) : (mainCategoryIds.Contains(subCategory.MainCategoryId))))
+                        .OrderBy(mainCategoryIds => mainCategoryIds.SubCategoryName);
+
+            Console.WriteLine(query.ToQueryString());
+            List<SubCategory> subCategories = await query
+                .Skip((position - 1) * skip)
+                .Take(skip)
+                .Include(subCategory => subCategory.MainCategory)
+                .ToListAsync();
+            var total = await query.CountAsync();
+
+            return (subCategories, total);
         }
 
         async public Task<SubCategory?> GetSubCategoryByIdAsync(int id)

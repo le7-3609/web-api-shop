@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using DTO;
 using Entities;
-using Microsoft.EntityFrameworkCore;
 using Repositories;
-using System.Text.Json;
 
 namespace Services
 {
@@ -17,18 +15,20 @@ namespace Services
             _cartRepository = cartRepository;
             _mapper = mapper;
         }
-        public async Task<CartItemDTO?> GetByIdAsync(int id)
+
+        public async Task<CartItemDTO?> GetCartItemByIdAsync(int id)
         {
-            var cartItem = await _cartRepository.GetByIdAsync(id);
+            var cartItem = await _cartRepository.GetCartItemByIdAsync(id);
 
             if (cartItem == null)
                 return null;
 
             return _mapper.Map<CartItemDTO>(cartItem);
         }
-        public async Task<IEnumerable<CartItemDTO>?> GetUserCartAsync(int userId)
+
+        public async Task<IEnumerable<CartItemDTO>?> GetCartItemsByCartIdAsync(int cartId)
         {
-            var cartItems = await _cartRepository.GetUserCartAsync(userId);
+            var cartItems = await _cartRepository.GetCartItemsByCartIdAsync(cartId);
 
             if (cartItems == null)
                 return null;
@@ -36,30 +36,36 @@ namespace Services
             return _mapper.Map<IEnumerable<CartItemDTO>>(cartItems);
         }
 
-        public async Task<CartItemDTO> CreateCartItemAsync(AddCartItemDTO dto)
+        public async Task<CartItemDTO?> AddCartItemAsync(AddCartItemDTO dto)
         {
-            var existing = await _cartRepository.GetByCartAndProductIdAsync(dto.CartId, dto.ProductId);
-            if (existing != null)
-                throw new Exception("Cart item already exists for this user and product.");
+            var existingItem = await _cartRepository.GetByCartAndProductIdAsync(dto.CartId, dto.ProductId);
 
+            if (existingItem != null)
+            {
+                return null;
+            }
             var cartItem = _mapper.Map<CartItem>(dto);
-            var created = await _cartRepository.CreateUserCartAsync(cartItem);
+            var created = await _cartRepository.AddCartItemAsync(cartItem);
 
             return _mapper.Map<CartItemDTO>(created);
         }
 
-        //לא עשיתי אותו עדיין זה רק מעטפת כדי שלא יעשה טעות בקולנטרולר
-        public async Task<CartItemDTO> UpdateUserCartAsync(CartItemDTO dto)
+        public async Task<CartItemDTO> UpdateCartItemAsync(CartItemDTO dto)
         {
-            return dto;
+            var cartItem = _mapper.Map<CartItem>(dto);
+            var updated = await _cartRepository.UpdateCartItemAsync(cartItem);
+
+            return _mapper.Map<CartItemDTO>(updated);
         }
 
-        public async Task<bool> DeleteUserCartAsync(int cartItemId)
+        public async Task<bool> DeleteCartItemAsync(int cartItemId)
         {
-            bool succeeded = await _cartRepository.DeleteUserCartAsync(cartItemId);
-            if (!succeeded)
-                return false;
-            return true;
+            return await _cartRepository.DeleteCartItemAsync(cartItemId);
+        }
+
+        public async Task<bool> ClearCartAsync(int cartId)
+        {
+            return await _cartRepository.ClearCartItemsAsync(cartId);
         }
     }
 }

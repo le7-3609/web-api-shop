@@ -1,6 +1,4 @@
 ﻿using DTO;
-using Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 
@@ -8,7 +6,7 @@ namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CartsController : Controller
+    public class CartsController : ControllerBase
     {
         private readonly ICartService _cartService;
 
@@ -17,11 +15,11 @@ namespace WebApiShop.Controllers
             _cartService = cartService;
         }
 
-        // GET api/<CartsController>/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CartItemDTO>> GetByIdAsync(int id)
+        // GET api/Carts/items/5
+        [HttpGet("items/{id}")]
+        public async Task<ActionResult<CartItemDTO>> GetCartItemByIdAsync(int id)
         {
-            CartItemDTO? cartItem = await _cartService.GetByIdAsync(id);
+            var cartItem = await _cartService.GetCartItemByIdAsync(id);
             if (cartItem == null)
             {
                 return NotFound($"CartItem with ID {id} not found");
@@ -29,52 +27,67 @@ namespace WebApiShop.Controllers
             return Ok(cartItem);
         }
 
-        // POST api/<CartsController>
-        [HttpPost]
-        public async Task<ActionResult<CartItemDTO>> CreateUserCartAsync([FromBody] AddCartItemDTO dto)
+        // GET api/Carts/5/items
+        [HttpGet("{cartId}/items")]
+        public async Task<ActionResult<IEnumerable<CartItemDTO>>> GetCartItemsByCartIdAsync(int cartId)
         {
-            CartItemDTO newCartItem = await _cartService.CreateCartItemAsync(dto);
-            if (newCartItem != null)
-            {
-                return CreatedAtAction(nameof(GetByIdAsync), new { id = newCartItem.CartId }, newCartItem);
-            }
-            return BadRequest("Cart item already exists for this user and product.");
-        }
-
-        // DELETE api/<CartsController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserCartAsync(int id)
-        {
-            bool succeeded = await _cartService.DeleteUserCartAsync(id);
-            if (!succeeded)
-            {
-                return NotFound($"Item with ID {id} not found in your cart");
-            }
-            return NoContent();
-        }
-
-        // GET api/<CartsController
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CartItemDTO>>> GetUserCartAsync([FromQuery] int userId)
-        {
-            var cartItems = await _cartService.GetUserCartAsync(userId);
+            var cartItems = await _cartService.GetCartItemsByCartIdAsync(cartId);
             if (cartItems == null || !cartItems.Any())
             {
-                return NotFound($"No cart items found for user with ID {userId}");
+                return NotFound($"No items found for cart ID {cartId}");
             }
             return Ok(cartItems);
         }
 
-        // PUT api/<CartsController/5
-        [HttpPut]
-        public async Task<ActionResult<CartItemDTO>> UpdateUserCartAsync([FromBody] CartItemDTO dto)
+        // POST api/Carts/items
+        [HttpPost("items")]
+        public async Task<ActionResult<CartItemDTO>> AddItemToCartAsync([FromBody] AddCartItemDTO dto)
         {
-            var updatedCartItem = await _cartService.UpdateUserCartAsync(dto);
-            if (updatedCartItem == null)
+            try
             {
-                return NotFound($"Cart item with ID {dto.CartId} not found");
+                var newCartItem = await _cartService.AddCartItemAsync(dto);
+                return CreatedAtAction(nameof(GetCartItemsByCartIdAsync), new { id = newCartItem.CartItemId }, newCartItem);
             }
-            return Ok(updatedCartItem);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT api/Carts/items
+        [HttpPut("items")]
+        public async Task<ActionResult<CartItemDTO>> UpdateItemInCartAsync([FromBody] CartItemDTO dto)
+        {
+            var updated = await _cartService.UpdateCartItemAsync(dto);
+            if (updated == null)
+            {
+                return NotFound($"Cart item not found");
+            }
+            return Ok(updated);
+        }
+
+        // DELETE api/Carts/items/5
+        [HttpDelete("items/{id}")]
+        public async Task<IActionResult> RemoveItemFromCartAsync(int id)
+        {
+            var succeeded = await _cartService.DeleteCartItemAsync(id);
+            if (!succeeded)
+            {
+                return NotFound($"Item with ID {id} not found");
+            }
+            return NoContent();
+        }
+
+        // DELETE api/Carts/5/clear
+        [HttpDelete("{cartId}/clear")]
+        public async Task<IActionResult> ClearCartAsync(int cartId)
+        {
+            var succeeded = await _cartService.ClearCartAsync(cartId);
+            if (!succeeded)
+            {
+                return NotFound($"Cart with ID {cartId} could not be cleared");
+            }
+            return NoContent();
         }
     }
 }

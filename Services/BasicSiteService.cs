@@ -21,9 +21,9 @@ namespace Services
             _basicSiteRepository = basicSiteRepository;
         }
 
-        async public Task<BasicSiteDTO> GetByBasicSiteIdAsync(int id)
+        async public Task<BasicSiteDTO> GetBasicSiteByIdAsync(int id)
         {
-            BasicSite basicSite = await _basicSiteRepository.GetByBasicSiteIdAsync(id);
+            BasicSite basicSite = await _basicSiteRepository.GetBasicSiteByIdAsync(id);
             return _mapper.Map<BasicSiteDTO>(basicSite);
 
         }

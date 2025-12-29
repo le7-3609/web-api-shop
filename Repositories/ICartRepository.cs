@@ -4,11 +4,15 @@ namespace Repositories
 {
     public interface ICartRepository
     {
-        Task<CartItem> CreateUserCartAsync(CartItem cartItem);
-        Task<bool> DeleteUserCartAsync(int cartItemId);
-        Task<IEnumerable<CartItem>> GetUserCartAsync(int userId);
-        Task<CartItem> UpdateUserCartAsync(CartItem cartItem);
-        Task<CartItem> GetByCartAndProductIdAsync(int userId, int productId);
-        Task<CartItem> GetByIdAsync(int id);
+        Task<CartItem> AddCartItemAsync(CartItem cartItem);
+        Task<bool> ClearCartItemsAsync(int cartId);
+        Task<Cart> CreateUserCartAsync(Cart cart);
+        Task<bool> DeleteCartAsync(int cartId);
+        Task<bool> DeleteCartItemAsync(int cartItemId);
+        Task<Cart?> GetCartByIdAsync(int cartId);
+        Task<CartItem?> GetCartItemByIdAsync(int cartItemId);
+        Task<IEnumerable<CartItem>> GetCartItemsByCartIdAsync(int cartId);
+        Task<CartItem> UpdateCartItemAsync(CartItem cartItem);
+        Task<CartItem?> GetByCartAndProductIdAsync(int cartId, int productId);
     }
 }

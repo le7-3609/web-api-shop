@@ -40,15 +40,17 @@ namespace Services
             CreateMap<Platform, PlatformsDTO>().ReverseMap();
             CreateMap<AddPlatformDTO, Platform>();
             CreateMap<Product, ProductDTO>()
-            .ForMember(
-            dest => dest.CategoryName,
-            opts => opts.MapFrom(src => src.SubCategory.SubCategoryName));
+                .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+                .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.SubCategoryId))
+                .ForMember(dest => dest.ProductsName, opt => opt.MapFrom(src => src.ProductName))
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.SubCategory.SubCategoryName))
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => (float)src.Price));
             CreateMap<ProductDTO, Product>();
             CreateMap<AddProductDTO, Product>();
             CreateMap<UpdateProductDTO, Product>()
-           .ForMember(
-            dest => dest.ProductId,
-            opts => opts.MapFrom(src => src.ProductId));
+               .ForMember(
+                dest => dest.ProductId,
+                opts => opts.MapFrom(src => src.ProductId));
             CreateMap<BasicSite, BasicSiteDTO>();
             CreateMap<AddBasicSiteDTO, BasicSite>();
             CreateMap<UpdateBasicSiteDTO, BasicSite>();

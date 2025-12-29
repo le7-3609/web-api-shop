@@ -17,12 +17,12 @@ namespace WebApiShope.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        async public Task<ActionResult<IEnumerable<SubCategoryDTO>>> GetSubCategoryAsync(int paging, int limit, string? search, int? minPrice, int? MaxPrice, int? mainCategoryID)
+        async public Task<ActionResult<(IEnumerable<SubCategoryDTO>, int TotalCount)>> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds)
         {
-            IEnumerable<SubCategoryDTO> categoryList=await _subCategoryService.GetSubCategoryAsync(paging, limit, search, minPrice, MaxPrice, mainCategoryID);
-            if (categoryList == null)
+            var(subCategories, totalCount) = await _subCategoryService.GetSubCategoryAsync(position, skip, desc, mainCategoryIds);
+            if (subCategories == null)
                 return NoContent();
-            return Ok(categoryList);
+            return Ok((subCategories, totalCount));
         }
 
         // GET api/<CategoryController>/5
