@@ -26,7 +26,9 @@ namespace DTO
         float Price,
         string PlatformName,
         string UserDescription,
-        bool IsActive
+        bool IsActive,
+        int ProductId,  
+        int PlatformId
     );
 
     public record AddCartItemDTO(

@@ -32,14 +32,19 @@ namespace WebApiShope.Controllers
 
         // POST api/<OrdersController>
         [HttpPost]
-        public async Task<ActionResult<OrderDetailsDTO>> AddOrderAsync([FromBody] OrderSummaryDTO dto)
+        public async Task<ActionResult<OrderDetailsDTO>> AddOrderAsync([FromBody] CartDTO cartDto)
         {
-            OrderDetailsDTO newOrder = await _orderService.AddOrderAsync(dto);
+            if (cartDto == null || !cartDto.CartItems.Any())
+                return BadRequest("The cart is empty.");
+
+            OrderDetailsDTO newOrder = await _orderService.AddOrderFromCartAsync(cartDto);
+
             if (newOrder != null)
             {
                 return CreatedAtAction(nameof(GetByIdAsync), new { id = newOrder.OrderId }, newOrder);
             }
-            return BadRequest("Already in use by another order.");
+
+            return BadRequest("Could not create order.");
         }
 
         // PUT api/<OrdersController>/5

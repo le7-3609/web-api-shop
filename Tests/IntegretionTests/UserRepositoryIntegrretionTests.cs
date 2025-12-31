@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Tests
+namespace Tests.IntegretionTests
 {
     public class UserRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IDisposable
     {
@@ -16,14 +16,15 @@ namespace Tests
         {
             _context = fixture.Context;
 
-            _context.Database.CloseConnection();
-            _context.Database.EnsureDeleted();
-            _context.Database.EnsureCreated();
+            _context.ChangeTracker.Clear();
+
+            _context.Users.RemoveRange(_context.Users);
+            _context.SaveChanges();
 
             _repository = new UserRepository(_context);
         }
 
- 
+
         #region Happy Paths
 
         [Fact]
@@ -75,10 +76,9 @@ namespace Tests
         public async Task UpdateAsync_ShouldUpdateUserSuccessfully()
         {
             // Arrange
-            var user = new User { Email = "old@test.com", Password = "123", FirstName = "Old", LastName = "Name", Phone = "0" };
+            var user = new User { Email = "old@test.com", Password = "123", FirstName = "Old", LastName = "Name", Phone = "0000000000" };
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
-
             _context.Entry(user).State = EntityState.Detached;
 
             // Act

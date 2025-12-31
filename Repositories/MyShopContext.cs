@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Entities;
+using Entities; 
 
 namespace Repositories;
 
@@ -79,14 +79,19 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<CartItem>(entity =>
         {
-            entity.HasKey(e => e.CartItemId).HasName("PK__CartItem__488B0B0A7C74324E");
+            entity.HasKey(e => e.CartItemId).HasName("PK__CartItem__488B0B0AC5DCE306");
 
             entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.PlatformId).HasDefaultValue(1);
 
             entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.CartId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CartItems_Carts");
+
+            entity.HasOne(d => d.Platform).WithMany(p => p.CartItems)
+                .HasForeignKey(d => d.PlatformId)
+                .HasConstraintName("FK_CartItems_Platforms");
 
             entity.HasOne(d => d.Product).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.ProductId)

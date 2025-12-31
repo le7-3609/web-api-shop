@@ -6,7 +6,7 @@ namespace Services
     public interface IOrderService
     {
         Task<OrderDetailsDTO> GetByIdAsync(int id);
-        Task<OrderDetailsDTO> AddOrderAsync(OrderSummaryDTO dto);
+        Task<OrderDetailsDTO> AddOrderFromCartAsync(CartDTO cartDto);
         Task UpdateStatusAsync(OrderSummaryDTO dto);
         Task<ReviewDTO> AddReviewAsync(int orderId, AddReviewDTO dto);
         Task<ReviewDTO> GetReviewByOrderIdAsync(int orderId);

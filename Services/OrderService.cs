@@ -11,12 +11,13 @@ namespace Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
+        private readonly ICartService _cartService;
 
-
-        public OrderService(IOrderRepository orderRepository,IMapper mapper)
+        public OrderService(IOrderRepository orderRepository,IMapper mapper, ICartService cartService)
         {
             _orderRepository = orderRepository;
-            _mapper = mapper;   
+            _mapper = mapper;
+            _cartService = cartService;
         }
         public async Task<OrderDetailsDTO> GetByIdAsync(int id)
         {
@@ -27,11 +28,26 @@ namespace Services
             }
             return _mapper.Map<OrderDetailsDTO>(order);
         }
-        public async Task<OrderDetailsDTO> AddOrderAsync(OrderSummaryDTO dto)
+        public async Task<OrderDetailsDTO> AddOrderFromCartAsync(CartDTO cartDto)
         {
-            var order = _mapper.Map<Order>(dto);
-            order = await _orderRepository.AddOrderAsync(order);
-            return _mapper.Map<OrderDetailsDTO>(order);
+            var order = new Order
+            {
+                UserId = cartDto.UserId,
+                OrderDate = DateOnly.FromDateTime(DateTime.Now),
+                OrderSum = cartDto.TotalPrice,
+                Status = 1,
+
+                OrderItems = cartDto.CartItems.Select(item => new OrderItem
+                {
+                    UserDescription = item.UserDescription,
+                    PlatformId = item.PlatformId,
+                    ProductId = item.ProductId
+                }).ToList()
+            };
+
+            var createdOrder = await _orderRepository.AddOrderAsync(order);
+            await _cartService.ClearCartAsync(cartDto.CartId);
+            return _mapper.Map<OrderDetailsDTO>(createdOrder);
         }
         public async Task UpdateStatusAsync(OrderSummaryDTO dto)
         {

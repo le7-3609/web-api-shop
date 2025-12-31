@@ -39,17 +39,17 @@ namespace Repositories
         {
             var productObjectToDelete = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
 
-            //var cartItem = await _context.CartItems.FirstOrDefaultAsync(x => x.BasicSitesPlatforms == id);
-            //if (cartItem != null)
-            //{
-            //    return false;
-            //}
+            var cartItem = await _context.CartItems.FirstOrDefaultAsync(x => x.PlatformId == id);
+            if (cartItem != null)
+            {
+                return false;
+            }
 
-            //var orederItem = await _context.OrderItems.FirstOrDefaultAsync(x => x.BasicSitesPlatforms == id);
-            //if (orederItem != null)
-            //{
-            //    return false;
-            //}
+            var orederItem = await _context.OrderItems.FirstOrDefaultAsync(x => x.PlatformId == id);
+            if (orederItem != null)
+            {
+                return false;
+            }
             if (productObjectToDelete == null)
             {
                 return false;

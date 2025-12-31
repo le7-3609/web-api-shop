@@ -13,5 +13,7 @@ public partial class Platform
 
     public virtual ICollection<BasicSite> BasicSites { get; set; } = new List<BasicSite>();
 
+    public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 }
