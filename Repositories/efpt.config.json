@@ -1,17 +1,17 @@
 ﻿{
    "CodeGenerationMode": 5,
-   "ContextClassName": "MyShopContext",
+   "ContextClassName": "PromptStoreDB3Context",
    "ContextNamespace": null,
    "FilterSchemas": false,
    "IncludeConnectionString": false,
    "IrregularWords": null,
-   "MinimumProductVersion": "2.6.1248",
+   "MinimumProductVersion": "2.6.1301",
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Models",
+   "OutputPath": "",
    "PluralRules": null,
    "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "Repositories",
+   "ProjectRootNamespace": "Entities",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
    "SelectedToBeGenerated": 0,
@@ -51,7 +51,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Review]",
+         "Name": "[dbo].[RATING]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Reviews]",
          "ObjectType": 0
       },
       {

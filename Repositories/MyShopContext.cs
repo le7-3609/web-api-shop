@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Entities; 
+using Entities;
 
 namespace Repositories;
 
@@ -30,6 +30,8 @@ public partial class MyShopContext : DbContext
     public virtual DbSet<Platform> Platforms { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<Rating> Ratings { get; set; }
 
     public virtual DbSet<Review> Reviews { get; set; }
 
@@ -182,11 +184,33 @@ public partial class MyShopContext : DbContext
                 .HasConstraintName("FK_Products_SubCategories");
         });
 
+        modelBuilder.Entity<Rating>(entity =>
+        {
+            entity.ToTable("RATING");
+
+            entity.Property(e => e.RatingId).HasColumnName("RATING_ID");
+            entity.Property(e => e.Host)
+                .HasMaxLength(50)
+                .HasColumnName("HOST");
+            entity.Property(e => e.Method)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("METHOD");
+            entity.Property(e => e.Path)
+                .HasMaxLength(50)
+                .HasColumnName("PATH");
+            entity.Property(e => e.RecordDate)
+                .HasColumnType("datetime")
+                .HasColumnName("Record_Date");
+            entity.Property(e => e.Referer)
+                .HasMaxLength(100)
+                .HasColumnName("REFERER");
+            entity.Property(e => e.UserAgent).HasColumnName("USER_AGENT");
+        });
+
         modelBuilder.Entity<Review>(entity =>
         {
             entity.HasKey(e => e.ReviewId).HasName("PK__Review__74BC79CE2DF6D79A");
-
-            entity.ToTable("Review");
 
             entity.Property(e => e.ReviewImageUrl).HasMaxLength(255);
 

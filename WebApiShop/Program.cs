@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
 using Repositories;
 using Services;
+using WebApiShop;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,9 +43,12 @@ builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 builder.Services.AddTransient<IOrderRepository, OrderRepository>();
 builder.Services.AddTransient<IOrderService, OrderService>();
 
+builder.Services.AddTransient<IRatingRepository, RatingRepository>();
+builder.Services.AddTransient<IRatingService, RatingService>();
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("School")));
+builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Home")));
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers(options =>
 {
@@ -66,6 +70,9 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "MyAPI-V1");
     });
 }
+app.UseErrorMiddleware();
+
+app.UseRatingMiddleware();
 
 app.UseHttpsRedirection();
 

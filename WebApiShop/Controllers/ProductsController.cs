@@ -23,7 +23,7 @@ namespace WebApiShope.Controllers
         async public Task<ActionResult<IEnumerable<ProductDTO>>> GetProductsBySubCategoryIdAsync(int categoryId)
         {
             IEnumerable<ProductDTO> productsList = await _productService.GetProductsBySubCategoryIdAsync(categoryId);
-            if (productsList == null)
+            if (productsList == null || !productsList.Any())
                 return NoContent();
             return Ok(productsList);
         }

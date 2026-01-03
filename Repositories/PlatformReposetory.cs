@@ -15,6 +15,10 @@ namespace Repositories
         {
             _context = context;
         }
+        public async Task<Platform> GetPlatformByNameAsync(string platformName)
+        {
+            return await _context.Platforms.FirstOrDefaultAsync(p => p.PlatformName == platformName);
+        }
 
         async public Task<IEnumerable<Platform>> GetPlatformsAsync()
         {

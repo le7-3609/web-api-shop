@@ -6,37 +6,39 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
-    public record OrderItemDTO(
-        int OrderItemId,
-        string ProductName,
-        float Price,
-        string PlatformName,
-        string UserDescription
-    );
+    public record OrderItemDTO
+    {
+        public int OrderItemId { get; init; }
+        public string ProductName { get; init; }
+        public float Price { get; init; }
+        public string PlatformName { get; init; }
+        public string UserDescription { get; init; }
+    }
 
-    public record OrderSummaryDTO(
-        int OrderId,
-        DateTime OrderDate,
-        float OrderSum,
-        string StatusName,
-        int OrderItemsCount
-    );
+    public record OrderSummaryDTO
+    {
+        public int OrderId { get; init; }
+        public DateOnly? OrderDate { get; init; }
+        public float OrderSum { get; init; }
+        public string StatusName { get; init; }
+    }
 
-    public record OrderDetailsDTO(
-        int OrderId,
-        DateTime OrderDate,
-        float OrderSum,
-        int OrderItemsCount,
-        string StatusName,
-        int UserId,
-        int ReviewId,
-        string ReviewImageUrl,
-        int Score,
-        string SiteName,
-        string SiteTypeName,
-        string SiteDescription,
-        List<OrderItemDTO> Items
-    ) : OrderSummaryDTO(OrderId, OrderDate, OrderSum, StatusName, OrderItemsCount);
+    public record OrderDetailsDTO : OrderSummaryDTO
+    {
+        public int OrderId { get; init; }
+        public DateOnly? OrderDate { get; init; }
+        public float OrderSum { get; init; }
+        public int OrderItemsCount { get; init; }
+        public string StatusName { get; init; }
+        public int UserId { get; init; }
+        public int ReviewId { get; init; }
+        public string ReviewImageUrl { get; init; }
+        public int Score { get; init; }
+        public string SiteName { get; init; }
+        public string SiteTypeName { get; init; }
+        public string SiteDescription { get; init; }
+        public List<OrderItemDTO> Items { get; init; }
+    } 
 
     public record AddReviewDTO(
         int OrderId,

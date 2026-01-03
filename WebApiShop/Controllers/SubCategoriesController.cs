@@ -17,7 +17,7 @@ namespace WebApiShope.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        async public Task<ActionResult<(IEnumerable<SubCategoryDTO>, int TotalCount)>> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds)
+        async public Task<ActionResult<(IEnumerable<SubCategoryDTO>, int TotalCount)>> GetSubCategoryAsync([FromQuery] int position, [FromQuery] int skip, [FromQuery] string? desc, [FromQuery] int?[] mainCategoryIds)
         {
             var(subCategories, totalCount) = await _subCategoryService.GetSubCategoryAsync(position, skip, desc, mainCategoryIds);
             if (subCategories == null)

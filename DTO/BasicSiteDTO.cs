@@ -6,17 +6,19 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
-    public record BasicSiteDTO
-    (
-        int BasicSiteId,
-        string SiteName,
-        string UserDescreption,
-        string SiteTypeName,
-        string PlatformName,
-        int PlatformId,
-        int SiteTypeId,
-        string SiteTypeDescreption
-    );
+    public
+
+    record BasicSiteDTO
+    {
+        public int BasicSiteId { get; init; }
+        public string SiteName { get; init; }
+        public string UserDescreption { get; init; }
+        public string SiteTypeName { get; init; }
+        public string PlatformName { get; init; }
+        public int PlatformId { get; init; }
+        public int SiteTypeId { get; init; }
+        public string SiteTypeDescreption { get; init; }
+    }
 
     public record UpdateBasicSiteDTO
     (

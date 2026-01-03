@@ -13,6 +13,8 @@ public partial class Cart
 
     public int BasicSiteId { get; set; }
 
+    public double? TotalPrice { get; set; }
+
     public virtual BasicSite BasicSite { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();

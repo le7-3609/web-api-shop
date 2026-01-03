@@ -17,33 +17,35 @@ namespace DTO
         string MainCategoryName
     );
 
-    public record SubCategoryDTO(
-        int SubCategoryId,
-        int MainCategoryId,
-        string SubCategoryName,
-        string ImageUrl,
-        string SubCategoryDescription
-    );
+    public record SubCategoryDTO
+    {
+        public int SubCategoryId { get; init; }
+        public int MainCategoryId { get; init; }
+        public string SubCategoryName { get; init; }
+        public string ImageUrl { get; init; }
+        public string SubCategoryDescription { get; init; }
+    }
+
     public record AddSubCategoryDTO
     (
         [Required]
         int MainCategoryId,
         [Required]
-        string CategoryName,
+        string SubCategoryName,
         [Required]
-        string ImgUrl,
+        string ImageUrl,
         [Required]
         string CategoryDescreption
     );
 
-    public record ProductDTO
-    (
-        int ProductId,
-        int CategoryId,
-        string ProductsName,
-        string CategoryName,
-        float Price
-    );
+ public record ProductDTO
+{
+    public int ProductId { get; init; }
+    public int SubCategoryId { get; init; }
+    public string ProductName { get; init; }
+    public string SubCategoryName { get; init; }
+    public float Price { get; init; }
+}
 
     public record UpdateProductDTO
     (

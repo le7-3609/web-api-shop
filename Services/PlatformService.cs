@@ -27,17 +27,29 @@ namespace  Services
             return _mapper.Map<IEnumerable<PlatformsDTO>>(platformList);
         }
 
-        async public Task<PlatformsDTO> AddPlatformAsync(AddPlatformDTO dto)
+        async public Task<PlatformsDTO> AddPlatformAsync(string platformName)
         {
-            Platform platform = _mapper.Map<Platform>(dto);
+            var existing = await _platformRepository.GetPlatformByNameAsync(platformName);
+
+            if (existing != null)
+            {
+                return null;
+            }
+            Platform platform = new Platform{PlatformName = platformName};
+            platform = await _platformRepository.AddPlatformAsync(platform);
             //add prompt with gemini
             // dto.PlatformsPrompt = "fdfbnfgn";
-            platform = await _platformRepository.AddPlatformAsync(platform);
             return _mapper.Map<PlatformsDTO>(platform);
         }
 
         async public Task UpdatePlatformAsync(int id, PlatformsDTO dto)
         {
+            var existing = await _platformRepository.GetPlatformByNameAsync(dto.PlatformName);
+
+            if (existing != null)
+            {
+                return;
+            }
             Platform platform = _mapper.Map<Platform>(dto);
             //add prompt with gemini
             // platform.PlatformsPrompt = "fdfbnfgn";

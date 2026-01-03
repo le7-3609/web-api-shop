@@ -2,6 +2,7 @@
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Zxcvbn;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -31,10 +32,14 @@ namespace WebApiShope.Controllers
 
         // POST api/<PlatformsController>
         [HttpPost]
-        public async Task<ActionResult<PlatformsDTO>> AddPlatformAsync([FromBody] AddPlatformDTO platform)
+        public async Task<ActionResult<PlatformsDTO>> AddPlatformAsync([FromBody] string platformName)
         {
-           PlatformsDTO PlatformForReturn= await _platformService.AddPlatformAsync(platform);
-           return CreatedAtAction(nameof(GetPlatformsAsync), new { id = PlatformForReturn.PlatformId }, PlatformForReturn);
+            var PlatformForReturn= await _platformService.AddPlatformAsync(platformName);
+            if (PlatformForReturn == null)
+            {
+                 return Conflict("Platform already exists in the system."); 
+            }
+            return CreatedAtAction(nameof(GetPlatformsAsync), new { id = PlatformForReturn.PlatformId }, PlatformForReturn);
         }
 
         // PUT api/<PlatformsController>/5
