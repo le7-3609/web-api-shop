@@ -84,7 +84,7 @@ While this repository contains the Back-end, it is designed to serve a modern **
 ### Installation & Setup
 1.  **Clone the repository:**
     ```bash
-    git clone [repository-url]
+    git clone https://github.com/le7-3609/web-api-shop
     ```
 2.  **Configuration:** Update the connection string in `appsettings.json` to point to your SQL Server instance.
 3.  **Restore Dependencies:**
