@@ -68,7 +68,7 @@ namespace WebApiShop.Controllers
 
         // DELETE api/Carts/items/5
         [HttpDelete("items/{id}")]
-        public async Task<IActionResult> RemoveItemFromCartAsync(int id)
+        public async Task<ActionResult> RemoveItemFromCartAsync(int id)
         {
             var succeeded = await _cartService.DeleteCartItemAsync(id);
             if (!succeeded)
@@ -80,7 +80,7 @@ namespace WebApiShop.Controllers
 
         // DELETE api/Carts/5/clear
         [HttpDelete("{cartId}/clear")]
-        public async Task<IActionResult> ClearCartAsync(int cartId)
+        public async Task<ActionResult> ClearCartAsync(int cartId)
         {
             var succeeded = await _cartService.ClearCartAsync(cartId);
             if (!succeeded)

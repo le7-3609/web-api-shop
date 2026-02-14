@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Services;
-using DTO;
+﻿using DTO;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Services;
+using Zxcvbn;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WebApiShope.Controllers
@@ -15,26 +16,44 @@ namespace WebApiShope.Controllers
             _subCategoryService = subCategoryService;
         }
 
+        private string? MapImageUrl(string? fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return null;
+            return $"{Request.Scheme}://{Request.Host}/images/{fileName}";
+        }
+
         // GET: api/<CategoryController>
         [HttpGet]
         async public Task<ActionResult<(IEnumerable<SubCategoryDTO>, int TotalCount)>> GetSubCategoryAsync([FromQuery] int position, [FromQuery] int skip, [FromQuery] string? desc, [FromQuery] int?[] mainCategoryIds)
         {
-            var(subCategories, totalCount) = await _subCategoryService.GetSubCategoryAsync(position, skip, desc, mainCategoryIds);
+            var (subCategories, totalCount) = await _subCategoryService.GetSubCategoryAsync(position, skip, desc, mainCategoryIds);
+
             if (subCategories == null)
                 return NoContent();
-            return Ok((subCategories, totalCount));
+
+            var updatedSubCategories = subCategories
+                .Select(sub => sub with { ImageUrl = MapImageUrl(sub.ImageUrl) })
+                .ToList();
+            return Ok(new
+            {
+                subCategories = updatedSubCategories,
+                totalCount = totalCount
+            });
         }
 
         // GET api/<CategoryController>/5
         [HttpGet("{id}")]
         async public Task<ActionResult<SubCategoryDTO>> GetSubCategoryByIdAsync(int id)
         {
-            SubCategoryDTO category =await _subCategoryService.GetSubCategoryByIdAsync(id);
-            if(category==null)
+            SubCategoryDTO category = await _subCategoryService.GetSubCategoryByIdAsync(id);
+
+            if (category == null)
             {
                 return NoContent();
             }
-            return Ok(category);
+            var updatedCategory = category with { ImageUrl = MapImageUrl(category.ImageUrl) };
+
+            return Ok(updatedCategory);
         }
 
         // POST api/<CategoryController>

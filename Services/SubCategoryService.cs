@@ -32,7 +32,6 @@ namespace Services
         {
             SubCategory category = await _subCategoryRepository.GetSubCategoryByIdAsync(id);
             return _mapper.Map<SubCategoryDTO>(category);
-
         }
 
         async public Task UpdateSubCategoryAsync(int id, SubCategoryDTO dto)

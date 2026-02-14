@@ -18,33 +18,51 @@ namespace WebApiShope.Controllers
             _productService = productsServise; 
         }
 
-        // GET: api/<ProductsController>
-        [HttpGet]
-        async public Task<ActionResult<IEnumerable<ProductDTO>>> GetProductsBySubCategoryIdAsync(int categoryId)
+        // GET: api/<ProductsController>/5
+        [HttpGet("{id}")]
+        async public Task<ActionResult<ProductDTO>> GetProductByIdAsync(int id)
         {
-            IEnumerable<ProductDTO> productsList = await _productService.GetProductsBySubCategoryIdAsync(categoryId);
-            if (productsList == null || !productsList.Any())
+            ProductDTO? product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
                 return NoContent();
-            return Ok(productsList);
+            return Ok(product);
         }
 
-    
+
+
+        // GET: api/<ProductsController>
+        [HttpGet]
+        async public Task<ActionResult<(IEnumerable<ProductDTO>, int TotalCount)>> GetProductsAsync([FromQuery] int position,[FromQuery] int skip,[FromQuery] string? desc,[FromQuery] int?[] subCategoryIds)
+        {
+            var (products, totalCount) = await _productService.GetProductsAsync(position, skip, desc, subCategoryIds);
+
+            if (products == null || !products.Any())
+                return NoContent();
+
+            return Ok(new
+            {
+                products = products,
+                totalCount = totalCount
+            });
+        }
+
+
         // POST api/<ProductsController>
         [HttpPost]
         async public Task<ActionResult<ProductDTO>> AddProductAsync([FromBody] AddProductDTO dto)
         {
 
             ProductDTO product = await _productService.AddProductAsync(dto);
-            return CreatedAtAction(nameof(GetProductsBySubCategoryIdAsync), new { id = product.ProductId }, product);
+            return CreatedAtAction(nameof(GetProductByIdAsync), new { id = product.ProductId }, product);
         
         }
 
         // PUT api/<ProductsController>/5
         [HttpPut("{id}")]
-        async public Task UpdateProductAsync(int id, [FromBody] UpdateProductDTO dto )
+        async public Task<ActionResult> UpdateProductAsync(int id, [FromBody] UpdateProductDTO dto )
         {
             await _productService.UpdateProductAsync(id, dto);
-
+            return Ok();
         }
 
         // DELETE api/<ProductsController>/5

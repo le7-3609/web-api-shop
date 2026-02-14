@@ -19,7 +19,7 @@ namespace Services
                 .ForMember(dest => dest.SubCategoryName, opt => opt.MapFrom(src => src.Product.SubCategory.SubCategoryName))
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Product.SubCategory.ImageUrl))
-                .ForMember(dest => dest.SubCategoryDescription, opt => opt.MapFrom(src => src.Product.SubCategory.CategoryDescription))
+                .ForMember(dest => dest.CategoryDescription, opt => opt.MapFrom(src => src.Product.SubCategory.CategoryDescription))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => (float)src.Product.Price))
                 .ForMember(dest => dest.PlatformName, opt => opt.MapFrom(src => src.Platform.PlatformName));
 

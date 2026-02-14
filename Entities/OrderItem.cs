@@ -17,9 +17,13 @@ public partial class OrderItem
 
     public string UserDescription { get; set; }
 
+    public int? PromptId { get; set; }
+
     public virtual Order Order { get; set; }
 
     public virtual Platform Platform { get; set; }
 
     public virtual Product Product { get; set; }
+
+    public virtual GeminiPrompt Prompt { get; set; }
 }

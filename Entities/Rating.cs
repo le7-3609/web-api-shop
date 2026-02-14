@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 
 namespace Entities;
-
 public partial class Rating
 {
     public int RatingId { get; set; }

@@ -19,6 +19,8 @@ public partial class Product
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
+    public virtual ICollection<GeminiPrompt> GeminiPrompts { get; set; } = new List<GeminiPrompt>();
+
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
     public virtual SubCategory SubCategory { get; set; }

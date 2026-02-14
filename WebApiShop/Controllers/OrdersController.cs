@@ -49,7 +49,7 @@ namespace WebApiShope.Controllers
 
         // PUT api/<OrdersController>/5
         [HttpPut]
-        public async Task<IActionResult> UpdateStatusAsync([FromBody] OrderSummaryDTO dto)
+        public async Task<ActionResult> UpdateStatusAsync([FromBody] OrderSummaryDTO dto)
         {
             await _orderService.UpdateStatusAsync(dto);
             return Ok();
@@ -81,7 +81,7 @@ namespace WebApiShope.Controllers
 
         // PUT api/<OrdersController>/5/review
         [HttpPut("{orderId}/review")]
-        public async Task<IActionResult> UpdateReviewAsync([FromBody] ReviewDTO dto)
+        public async Task<ActionResult> UpdateReviewAsync([FromBody] ReviewDTO dto)
         {
             var existingReview = await _orderService.GetReviewByOrderIdAsync(dto.OrderId);
             if (existingReview == null)

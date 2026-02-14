@@ -2,6 +2,7 @@
 using DTO;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Repositories;
 using System.Text.Json;
 
@@ -10,33 +11,66 @@ namespace Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IProductRepository _productRepository;
+
         private readonly IMapper _mapper;
         private readonly ICartService _cartService;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository orderRepository,IMapper mapper, ICartService cartService)
+        public OrderService(IOrderRepository orderRepository,IMapper mapper, ICartService cartService, ILogger<OrderService> logger, IProductRepository productRepository)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _cartService = cartService;
+            _logger = logger;
+            _productRepository = productRepository;
         }
-        public async Task<OrderDetailsDTO> GetByIdAsync(int id)
+        private async Task<float> CalculateRealSumAsync(List<CartItemDTO> items)
         {
-            var order = await _orderRepository.GetByIdAsync(id);
-            if (order == null)
+            float total = 0;
+            foreach (var item in items)
             {
-                return null;
+                var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+                if (product == null)
+                {
+                    _logger.LogError("Security Warning: Product ID {ProductId} not found during validation.", item.ProductId);
+                    throw new KeyNotFoundException("Product not found");
+                }
+                total += (float)product.Price;
             }
-            return _mapper.Map<OrderDetailsDTO>(order);
+            return total;
         }
+
+        private async Task<(bool IsValid, float CalculatedSum)> ValidateOrderSumAsync(CartDTO cartDto)
+        {
+            float calculatedSum = await CalculateRealSumAsync(cartDto.CartItems);
+
+            if (Math.Abs(calculatedSum - cartDto.TotalPrice) > 0)
+            {
+                _logger.LogError("Security Warning: Order sum mismatch. Client: {ClientSum}, Real: {RealSum}",
+                    cartDto.TotalPrice, calculatedSum);
+                return (false, calculatedSum);
+            }
+            return (true, calculatedSum);
+        }
+
         public async Task<OrderDetailsDTO> AddOrderFromCartAsync(CartDTO cartDto)
         {
+            var (isValid, expectedSum) = await ValidateOrderSumAsync(cartDto);
+
+            if (!isValid)
+            {
+                _logger.LogWarning("SECURITY ALERT: Price mismatch for User {UserId}. Client sent {ClientSum}, but expected {ExpectedSum}.",
+                    cartDto.UserId, cartDto.TotalPrice, expectedSum);
+                throw new InvalidOperationException("Payment verification failed. The transaction has been logged.");
+            }
+
             var order = new Order
             {
                 UserId = cartDto.UserId,
                 OrderDate = DateOnly.FromDateTime(DateTime.Now),
-                OrderSum = cartDto.TotalPrice,
+                OrderSum = expectedSum,
                 Status = 1,
-
                 OrderItems = cartDto.CartItems.Select(item => new OrderItem
                 {
                     UserDescription = item.UserDescription,
@@ -49,6 +83,17 @@ namespace Services
             await _cartService.ClearCartAsync(cartDto.CartId);
             return _mapper.Map<OrderDetailsDTO>(createdOrder);
         }
+
+        public async Task<OrderDetailsDTO> GetByIdAsync(int id)
+        {
+            var order = await _orderRepository.GetByIdAsync(id);
+            if (order == null)
+            {
+                return null;
+            }
+            return _mapper.Map<OrderDetailsDTO>(order);
+        }
+       
         public async Task UpdateStatusAsync(OrderSummaryDTO dto)
         {
             var order = _mapper.Map<Order>(dto);

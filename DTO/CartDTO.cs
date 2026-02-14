@@ -24,7 +24,7 @@ namespace DTO
         public string SubCategoryName { get; init; }
         public string ProductName { get; init; }
         public string ImageUrl { get; init; }
-        public string SubCategoryDescription { get; init; }
+        public string CategoryDescription { get; init; }
         public float Price { get; init; }
         public string PlatformName { get; init; }
         public string UserDescription { get; init; }

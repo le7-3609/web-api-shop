@@ -9,8 +9,7 @@ namespace DTO
 {
    public record MainCategoryDTO(
         int MainCategoryId,
-        string MainCategoryName,
-        string MainCategoryPrompt
+        string MainCategoryName
     );
     public class ManegerMainCategoryDTO
     (
@@ -22,8 +21,8 @@ namespace DTO
         public int SubCategoryId { get; init; }
         public int MainCategoryId { get; init; }
         public string SubCategoryName { get; init; }
-        public string ImageUrl { get; init; }
-        public string SubCategoryDescription { get; init; }
+        public string? ImageUrl { get; init; }
+        public string CategoryDescription { get; init; }
     }
 
     public record AddSubCategoryDTO
@@ -35,7 +34,7 @@ namespace DTO
         [Required]
         string ImageUrl,
         [Required]
-        string CategoryDescreption
+        string CategoryDescription
     );
 
  public record ProductDTO

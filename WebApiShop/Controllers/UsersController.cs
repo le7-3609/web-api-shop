@@ -69,7 +69,7 @@ namespace WebApiShope.Controllers
 
         // PUT api/<UsersController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] RegisterAndUpdateDTO dto)
+        public async Task<ActionResult> UpdateAsync(int id, [FromBody] RegisterAndUpdateDTO dto)
         {
             var isUpdated = await _userService.UpdateAsync(id, dto);
             if (isUpdated == null)

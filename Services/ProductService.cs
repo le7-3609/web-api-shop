@@ -19,11 +19,17 @@ namespace Services
             _productRepository = productRepository;
             _mapper = mapper;
         }
-
-        async public Task<IEnumerable<ProductDTO>> GetProductsBySubCategoryIdAsync(int categoryId)
+        async public Task<(IEnumerable<ProductDTO>, int TotalCount)> GetProductsAsync(int position, int skip, string? desc, int?[] subCategoryIds)
         {
-            var products = await _productRepository.GetProductsBySubCategoryIdAsync(categoryId);
-            return _mapper.Map<IEnumerable<ProductDTO>>(products);
+            var (products, totalCount) = await _productRepository.GetProductsAsync(position, skip, desc, subCategoryIds);
+            var productsRes = _mapper.Map<IEnumerable<ProductDTO>>(products);
+            return (productsRes, TotalCount: totalCount);
+        }
+
+        async public Task<ProductDTO> GetProductByIdAsync(int Id)
+        {
+            Product product = await _productRepository.GetProductByIdAsync(Id);
+            return _mapper.Map<ProductDTO>(product);
         }
 
         async public Task UpdateProductAsync(int id, UpdateProductDTO dto)

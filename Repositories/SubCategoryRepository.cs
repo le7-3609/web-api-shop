@@ -11,20 +11,30 @@ namespace Repositories
             _context = context;
         }
 
-        async public Task<(IEnumerable<SubCategory>, int TotalCount)> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds)
+        public async Task<(IEnumerable<SubCategory>, int TotalCount)> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds)
         {
-            var query = _context.SubCategories.Where(subCategory =>
-                        (desc == null ? (true) : (subCategory.CategoryDescription.Contains(desc)))
-                        && ((mainCategoryIds.Length == 0) ? (true) : (mainCategoryIds.Contains(subCategory.MainCategoryId))))
-                        .OrderBy(mainCategoryIds => mainCategoryIds.SubCategoryName);
+            var ids = mainCategoryIds ?? Array.Empty<int?>();
+            var query = _context.SubCategories.AsQueryable();
 
-            Console.WriteLine(query.ToQueryString());
-            List<SubCategory> subCategories = await query
-                .Skip((position - 1) * skip)
-                .Take(skip)
-                .Include(subCategory => subCategory.MainCategory)
-                .ToListAsync();
+            if (!string.IsNullOrEmpty(desc))
+            {
+                query = query.Where(s => s.CategoryDescription.Contains(desc));
+            }
+
+            if (ids.Length > 0)
+            {
+                query = query.Where(s => ids.Contains(s.MainCategoryId));
+            }
+
+            query = query.OrderBy(s => s.SubCategoryName);
+
             var total = await query.CountAsync();
+
+            var subCategories = await query
+                .Skip(skip)
+                .Take(position)
+                .Include(s => s.MainCategory)
+                .ToListAsync();
 
             return (subCategories, total);
         }

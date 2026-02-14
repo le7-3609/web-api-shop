@@ -8,13 +8,13 @@
    "MinimumProductVersion": "2.6.1301",
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "",
+   "OutputPath": "Models",
    "PluralRules": null,
    "PreserveCasingWithRegex": true,
-   "ProjectRootNamespace": "Entities",
+   "ProjectRootNamespace": "Repositories",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 2,
-   "SelectedToBeGenerated": 0,
+   "SelectedToBeGenerated": 1,
    "SingularRules": null,
    "T4TemplatePath": null,
    "Tables": [
@@ -28,6 +28,10 @@
       },
       {
          "Name": "[dbo].[Carts]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[GeminiPrompt]",
          "ObjectType": 0
       },
       {

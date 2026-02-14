@@ -16,10 +16,37 @@ namespace Repositories
             _context = context;
         }
 
-        async public Task<IEnumerable<Product>> GetProductsBySubCategoryIdAsync(int categoryID)
+        async public Task<(IEnumerable<Product>, int TotalCount)> GetProductsAsync(int position, int skip, string? desc, int?[] subCategoryIds)
         {
-            return await _context.Products.Include(x => x.SubCategory)
-                .Where(x => x.SubCategoryId == categoryID).ToListAsync();
+            var ids = subCategoryIds ?? Array.Empty<int?>();
+            var query = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(desc))
+            {
+                query = query.Where(s => s.ProductName.Contains(desc));
+            }
+
+            if (ids.Length > 0)
+            {
+                query = query.Where(s => ids.Contains(s.SubCategoryId));
+            }
+
+            query = query.OrderBy(s => s.ProductName);
+
+            var total = await query.CountAsync();
+
+            var products = await query
+                .Skip(skip)          
+                .Take(position)      
+                .Include(s => s.SubCategory)
+                .ToListAsync();
+
+            return (products, total);
+        }
+
+        async public Task<Product> GetProductByIdAsync(int id)
+        {
+            return await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
         async public Task<Product> AddProductAsync(Product product)
@@ -37,15 +64,15 @@ namespace Repositories
 
         async public Task<bool> DeleteProductAsync(int id)
         {
-            var productObjectToDelete = await _context.Products.FirstOrDefaultAsync(x => x.ProductId == id);
+            var productObjectToDelete = await _context.Products.FirstOrDefaultAsync(p => p.ProductId == id);
 
-            var cartItem = await _context.CartItems.FirstOrDefaultAsync(x => x.PlatformId == id);
+            var cartItem = await _context.CartItems.FirstOrDefaultAsync(p => p.PlatformId == id);
             if (cartItem != null)
             {
                 return false;
             }
 
-            var orederItem = await _context.OrderItems.FirstOrDefaultAsync(x => x.PlatformId == id);
+            var orederItem = await _context.OrderItems.FirstOrDefaultAsync(p => p.PlatformId == id);
             if (orederItem != null)
             {
                 return false;

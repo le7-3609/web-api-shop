@@ -38,7 +38,7 @@ namespace WebApiShope.Controllers
 
         // PUT api/<SiteTypeController>/5
         [HttpPut("{id}/manager")]
-        public async Task<IActionResult> UpdateByMngAsync(int id, SiteTypeDTO dto)
+        public async Task<ActionResult> UpdateByMngAsync(int id, SiteTypeDTO dto)
         {
             var updatedSiteType = await _siteTypeService.UpdateByMngAsync(id, dto);
             if (updatedSiteType == null)

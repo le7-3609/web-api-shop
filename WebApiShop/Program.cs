@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
 using Repositories;
 using Services;
+using System.Text.Json;
 using WebApiShop;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -40,25 +41,42 @@ builder.Services.AddScoped<IMainCategoryService, MainCategoryService>();
 builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
 builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
-builder.Services.AddTransient<IOrderRepository, OrderRepository>();
-builder.Services.AddTransient<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
-builder.Services.AddTransient<IRatingRepository, RatingRepository>();
-builder.Services.AddTransient<IRatingService, RatingService>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 
-builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Home")));
-//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IGemini, Gemini>();
+builder.Services.AddScoped<IGeminiPromptsRepository, GeminiPromptsRepository>();
+builder.Services.AddScoped<IGeminiService, GeminiService>();
+
 builder.Services.AddControllers(options =>
 {
     options.SuppressAsyncSuffixInActionNames = false;
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
+builder.Services.AddOpenApi();
+builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("School")));
 builder.Services.AddAutoMapper(cfg =>
 {
-    // cfg.LicenseKey = "YOUR_LICENSE_KEY_HERE";
     cfg.AddMaps(typeof(Services.Mapper).Assembly);
 });
+#region FOR ANGULAR
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5000") 
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+#endregion
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -70,13 +88,16 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "MyAPI-V1");
     });
 }
+
+app.UseStaticFiles();
+
 app.UseErrorMiddleware();
 
 app.UseRatingMiddleware();
 
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.UseCors("AllowAngular");
 
 app.UseAuthorization();
 
