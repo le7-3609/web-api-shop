@@ -9,11 +9,11 @@ namespace WebApiShop.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        ILogger<UsersController> _logger;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(IUserService usersService, ILogger<UsersController> logger)
+        public UsersController(IUserService userService, ILogger<UsersController> logger)
         {
-            _userService = usersService;
+            _userService = userService;
             _logger = logger;
         }
 
