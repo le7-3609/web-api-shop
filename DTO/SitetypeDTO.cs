@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 namespace DTO
 {
     public record SiteTypeDTO(
-        int SiteTypeId,
+        long SiteTypeId,
         string SiteTypeName,
-        float Price,
+        double Price,
         string SiteTypeDescription
     );
 
     public record MngSiteTypeDTO(
-       int SiteTypeId,
+         long SiteTypeId,
        string SiteTypeName,
-       float Price,
+         double Price,
        string SiteTypeDescription,
        string SiteTypeNamePrompt,
        string SiteTypeDescriptionPrompt
@@ -25,7 +25,7 @@ namespace DTO
     public record AddSiteTypeDTO
     (
         string SiteTypeName,
-        float Price,
+        double Price,
         string SiteTypeDescription,
         string SiteTypeNamePrompt,
         string SiteTypeDescriptionPrompt

@@ -4,9 +4,9 @@ namespace Services
 {
     public interface IMainCategoryService
     {
-        Task<MainCategoryDTO> AddMainCategoryAsync(ManegerMainCategoryDTO dto);
+        Task<MainCategoryDTO> AddMainCategoryAsync(AdminMainCategoryDTO dto);
         Task<bool> DeleteMainCategoryAsync(int id);
         Task<IEnumerable<MainCategoryDTO>> GetMainCategoryAsync();
-        Task UpdateMainCategoryAsync(int id, MainCategoryDTO dto);
+        Task<bool> UpdateMainCategoryAsync(int id, AdminMainCategoryDTO dto);
     }
 }

@@ -15,7 +15,7 @@ namespace Repositories
         {
             return await _context.Users.ToListAsync();
         }
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
         }
@@ -49,6 +49,11 @@ namespace Repositories
             return await _context.Orders
                 .Where(o=>o.UserId == userId)
                 .ToListAsync();
+        }
+
+        public async Task<User?> GetByProviderIdAsync(string provider, string providerId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Provider == provider && u.ProviderId == providerId);
         }
     }
 }

@@ -25,19 +25,22 @@ namespace Repositories
             return prompt;
         }
 
-
-
         async public Task UpdatePromptAsync(long id, GeminiPrompt prompt)
         {
             _context.GeminiPrompts.Update(prompt);
             await _context.SaveChangesAsync();
-
         }
-
 
         async public Task<GeminiPrompt?> GetByIDPromptAsync(long id)
         {
             return await _context.GeminiPrompts.FirstOrDefaultAsync(x => x.PromptId == id);
+        }
+
+        async public Task DeletePromptAsync(long id)
+        {
+            GeminiPrompt prompt = await _context.GeminiPrompts.FirstOrDefaultAsync(x => x.PromptId == id);
+            _context.GeminiPrompts.Remove(prompt);
+            await _context.SaveChangesAsync();
         }
     }
 }

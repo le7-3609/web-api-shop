@@ -1,105 +1,143 @@
 ﻿using Entities;
-using Microsoft.EntityFrameworkCore;
 using Repositories;
+using Xunit;
 
-namespace Tests.IntegretionTests
+namespace Tests.IntegrationTests
 {
-    public class ProductRepositoryIntegrationTests : IDisposable
+    [Collection("Database collection")]
+    public class ProductRepositoryIntegrationTests
     {
+        private readonly DatabaseFixture _fixture;
         private readonly MyShopContext _context;
         private readonly ProductRepository _repository;
 
         public ProductRepositoryIntegrationTests(DatabaseFixture fixture)
         {
+            _fixture = fixture;
             _context = fixture.Context;
-            _context.ChangeTracker.Clear();
-
-            // Clear tables in correct order to avoid FK conflicts
-            _context.Products.RemoveRange(_context.Products);
-            _context.SubCategories.RemoveRange(_context.SubCategories);
-            _context.MainCategories.RemoveRange(_context.MainCategories);
-            _context.SaveChanges();
-
             _repository = new ProductRepository(_context);
+            _fixture.ClearDatabase();
         }
 
-        [Fact]
-        public async Task AddProductAsync_SavingToDb_ShouldWorkWithRequiredFields()
+        private void SeedMainAndSubCategory()
         {
-            // Arrange
-            var product = new Product
-            {
-                ProductName = "Kosher Phone",
-                ProductPrompt = "Must have this field", 
-                SubCategoryId = 5
-            };
+            var mainCat = new MainCategory { MainCategoryId = 1, MainCategoryName = "Main", MainCategoryPrompt = "P" };
+            _context.MainCategories.Add(mainCat);
+            var subCat = new SubCategory { SubCategoryId = 1, SubCategoryName = "Sub", SubCategoryPrompt = "P", MainCategoryId = 1 };
+            _context.SubCategories.Add(subCat);
+            _context.SaveChanges();
+        }
 
-            // Act
+        #region Happy Paths
+
+        [Fact]
+        public async Task AddProductAsync_ValidProduct_ReturnsProduct()
+        {
+            SeedMainAndSubCategory();
+            var product = new Product { ProductName = "Laptop", ProductPrompt = "Required", SubCategoryId = 1 };
+
             var result = await _repository.AddProductAsync(product);
 
-            // Assert
-            Assert.NotEqual(0, result.ProductId); 
-            var exists = await _context.Products.AnyAsync(p => p.ProductName == "Kosher Phone");
-            Assert.True(exists);
+            Assert.True(result.ProductId > 0);
+            Assert.Equal("Laptop", result.ProductName);
         }
 
         [Fact]
-        public async Task GetProductsBySubCategoryIdAsync_FiltersCorrectSubCategory()
+        public async Task GetProductByIdAsync_WithValidId_ReturnsProduct()
         {
-            // Arrange
-            var subCategory = new SubCategory
-            {
-                SubCategoryId = 1,
-                SubCategoryName = "Electronics",
-                SubCategoryPrompt = "Required description content" 
-            };
+            SeedMainAndSubCategory();
+            var product = new Product { ProductId = 5, ProductName = "Phone", ProductPrompt = "P", SubCategoryId = 1 };
+            _context.Products.Add(product);
+            _context.SaveChanges();
 
-            await _context.SubCategories.AddAsync(subCategory);
+            var result = await _repository.GetProductByIdAsync(5);
 
+            Assert.NotNull(result);
+            Assert.Equal("Phone", result.ProductName);
+        }
+
+        [Fact]
+        public async Task GetProductsAsync_FilterBySubCategory_ReturnsFiltered()
+        {
+            SeedMainAndSubCategory();
             _context.Products.AddRange(
-                new Product { ProductName = "P1", SubCategoryId = 1, ProductPrompt = "A" },
-                new Product { ProductName = "P2", SubCategoryId = 1, ProductPrompt = "B" }
+                new Product { ProductName = "P1", ProductPrompt = "P", SubCategoryId = 1 },
+                new Product { ProductName = "P2", ProductPrompt = "P", SubCategoryId = 1 }
             );
+            _context.SaveChanges();
 
-            await _context.SaveChangesAsync();
+            var (products, total) = await _repository.GetProductsAsync(10, 0, null, new int?[] { 1 });
 
-            // Act
-            var results = await _repository.GetProductsBySubCategoryIdAsync(1);
-
-            // Assert
-            Assert.Equal(2, results.Count());
+            Assert.Equal(2, products.Count());
+            Assert.Equal(2, total);
         }
 
         [Fact]
-        public async Task UpdateProductAsync_ShouldChangeDataInDb()
+        public async Task UpdateProductAsync_WithValidProduct_Updates()
         {
-            // Arrange
-            var product = new Product { ProductId = 10, ProductName = "Old Name", ProductPrompt = "A" };
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
+            SeedMainAndSubCategory();
+            var product = new Product { ProductId = 10, ProductName = "Old", ProductPrompt = "P", SubCategoryId = 1 };
+            _context.Products.Add(product);
+            _context.SaveChanges();
 
-            // Act
-            product.ProductName = "New Name";
+            product.ProductName = "New";
             await _repository.UpdateProductAsync(10, product);
 
-            // Assert
-            var updated = await _context.Products.FindAsync(10);
-            Assert.Equal("New Name", updated.ProductName);
+            var updated = _context.Products.Find(10L);
+            Assert.NotNull(updated);
+            Assert.Equal("New", updated.ProductName);
         }
 
         [Fact]
-        public async Task DeleteProductAsync_WhenProductDoesNotExist_ReturnsFalse()
+        public async Task GetProductsBySubCategoryIdAsync_ReturnsCorrectProducts()
         {
-            // Act
-            var result = await _repository.DeleteProductAsync(999);
+            SeedMainAndSubCategory();
+            _context.Products.AddRange(
+                new Product { ProductName = "P1", ProductPrompt = "P", SubCategoryId = 1 },
+                new Product { ProductName = "P2", ProductPrompt = "P", SubCategoryId = 1 }
+            );
+            _context.SaveChanges();
 
-            // Assert
+            var result = await _repository.GetProductsBySubCategoryIdAsync(1);
+
+            Assert.Equal(2, result.Count());
+        }
+
+        #endregion
+
+        #region Unhappy Paths
+
+        [Fact]
+        public async Task GetProductByIdAsync_NonExistentId_ReturnsNull()
+        {
+            var result = await _repository.GetProductByIdAsync(9999);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task DeleteProductAsync_NonExistentProduct_ReturnsFalse()
+        {
+            var result = await _repository.DeleteProductAsync(9999);
             Assert.False(result);
         }
-        public void Dispose()
+
+        [Fact]
+        public async Task GetProductsAsync_EmptyDatabase_ReturnsEmpty()
         {
-            _context.Database.EnsureDeleted();
-            _context.Dispose();
+            var (products, total) = await _repository.GetProductsAsync(10, 0, null, Array.Empty<int?>());
+
+            Assert.Empty(products);
+            Assert.Equal(0, total);
         }
+
+        [Fact]
+        public async Task GetProductsBySubCategoryIdAsync_NonExistentSubCategory_ReturnsEmpty()
+        {
+            var result = await _repository.GetProductsBySubCategoryIdAsync(9999);
+
+            Assert.Empty(result);
+        }
+
+        #endregion
     }
 }

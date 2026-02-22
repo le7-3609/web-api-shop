@@ -26,8 +26,14 @@ namespace  Services
             IEnumerable<Platform> platformList = await _platformRepository.GetPlatformsAsync();
             return _mapper.Map<IEnumerable<PlatformsDTO>>(platformList);
         }
+        
+        async public Task<PlatformsDTO?> GetPlatformByIdAsync(int id)
+        {
+            var platform = await _platformRepository.GetPlatformByIdAsync(id);
+            return platform == null ? null : _mapper.Map<PlatformsDTO>(platform);
+        }
 
-        async public Task<PlatformsDTO> AddPlatformAsync(string platformName)
+        async public Task<PlatformsDTO?> AddPlatformAsync(string platformName)
         {
             var existing = await _platformRepository.GetPlatformByNameAsync(platformName);
 
@@ -42,18 +48,27 @@ namespace  Services
             return _mapper.Map<PlatformsDTO>(platform);
         }
 
-        async public Task UpdatePlatformAsync(int id, PlatformsDTO dto)
+        async public Task<bool> UpdatePlatformAsync(int id, PlatformsDTO dto)
         {
-            var existing = await _platformRepository.GetPlatformByNameAsync(dto.PlatformName);
-
-            if (existing != null)
+            // Ensure platform exists by id
+            var existingById = await _platformRepository.GetPlatformByIdAsync(id);
+            if (existingById == null)
             {
-                return;
+                return false; // not found
             }
+
+            // Check for name conflict with other records
+            var existingByName = await _platformRepository.GetPlatformByNameAsync(dto.PlatformName);
+            if (existingByName != null && existingByName.PlatformId != id)
+            {
+                return false; // conflict
+            }
+
             Platform platform = _mapper.Map<Platform>(dto);
-            //add prompt with gemini
-            // platform.PlatformsPrompt = "fdfbnfgn";
-            await _platformRepository.UpdatePlatformAsync(id, platform);
+            // ensure id is set
+            platform.PlatformId = id;
+
+            return await _platformRepository.UpdatePlatformAsync(id, platform);
         }
 
         async public Task<bool> DeletePlatformAsync(int id)

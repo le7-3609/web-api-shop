@@ -7,7 +7,7 @@ namespace Entities;
 
 public partial class User
 {
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     public string Email { get; set; }
 
@@ -18,6 +18,14 @@ public partial class User
     public string LastName { get; set; }
 
     public string Phone { get; set; }
+
+    public string Provider { get; set; }
+
+    public string ProviderId { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? LastLogin { get; set; }
 
     public virtual Cart Cart { get; set; }
 

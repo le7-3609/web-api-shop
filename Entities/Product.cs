@@ -7,9 +7,9 @@ namespace Entities;
 
 public partial class Product
 {
-    public int ProductId { get; set; }
+    public long ProductId { get; set; }
 
-    public int SubCategoryId { get; set; }
+    public long SubCategoryId { get; set; }
 
     public string ProductName { get; set; }
 
@@ -18,8 +18,6 @@ public partial class Product
     public string ProductPrompt { get; set; }
 
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-
-    public virtual ICollection<GeminiPrompt> GeminiPrompts { get; set; } = new List<GeminiPrompt>();
 
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 

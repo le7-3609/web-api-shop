@@ -26,26 +26,35 @@ namespace Services
             return (productsRes, TotalCount: totalCount);
         }
 
-        async public Task<ProductDTO> GetProductByIdAsync(int Id)
+        async public Task<ProductDTO?> GetProductByIdAsync(int Id)
         {
-            Product product = await _productRepository.GetProductByIdAsync(Id);
+            Product? product = await _productRepository.GetProductByIdAsync(Id);
             return _mapper.Map<ProductDTO>(product);
         }
 
-        async public Task UpdateProductAsync(int id, UpdateProductDTO dto)
+        async public Task UpdateProductAsync(int id, AdminProductDTO dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.ProductName))
+            {
+                throw new ArgumentException("ProductName cannot be empty");
+            }
+
             Product product = _mapper.Map<Product>(dto);
-            //למלא פרומפט עם gemini
-            product.ProductPrompt = "vfsghhfg";
+            product.ProductId = id; 
+            product.ProductPrompt = string.IsNullOrWhiteSpace(dto.ProductPrompt) ? product.ProductPrompt ?? "" : dto.ProductPrompt;
             await _productRepository.UpdateProductAsync(id, product);
         }
 
 
-        async public Task<ProductDTO> AddProductAsync(AddProductDTO dto)
+        async public Task<ProductDTO> AddProductAsync(AdminProductDTO dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.ProductName))
+            {
+                throw new ArgumentException("ProductName cannot be empty");
+            }
+
             Product product = _mapper.Map<Product>(dto);
-            //למלא פרומפט עם gemini
-            product.ProductPrompt = "gfasdfghfh";
+            product.ProductPrompt = string.IsNullOrWhiteSpace(dto.ProductPrompt) ? "" : dto.ProductPrompt;
             product = await _productRepository.AddProductAsync(product);
             return _mapper.Map<ProductDTO>(product);
         }

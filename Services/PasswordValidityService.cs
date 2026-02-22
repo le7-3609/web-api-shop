@@ -13,7 +13,7 @@ namespace Services
 {
     public class PasswordValidityService : IPasswordValidityService
     {
-        public PasswordDTO PasswordStrength(string password)
+        public PasswordDTO? PasswordStrength(string password)
         {
             if (password != null && password != "")
             {

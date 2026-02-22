@@ -1,8 +1,10 @@
 ﻿using Azure;
+using Entities;
 using Google.GenAI;
 using Google.GenAI.Types;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Repositories;
 using System;
 using System.Collections.Generic;
@@ -16,63 +18,139 @@ namespace Services
     {
         IConfiguration _config;
         ILogger<Gemini> logger;
-        public Gemini(IConfiguration config, ILogger<Gemini> logger)
+        private readonly IOptions<GeminiSettings> _geminiSettings;
+
+        public Gemini(IConfiguration config, ILogger<Gemini> logger, IOptions<GeminiSettings> geminiSettings)
         {
             this._config = config;
             this.logger = logger;
+            _geminiSettings = geminiSettings;
         }
-        public async Task<string> RunGeminiForUserProduct(string userRequest, string category)
+
+        public async Task<string?> RunGeminiForUserProduct(string userRequest, string category)
         {
+            var request = BuildRequest(
+                role: "Strict JSON Transformer",
+                task: "Generate a technical prompt value based on user request and product category context.",
+                contextTitle: "Category",
+                contextValue: category,
+                userRequest: userRequest);
 
-            string myApiKey = _config.GetValue<string>("GEMINI_API_KEY");
-            string request = $"I am using the Gemini API now and I am going to " +
-                             $"directly convert everything that returns into JSON, and " +
-                             $"if the output is not exclusively JSON, the program will " +
-                             $"crash during conversion, so return only, only JSON.The" +
-                             $" Strict JSON Transformer:Role: High-precision JSON " +
-                             $"generation engine for automated backend systems.Operational" +
-                             $" Protocol:Task: Map the User Input to the Category and" +
-                             $" generate a single technical value.nOutput Format: Provide the" +
-                             $" result exclusively as a valid JSON object.Property: The JSON " +
-                             $"must contain exactly one key named technical_valueFinality:" +
-                             $" The JSON object is the complete and final response.Input Data:" +
-                             $"Category:" + category + "Input:" + userRequest +
-                             $" returns to each employee the schedule of hours they worked in the last " +
-                             $"Target Output Schema:technical_value" +
-                             $": stringGenerate JSON now:";
+            return await RunGeminiAsync(request);
+        }
 
-            var client = new Client(apiKey: myApiKey);
+        public async Task<string?> RunGeminiForFillCategory(string userRequest, string mainCategory)
+        {
+            var request = BuildRequest(
+                role: "Category Expansion Transformer",
+                task: "Generate technical expansion instructions for user category customization, using the main category only as context.",
+                contextTitle: "Main Category",
+                contextValue: mainCategory,
+                userRequest: userRequest);
+
+            return await RunGeminiAsync(request);
+        }
+
+        public async Task<string?> RunGeminiForFillBasicSite(string userRequest)
+        {
+            var request = BuildRequest(
+                role: "Website Architecture Transformer",
+                task: "Generate a clear technical definition for a base website request.",
+                contextTitle: "Context",
+                contextValue: "Basic Site",
+                userRequest: userRequest);
+
+            return await RunGeminiAsync(request);
+        }
+
+        private async Task<string?> RunGeminiAsync(string request)
+        {
+            var apiKey = ResolveApiKey();
+            if (string.IsNullOrWhiteSpace(apiKey))
+            {
+                logger.LogWarning("Gemini API key is missing");
+                return null;
+            }
+
+            var client = new Client(apiKey: apiKey);
 
             try
             {
                 var response = await client.Models.GenerateContentAsync(
                     model: "gemini-3-flash-preview",
-                    contents: request
-                );
-                try
-                {
-                    string response2 = response.Candidates[0].Content.Parts[0].Text;
-                    int start = response2.IndexOf('{');
-                    int end = response2.IndexOf('}');
-                    if (start == -1 || end == -1)
+                    contents: request,
+                    config: new GenerateContentConfig
                     {
-                        return null;
-                    }
-                    string subResponse = response2.Substring(start, end - start + 1);
+                        Temperature = 0.2f,
+                        ResponseMimeType = "application/json"
+                    });
 
-                    return subResponse;
-                }
-                catch (Exception ex)
+                string? rawResponse = response.Candidates?[0].Content?.Parts?[0].Text;
+                if (string.IsNullOrWhiteSpace(rawResponse))
                 {
-                    logger.LogWarning(ex.ToString() + "faild to extract the answer");
+                    logger.LogWarning("Gemini returned an empty response");
                     return null;
                 }
 
+                return ExtractJson(rawResponse);
             }
             catch (Exception ex)
             {
-                return $"Error: {ex.Message}";
+                logger.LogError(ex, "Gemini request failed");
+                return null;
             }
+        }
+
+        private static string BuildRequest(string role, string task, string contextTitle, string contextValue, string userRequest)
+        {
+            return $$"""
+                Role: {{role}}
+                Task: {{task}}
+                Constraint: Return only a valid JSON object with no markdown or extra text.
+
+                Input:
+                - {{contextTitle}}: {{contextValue}}
+                - User Request: {{userRequest}}
+
+                Schema:
+                {
+                  "technical_value": "string"
+                }
+                """;
+        }
+
+        private string? ResolveApiKey()
+        {
+            if (!string.IsNullOrWhiteSpace(_geminiSettings.Value.ApiKey))
+            {
+                return _geminiSettings.Value.ApiKey;
+            }
+
+            return _config["GEMINI_API_KEY"];
+        }
+
+        private static string? ExtractJson(string rawResponse)
+        {
+            string cleanJson = rawResponse.Trim();
+            if (cleanJson.StartsWith("```json", StringComparison.OrdinalIgnoreCase))
+            {
+                cleanJson = cleanJson.Replace("```json", "", StringComparison.OrdinalIgnoreCase)
+                    .Replace("```", "", StringComparison.OrdinalIgnoreCase)
+                    .Trim();
+            }
+            else if (cleanJson.StartsWith("```", StringComparison.OrdinalIgnoreCase))
+            {
+                cleanJson = cleanJson.Replace("```", "", StringComparison.OrdinalIgnoreCase).Trim();
+            }
+
+            int start = cleanJson.IndexOf('{');
+            int end = cleanJson.LastIndexOf('}');
+            if (start < 0 || end < 0 || end < start)
+            {
+                return null;
+            }
+
+            return cleanJson.Substring(start, end - start + 1);
         }
     }
 }

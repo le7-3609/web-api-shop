@@ -18,7 +18,15 @@ namespace WebApiShop
 
         public async Task Invoke(HttpContext httpContext, IRatingService ratingService)
         {
-            Rating rating = new Rating(httpContext);
+            Rating rating = new Rating
+            {
+                Host = httpContext.Request.Host.HasValue ? httpContext.Request.Host.Value : string.Empty,
+                Method = httpContext.Request.Method,
+                Path = httpContext.Request.Path.HasValue ? httpContext.Request.Path.Value : string.Empty,
+                Referer = httpContext.Request.Headers.Referer.ToString(),
+                UserAgent = httpContext.Request.Headers.UserAgent.ToString(),
+                RecordDate = DateTime.UtcNow
+            };
             await ratingService.AddRatingAsync(rating);
             await _next(httpContext);
         }

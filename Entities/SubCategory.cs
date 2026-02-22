@@ -7,9 +7,9 @@ namespace Entities;
 
 public partial class SubCategory
 {
-    public int SubCategoryId { get; set; }
+    public long SubCategoryId { get; set; }
 
-    public int MainCategoryId { get; set; }
+    public long MainCategoryId { get; set; }
 
     public string SubCategoryName { get; set; }
 

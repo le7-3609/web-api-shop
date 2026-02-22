@@ -32,21 +32,44 @@ namespace WebApiShop.Controllers
         public async Task<ActionResult<IEnumerable<CartItemDTO>>> GetCartItemsByCartIdAsync(int cartId)
         {
             var cartItems = await _cartService.GetCartItemsByCartIdAsync(cartId);
-            if (cartItems == null || !cartItems.Any())
+            if (cartItems == null)
             {
-                return NotFound($"No items found for cart ID {cartId}");
+                return NotFound($"Cart with ID {cartId} not found");
             }
             return Ok(cartItems);
         }
 
-        // POST api/Carts/items
-        [HttpPost("items")]
-        public async Task<ActionResult<CartItemDTO>> AddItemToCartAsync([FromBody] AddCartItemDTO dto)
+        // POST api/Carts/users/5/items 
+        [HttpPost("users/{userId}/items")]
+        public async Task<ActionResult<CartItemDTO>> AddItemToUserCartAsync(int userId, [FromBody] AddCartItemDTO dto)
         {
             try
             {
-                var newCartItem = await _cartService.AddCartItemAsync(dto);
-                return CreatedAtAction(nameof(GetCartItemsByCartIdAsync), new { id = newCartItem.CartItemId }, newCartItem);
+                var newCartItem = await _cartService.AddCartItemForUserAsync(userId, dto);
+                return CreatedAtAction(nameof(GetCartItemsByCartIdAsync), new { cartId = newCartItem.CartId }, newCartItem);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // POST api/Carts/users/5/import-guest
+        [HttpPost("users/{userId}/import-guest")]
+        public async Task<ActionResult<GuestCartImportResultDTO>> ImportGuestCartAsync(int userId, [FromBody] ImportGuestCartDTO dto)
+        {
+            try
+            {
+                var result = await _cartService.ImportGuestCartAsync(userId, dto);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
             }
             catch (Exception ex)
             {
@@ -56,14 +79,50 @@ namespace WebApiShop.Controllers
 
         // PUT api/Carts/items
         [HttpPut("items")]
-        public async Task<ActionResult<CartItemDTO>> UpdateItemInCartAsync([FromBody] CartItemDTO dto)
+        public async Task<ActionResult<CartItemDTO>> UpdateItemInCartAsync([FromBody] UpdateCartItemDTO dto)
         {
-            var updated = await _cartService.UpdateCartItemAsync(dto);
-            if (updated == null)
+            try
             {
-                return NotFound($"Cart item not found");
+                var updated = await _cartService.UpdateCartItemAsync(dto);
+                if (updated == null)
+                {
+                    return NotFound("Cart item not found");
+                }
+
+                return Ok(updated);
             }
-            return Ok(updated);
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PUT api/Carts/5
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CartDTO>> UpdateCartAsync(int id, [FromBody] UpdateCartDTO dto)
+        {
+            try
+            {
+                var updated = await _cartService.UpdateCartAsync(id, dto);
+                if (updated == null)
+                {
+                    return NotFound($"Cart with ID {id} not found");
+                }
+
+                return Ok(updated);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE api/Carts/items/5

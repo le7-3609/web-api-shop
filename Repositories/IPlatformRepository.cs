@@ -7,7 +7,8 @@ namespace Repositories
         Task<Platform> AddPlatformAsync(Platform platform);
         Task<bool> DeletePlatformAsync(int id);
         Task<IEnumerable<Platform>> GetPlatformsAsync();
-        Task UpdatePlatformAsync(int id, Platform platform);
-        Task<Platform> GetPlatformByNameAsync(string name);
+        Task<bool> UpdatePlatformAsync(int id, Platform platform);
+        Task<Platform?> GetPlatformByIdAsync(int id);
+        Task<Platform?> GetPlatformByNameAsync(string name);
     }
 }

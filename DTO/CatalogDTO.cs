@@ -8,59 +8,97 @@ using System.Threading.Tasks;
 namespace DTO
 {
    public record MainCategoryDTO(
-        int MainCategoryId,
+       long MainCategoryId,
         string MainCategoryName
     );
-    public class ManegerMainCategoryDTO
-    (
-        string MainCategoryName
+    public record AdminMainCategoryDTO(
+        [Required]
+        string MainCategoryName,
+        [Required]
+        string MainCategoryPrompt
     );
 
     public record SubCategoryDTO
-    {
-        public int SubCategoryId { get; init; }
-        public int MainCategoryId { get; init; }
-        public string SubCategoryName { get; init; }
-        public string? ImageUrl { get; init; }
-        public string CategoryDescription { get; init; }
-    }
+    (
+        long SubCategoryId,
+        long MainCategoryId,
+        string SubCategoryName,
+        string SubCategoryPrompt,
+        string? ImageUrl,
+        string CategoryDescription
+    );
 
     public record AddSubCategoryDTO
     (
         [Required]
-        int MainCategoryId,
+        long MainCategoryId,
         [Required]
         string SubCategoryName,
         [Required]
+        string SubCategoryPrompt,
         string ImageUrl,
         [Required]
         string CategoryDescription
     );
 
- public record ProductDTO
-{
-    public int ProductId { get; init; }
-    public int SubCategoryId { get; init; }
-    public string ProductName { get; init; }
-    public string SubCategoryName { get; init; }
-    public float Price { get; init; }
-}
+     public record ProductDTO
+     (     
+         long ProductId,
+         long SubCategoryId,
+         string ProductName,
+         string SubCategoryName,
+         double Price,
+         string ProductPrompt
+     );
+  
 
     public record UpdateProductDTO
     (
-        int ProductId,
-        int CategoryId,
-        string ProductsName,
-        float Price
+        [Required]
+        long ProductId,
+        [Required]
+        long SubCategoryId,
+        [Required]
+        [StringLength(200)]
+        string ProductName,
+        [Required]
+        double Price,
+        [Required]
+        string ProductPrompt
     );
     public record AddProductDTO
     (
-        int CategoryId,
-        string ProductsName,
-        float Price
+        [Required]
+        long SubCategoryId,
+        [Required]
+        [StringLength(200)]
+        string ProductName,
+        [Required]
+        double Price,
+        [Required]
+        string ProductPrompt
+    );
+
+    public record AdminProductDTO
+    (
+        long? ProductId,
+        [Required]
+        long SubCategoryId,
+        [Required]
+        [StringLength(200)]
+        string ProductName,
+        [Required]
+        double Price,
+        string? ProductPrompt
     );
     public record AddPlatformDTO
     (
-        string PlatformName
+        string PlatformName,
+        string PlatformPrompt
+    );
+
+    public record PaginatedResponse<T>(
+        IEnumerable<T> Items,
+        int TotalCount
     );
 }

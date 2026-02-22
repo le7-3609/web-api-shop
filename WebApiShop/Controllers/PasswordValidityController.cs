@@ -8,9 +8,15 @@ namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PasswordValidityController : Controller
+    public class PasswordValidityController : ControllerBase
     {
-        PasswordValidityService _passwordValidityService = new PasswordValidityService();
+        private readonly IPasswordValidityService _passwordValidityService;
+        
+        public PasswordValidityController(IPasswordValidityService passwordValidityService)
+        {
+            _passwordValidityService = passwordValidityService;
+        }
+        
         // POST api/<PasswordValidityController>/("passwordStrength")
         [HttpPost("passwordStrength")]
         public ActionResult<PasswordDTO> PasswordStrength([FromBody] string password)

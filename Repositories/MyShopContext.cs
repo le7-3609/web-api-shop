@@ -50,10 +50,7 @@ public partial class MyShopContext : DbContext
     {
         modelBuilder.Entity<BasicSite>(entity =>
         {
-            entity.HasKey(e => e.BasicSiteId).HasName("PK__BasicSit__FFB1C800DF4A3F07");
-
             entity.Property(e => e.SiteName).HasMaxLength(500);
-            entity.Property(e => e.SiteTypeId).HasColumnName("SiteTypeID");
 
             entity.HasOne(d => d.Platform).WithMany(p => p.BasicSites)
                 .HasForeignKey(d => d.PlatformId)
@@ -67,9 +64,9 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<Cart>(entity =>
         {
-            entity.HasKey(e => e.CartId).HasName("PK__Carts__51BCD7B7B795F559");
+            entity.HasIndex(e => e.UserId, "UQ__Carts__1788CC4D36817419").IsUnique();
 
-            entity.HasIndex(e => e.UserId, "UQ__Carts__1788CC4D5B9FB2BD").IsUnique();
+            entity.Property(e => e.BasicSiteId).IsRequired(false);
 
             entity.HasOne(d => d.BasicSite).WithMany(p => p.Carts)
                 .HasForeignKey(d => d.BasicSiteId)
@@ -84,11 +81,8 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<CartItem>(entity =>
         {
-            entity.HasKey(e => e.CartItemId).HasName("PK__CartItem__488B0B0AE9338F2F");
-
             entity.Property(e => e.IsActive).HasDefaultValue(true);
-            entity.Property(e => e.PlatformId).HasDefaultValue(1);
-            entity.Property(e => e.PromptId).HasColumnName("PromptID");
+            entity.Property(e => e.PlatformId).HasDefaultValue(1L);
 
             entity.HasOne(d => d.Cart).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.CartId)
@@ -106,33 +100,23 @@ public partial class MyShopContext : DbContext
 
             entity.HasOne(d => d.Prompt).WithMany(p => p.CartItems)
                 .HasForeignKey(d => d.PromptId)
-                .HasConstraintName("FK_CartItems_GeminiPrompt");
+                .HasConstraintName("FK_CartItems_GeminiPrompts");
         });
 
         modelBuilder.Entity<GeminiPrompt>(entity =>
         {
             entity.HasKey(e => e.PromptId);
 
-            entity.ToTable("GeminiPrompt");
-
-            entity.Property(e => e.PromptId).HasColumnName("PromptID");
             entity.Property(e => e.Prompt).IsRequired();
-
-            entity.HasOne(d => d.Product).WithMany(p => p.GeminiPrompts)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("FK_GeminiPrompt_Products");
 
             entity.HasOne(d => d.SubCategory).WithMany(p => p.GeminiPrompts)
                 .HasForeignKey(d => d.SubCategoryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_GeminiPrompt_SubCategory");
         });
 
         modelBuilder.Entity<MainCategory>(entity =>
         {
-            entity.HasKey(e => e.MainCategoryId).HasName("PK__MainCate__0290BDD64C8B2AD9");
-
-            entity.HasIndex(e => e.MainCategoryName, "UQ__MainCate__121AD3E3610F8F40").IsUnique();
+            entity.HasIndex(e => e.MainCategoryName, "UQ__MainCate__121AD3E378C9C759").IsUnique();
 
             entity.Property(e => e.MainCategoryName)
                 .IsRequired()
@@ -142,10 +126,8 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BCFD2B97788");
-
             entity.Property(e => e.OrderDate).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Status).HasDefaultValue(1);
+            entity.Property(e => e.Status).HasDefaultValue(1L);
 
             entity.HasOne(d => d.BasicSite).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.BasicSiteId)
@@ -165,10 +147,6 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<OrderItem>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__OrderIte__57ED06814D006F5C");
-
-            entity.Property(e => e.PromptId).HasColumnName("PromptID");
-
             entity.HasOne(d => d.Order).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -186,24 +164,23 @@ public partial class MyShopContext : DbContext
 
             entity.HasOne(d => d.Prompt).WithMany(p => p.OrderItems)
                 .HasForeignKey(d => d.PromptId)
-                .HasConstraintName("FK_OrderItems_GeminiPrompt");
+                .HasConstraintName("FK_OrderItems_GeminiPrompts");
         });
 
         modelBuilder.Entity<Platform>(entity =>
         {
-            entity.HasKey(e => e.PlatformId).HasName("PK__Platform__F559F6FA4B71F28D");
-
-            entity.HasIndex(e => e.PlatformName, "UQ__Platform__85614BEEC5A3CB06").IsUnique();
+            entity.HasIndex(e => e.PlatformName, "UQ__Platform__85614BEE84A86521").IsUnique();
 
             entity.Property(e => e.PlatformName)
+                .IsRequired()
+                .HasMaxLength(255);
+            entity.Property(e => e.PlatformPrompt)
                 .IsRequired()
                 .HasMaxLength(255);
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductId).HasName("PK__Products__B40CC6CD02C06A1F");
-
             entity.Property(e => e.ProductName)
                 .IsRequired()
                 .HasMaxLength(255);
@@ -241,8 +218,6 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<Review>(entity =>
         {
-            entity.HasKey(e => e.ReviewId).HasName("PK__Reviews__74BC79CE1C8AA0AF");
-
             entity.Property(e => e.ReviewImageUrl).HasMaxLength(255);
 
             entity.HasOne(d => d.Order).WithMany(p => p.Reviews)
@@ -253,9 +228,7 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<SiteType>(entity =>
         {
-            entity.HasKey(e => e.SiteTypeId).HasName("PK__SiteType__85A71CE6C5295058");
-
-            entity.HasIndex(e => e.SiteTypeName, "UQ__SiteType__3AB6FDCA747176A1").IsUnique();
+            entity.HasIndex(e => e.SiteTypeName, "UQ__SiteType__3AB6FDCABF08758D").IsUnique();
 
             entity.Property(e => e.SiteTypeDescriptionPrompt).IsRequired();
             entity.Property(e => e.SiteTypeName)
@@ -266,16 +239,12 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<Status>(entity =>
         {
-            entity.HasKey(e => e.StatusId).HasName("PK__Statuses__C8EE206318F5FA62");
-
             entity.Property(e => e.StatusName).HasMaxLength(255);
         });
 
         modelBuilder.Entity<SubCategory>(entity =>
         {
-            entity.HasKey(e => e.SubCategoryId).HasName("PK__SubCateg__26BE5B193C0BEE2E");
-
-            entity.HasIndex(e => e.SubCategoryName, "UQ__SubCateg__0BBDA28B7CDB2B96").IsUnique();
+            entity.HasIndex(e => e.SubCategoryName, "UQ__SubCateg__0BBDA28B83D24F4D").IsUnique();
 
             entity.Property(e => e.ImageUrl)
                 .HasMaxLength(1000)
@@ -293,19 +262,24 @@ public partial class MyShopContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C930BF82F");
+            entity.HasIndex(e => new { e.Provider, e.ProviderId }, "IX_Users_Provider_ProviderId").HasFilter("([ProviderId] IS NOT NULL)");
 
-            entity.HasIndex(e => e.Email, "UQ__Users__A9D10534486E6FC6").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ_Users_Email").IsUnique();
 
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.Email)
                 .IsRequired()
                 .HasMaxLength(255);
             entity.Property(e => e.FirstName).HasMaxLength(255);
+            entity.Property(e => e.LastLogin).HasColumnType("datetime");
             entity.Property(e => e.LastName).HasMaxLength(255);
-            entity.Property(e => e.Password)
-                .IsRequired()
-                .HasMaxLength(255);
+            entity.Property(e => e.Password).HasMaxLength(255);
             entity.Property(e => e.Phone).HasMaxLength(50);
+            entity.Property(e => e.Provider)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         OnModelCreatingPartial(modelBuilder);

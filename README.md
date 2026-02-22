@@ -43,7 +43,8 @@ The server is built using **ASP.NET Core 9 (Web API)** following modern software
 | Category | Method | Endpoint | Description |
 | :--- | :--- | :--- | :--- |
 | **Carts** | `GET` | `/api/Carts/{cartId}/items` | Retrieve all items in a specific cart |
-| | `POST` | `/api/Carts/items` | Add a new item/prompt to the cart |
+| | `POST` | `/api/Carts/users/{userId}/items` | Preferred: create/reuse user cart and add item if not already in cart |
+| | `POST` | `/api/Carts/users/{userId}/import-guest` | Import guest cart items into user cart (skip duplicates) |
 | | `DELETE` | `/api/Carts/{cartId}/clear` | Remove all items from the cart |
 | **Users** | `POST` | `/api/Users/register` | Register a new user |
 | | `POST` | `/api/Users/login` | Secure user authentication |

@@ -5,6 +5,6 @@ namespace Services
 {
     public interface IPasswordValidityService
     {
-        PasswordDTO PasswordStrength(string password);
+        PasswordDTO? PasswordStrength(string password);
     }
 }

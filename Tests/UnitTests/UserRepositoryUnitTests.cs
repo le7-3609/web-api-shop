@@ -27,6 +27,7 @@ namespace Tests.UnitTests
             var result = await repo.GetAllAsync();
 
             // Assert
+            Assert.NotNull(result);
             Assert.Equal(2, result.Count());
         }
 
@@ -111,6 +112,7 @@ namespace Tests.UnitTests
             var result = await repo.UpdateAsync(user);
 
             // Assert
+            Assert.NotNull(result);
             Assert.Equal("NewName", result.FirstName);
             mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
         }
@@ -131,6 +133,7 @@ namespace Tests.UnitTests
             var result = await repo.GetAllOrdersAsync(10);
 
             // Assert
+            Assert.NotNull(result);
             Assert.Single(result);
             Assert.Equal(10, result.First().UserId);
         }

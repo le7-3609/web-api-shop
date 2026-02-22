@@ -7,7 +7,7 @@ namespace Entities;
 
 public partial class SiteType
 {
-    public int SiteTypeId { get; set; }
+    public long SiteTypeId { get; set; }
 
     public string SiteTypeName { get; set; }
 

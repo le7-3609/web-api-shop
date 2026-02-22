@@ -28,16 +28,21 @@ namespace Services
             return (subCategoriesRes, TotalCount: totalCount);
         }
 
-        async public Task<SubCategoryDTO> GetSubCategoryByIdAsync(int id)
+        async public Task<SubCategoryDTO?> GetSubCategoryByIdAsync(int id)
         {
-            SubCategory category = await _subCategoryRepository.GetSubCategoryByIdAsync(id);
+            SubCategory? category = await _subCategoryRepository.GetSubCategoryByIdAsync(id);
             return _mapper.Map<SubCategoryDTO>(category);
         }
 
         async public Task UpdateSubCategoryAsync(int id, SubCategoryDTO dto)
         {
+            var existingWithSameName = await _subCategoryRepository.GetByNameAsync(dto.SubCategoryName);
+            if (existingWithSameName != null && existingWithSameName.SubCategoryId != id)
+            {
+                throw new InvalidOperationException($"SubCategory with name '{dto.SubCategoryName}' already exists");
+            }
+            
             SubCategory category = _mapper.Map<SubCategory>(dto);
-            //למלא פרומפט עם gemini
             category.SubCategoryPrompt = "vfsghhfg";
             await _subCategoryRepository.UpdateSubCategoryAsync(id, category);
 
@@ -46,8 +51,21 @@ namespace Services
 
         async public Task<SubCategoryDTO> AddSubCategoryAsync(AddSubCategoryDTO dto)
         {
+            // Check if a SubCategory with the same name already exists
+            var existingWithSameName = await _subCategoryRepository.GetByNameAsync(dto.SubCategoryName);
+            if (existingWithSameName != null)
+            {
+                throw new InvalidOperationException($"SubCategory with name '{dto.SubCategoryName}' already exists");
+            }
+            
+            // Validate MainCategoryId exists
+            var mainCategoryExists = await _subCategoryRepository.MainCategoryExistsAsync((int)dto.MainCategoryId);
+            if (!mainCategoryExists)
+            {
+                throw new InvalidOperationException($"MainCategory with ID {dto.MainCategoryId} does not exist");
+            }
+            
             SubCategory category = _mapper.Map<SubCategory>(dto);
-            //למלא פרומפט עם gemini
             category.SubCategoryPrompt = "gfasdfghfh";
             category = await _subCategoryRepository.AddSubCategoryAsync(category);
 

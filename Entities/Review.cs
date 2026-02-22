@@ -7,9 +7,9 @@ namespace Entities;
 
 public partial class Review
 {
-    public int ReviewId { get; set; }
+    public long ReviewId { get; set; }
 
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
 
     public short Score { get; set; }
 

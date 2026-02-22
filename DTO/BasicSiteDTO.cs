@@ -10,29 +10,30 @@ namespace DTO
 
     record BasicSiteDTO
     {
-        public int BasicSiteId { get; init; }
+        public long BasicSiteId { get; init; }
         public string SiteName { get; init; }
+        public double Price { get; init; }
         public string UserDescreption { get; init; }
         public string SiteTypeName { get; init; }
         public string PlatformName { get; init; }
-        public int PlatformId { get; init; }
-        public int SiteTypeId { get; init; }
+        public long? PlatformId { get; init; }
+        public long SiteTypeId { get; init; }
         public string SiteTypeDescreption { get; init; }
     }
 
     public record UpdateBasicSiteDTO
     (
-        int BasicSiteId,
+        long BasicSiteId,
         string SiteName,
         string UserDescreption,
-        int SiteTypeId,
-        int PlatformId
+        long SiteTypeId,
+        long? PlatformId
     );
     public record AddBasicSiteDTO
     (
         string SiteName,
         string UserDescreption,
-        int SiteTypeId,
-        int PlatformId
+        long SiteTypeId,
+        long? PlatformId
     );
 }

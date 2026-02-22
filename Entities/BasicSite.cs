@@ -7,13 +7,13 @@ namespace Entities;
 
 public partial class BasicSite
 {
-    public int BasicSiteId { get; set; }
+    public long BasicSiteId { get; set; }
 
     public string SiteName { get; set; }
 
-    public int SiteTypeId { get; set; }
+    public long SiteTypeId { get; set; }
 
-    public int? PlatformId { get; set; }
+    public long? PlatformId { get; set; }
 
     public string UserDescreption { get; set; }
 

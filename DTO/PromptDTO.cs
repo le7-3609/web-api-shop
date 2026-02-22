@@ -8,7 +8,8 @@ namespace DTO
 {
     public record PlatformsDTO
     (
-        int PlatformId,
-        string PlatformName 
+        long PlatformId,
+        string PlatformName,
+        string PlatformPrompt
     );
 }

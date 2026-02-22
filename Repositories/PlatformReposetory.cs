@@ -15,9 +15,14 @@ namespace Repositories
         {
             _context = context;
         }
-        public async Task<Platform> GetPlatformByNameAsync(string platformName)
+        public async Task<Platform?> GetPlatformByNameAsync(string platformName)
         {
             return await _context.Platforms.FirstOrDefaultAsync(p => p.PlatformName == platformName);
+        }
+
+        async public Task<Platform?> GetPlatformByIdAsync(int id)
+        {
+            return await _context.Platforms.FirstOrDefaultAsync(p => p.PlatformId == id);
         }
 
         async public Task<IEnumerable<Platform>> GetPlatformsAsync()
@@ -32,10 +37,25 @@ namespace Repositories
             return platform;
         }
 
-        async public Task UpdatePlatformAsync(int id, Platform platform)
+        async public Task<bool> UpdatePlatformAsync(int id, Platform platform)
         {
-            _context.Platforms.Update(platform);
+            var existing = await _context.Platforms.FirstOrDefaultAsync(p => p.PlatformId == id);
+            if (existing == null)
+            {
+                return false;
+            }
+
+            // check for name conflict with other records
+            var conflict = await _context.Platforms.FirstOrDefaultAsync(p => p.PlatformName == platform.PlatformName && p.PlatformId != id);
+            if (conflict != null)
+            {
+                return false;
+            }
+
+            // apply changes to the tracked entity
+            _context.Entry(existing).CurrentValues.SetValues(platform);
             await _context.SaveChangesAsync();
+            return true;
         }
 
         async public Task<bool> DeletePlatformAsync(int id)

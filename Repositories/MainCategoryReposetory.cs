@@ -20,18 +20,33 @@ namespace Repositories
             return await _context.MainCategories.ToListAsync();
         }
 
+        async public Task<MainCategory?> GetMainCategoryByIdAsync(int id)
+        {
+            return await _context.MainCategories.FirstOrDefaultAsync(x => x.MainCategoryId == id);
+        }
+
         async public Task<MainCategory> AddMainCategoryAsync(MainCategory mainCategoryToAdd)
         {
 
             await _context.MainCategories.AddAsync(mainCategoryToAdd);
-            _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return mainCategoryToAdd;
         }
 
-        async public Task UpdateMainCategoryAsync(int id, MainCategory mainCategoryToUpdate)
+        async public Task UpdateMainCategoryAsync(MainCategory mainCategoryToUpdate)
         {
 
-            _context.MainCategories.Update(mainCategoryToUpdate);
+            // If an instance with the same key is already tracked, apply the new values
+            var local = _context.MainCategories.Local.FirstOrDefault(e => e.MainCategoryId == mainCategoryToUpdate.MainCategoryId);
+            if (local != null && !ReferenceEquals(local, mainCategoryToUpdate))
+            {
+                _context.Entry(local).CurrentValues.SetValues(mainCategoryToUpdate);
+            }
+            else
+            {
+                _context.MainCategories.Update(mainCategoryToUpdate);
+            }
+
             await _context.SaveChangesAsync();
 
         }

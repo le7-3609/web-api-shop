@@ -7,17 +7,17 @@ namespace Entities;
 
 public partial class Order
 {
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
 
-    public int BasicSiteId { get; set; }
+    public long BasicSiteId { get; set; }
 
     public DateOnly? OrderDate { get; set; }
 
     public double OrderSum { get; set; }
 
-    public int Status { get; set; }
+    public long Status { get; set; }
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
     public string OrderPromt { get; set; }
 

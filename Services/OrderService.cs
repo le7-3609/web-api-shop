@@ -25,66 +25,115 @@ namespace Services
             _logger = logger;
             _productRepository = productRepository;
         }
-        private async Task<float> CalculateRealSumAsync(List<CartItemDTO> items)
+        private async Task<double> CalculateRealSumAsync(List<CartItemDTO> items, double basicSitePrice)
         {
-            float total = 0;
+            double total = basicSitePrice;
             foreach (var item in items)
             {
-                var product = await _productRepository.GetProductByIdAsync(item.ProductId);
+                var product = await _productRepository.GetProductByIdAsync((int)item.ProductId);
                 if (product == null)
                 {
                     _logger.LogError("Security Warning: Product ID {ProductId} not found during validation.", item.ProductId);
                     throw new KeyNotFoundException("Product not found");
                 }
-                total += (float)product.Price;
+                total += product.Price;
             }
             return total;
         }
 
-        private async Task<(bool IsValid, float CalculatedSum)> ValidateOrderSumAsync(CartDTO cartDto)
+        private bool IsCartTotalConsistent(CartDTO cartDto, double expectedSum)
         {
-            float calculatedSum = await CalculateRealSumAsync(cartDto.CartItems);
-
-            if (Math.Abs(calculatedSum - cartDto.TotalPrice) > 0)
-            {
-                _logger.LogError("Security Warning: Order sum mismatch. Client: {ClientSum}, Real: {RealSum}",
-                    cartDto.TotalPrice, calculatedSum);
-                return (false, calculatedSum);
-            }
-            return (true, calculatedSum);
+            return Math.Abs(cartDto.TotalPrice - expectedSum) < 0.01;
         }
 
-        public async Task<OrderDetailsDTO> AddOrderFromCartAsync(CartDTO cartDto)
+        public async Task<(IEnumerable<OrderDetailsDTO> Orders, double Total)> GetOrdersAsync()
         {
-            var (isValid, expectedSum) = await ValidateOrderSumAsync(cartDto);
-
-            if (!isValid)
+            double total = 0;
+            var orders = await _orderRepository.GetOrdersAsync();
+            foreach (var order in orders)
             {
-                _logger.LogWarning("SECURITY ALERT: Price mismatch for User {UserId}. Client sent {ClientSum}, but expected {ExpectedSum}.",
-                    cartDto.UserId, cartDto.TotalPrice, expectedSum);
-                throw new InvalidOperationException("Payment verification failed. The transaction has been logged.");
+                total += order.OrderSum;
+            }
+            var orderDtos = _mapper.Map<IEnumerable<OrderDetailsDTO>>(orders);
+            return (orderDtos, total);
+        }
+
+        public async Task<OrderDetailsDTO> AddOrderFromCartAsync(int cartId)
+        {
+            ValidateCartId(cartId);
+            var cartDto = await GetValidatedCartAsync(cartId);
+            var expectedSum = await CalculateRealSumAsync(cartDto.CartItems, cartDto.BasicSitePrice);
+            ValidateCartTotalConsistency(cartId, cartDto, expectedSum);
+            var order = BuildOrderFromCart(cartDto, expectedSum);
+
+            return await SaveOrderAndClearCartAsync(order, cartId);
+        }
+
+        private static void ValidateCartId(int cartId)
+        {
+            if (cartId <= 0)
+            {
+                throw new InvalidOperationException("Invalid cart ID.");
+            }
+        }
+
+        private async Task<CartDTO> GetValidatedCartAsync(int cartId)
+        {
+            var cartDto = await _cartService.GetCartByIdAsync(cartId);
+            if (cartDto == null)
+            {
+                throw new KeyNotFoundException("Cart not found.");
             }
 
-            var order = new Order
+            if (cartDto.CartItems == null || cartDto.CartItems.Count == 0)
+            {
+                throw new InvalidOperationException("The cart is empty.");
+            }
+
+            if (!cartDto.BasicSiteId.HasValue)
+            {
+                throw new InvalidOperationException("Cannot create order without BasicSiteId.");
+            }
+
+            return cartDto;
+        }
+
+        private void ValidateCartTotalConsistency(int cartId, CartDTO cartDto, double expectedSum)
+        {
+            if (!IsCartTotalConsistent(cartDto, expectedSum))
+            {
+                _logger.LogWarning("SECURITY ALERT: Cart total mismatch for Cart {CartId}. Cart.TotalPrice={CartTotalPrice}, Expected={ExpectedSum}",
+                    cartId, cartDto.TotalPrice, expectedSum);
+                throw new InvalidOperationException("Cart total validation failed.");
+            }
+        }
+
+        private static Order BuildOrderFromCart(CartDTO cartDto, double expectedSum)
+        {
+            return new Order
             {
                 UserId = cartDto.UserId,
+                BasicSiteId = cartDto.BasicSiteId!.Value,
                 OrderDate = DateOnly.FromDateTime(DateTime.Now),
                 OrderSum = expectedSum,
                 Status = 1,
                 OrderItems = cartDto.CartItems.Select(item => new OrderItem
                 {
-                    UserDescription = item.UserDescription,
-                    PlatformId = item.PlatformId,
+                    PromptId = item.PromptId,
+                    PlatformId = item.PlatformId ?? 1,
                     ProductId = item.ProductId
                 }).ToList()
             };
+        }
 
+        private async Task<OrderDetailsDTO> SaveOrderAndClearCartAsync(Order order, int cartId)
+        {
             var createdOrder = await _orderRepository.AddOrderAsync(order);
-            await _cartService.ClearCartAsync(cartDto.CartId);
+            await _cartService.ClearCartAsync(cartId);
             return _mapper.Map<OrderDetailsDTO>(createdOrder);
         }
 
-        public async Task<OrderDetailsDTO> GetByIdAsync(int id)
+        public async Task<OrderDetailsDTO?> GetByIdAsync(int id)
         {
             var order = await _orderRepository.GetByIdAsync(id);
             if (order == null)
@@ -99,7 +148,7 @@ namespace Services
             var order = _mapper.Map<Order>(dto);
             await _orderRepository.UpdateStatusAsync(order);
         }
-        public async Task<ReviewDTO> AddReviewAsync(int orderId, AddReviewDTO dto)
+        public async Task<ReviewDTO?> AddReviewAsync(int orderId, AddReviewDTO dto)
         {
             var existingReview = await _orderRepository.GetReviewByOrderIdAsync(orderId);
             if (existingReview != null)
@@ -112,7 +161,7 @@ namespace Services
             return _mapper.Map<ReviewDTO>(review);
         }
 
-        public async Task<ReviewDTO> GetReviewByOrderIdAsync(int orderId)
+        public async Task<ReviewDTO?> GetReviewByOrderIdAsync(int orderId)
         {
             var review = await _orderRepository.GetReviewByOrderIdAsync(orderId);
             if (review == null)
@@ -126,7 +175,7 @@ namespace Services
             var review = _mapper.Map<Review>(dto);
             await _orderRepository.UpdateReviewAsync(review);
         }
-        public async Task<IEnumerable<OrderItemDTO>> GetOrderItemsAsync(int orderId)
+        public async Task<IEnumerable<OrderItemDTO>?> GetOrderItemsAsync(int orderId)
         {
             var orderItems = await _orderRepository.GetOrderItemsAsync(orderId);
 

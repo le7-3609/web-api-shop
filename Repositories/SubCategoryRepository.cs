@@ -13,7 +13,10 @@ namespace Repositories
 
         public async Task<(IEnumerable<SubCategory>, int TotalCount)> GetSubCategoryAsync(int position, int skip, string? desc, int?[] mainCategoryIds)
         {
-            var ids = mainCategoryIds ?? Array.Empty<int?>();
+            var ids = (mainCategoryIds ?? Array.Empty<int?>())
+                .Where(id => id.HasValue)
+                .Select(id => (long)id!.Value)
+                .ToArray();
             var query = _context.SubCategories.AsQueryable();
 
             if (!string.IsNullOrEmpty(desc))
@@ -43,6 +46,16 @@ namespace Repositories
         {
             return await _context.SubCategories.FirstOrDefaultAsync(x => x.SubCategoryId == id);
 
+        }
+
+        async public Task<SubCategory?> GetByNameAsync(string name)
+        {
+            return await _context.SubCategories.FirstOrDefaultAsync(x => x.SubCategoryName == name);
+        }
+
+        async public Task<bool> MainCategoryExistsAsync(int mainCategoryId)
+        {
+            return await _context.MainCategories.AnyAsync(x => x.MainCategoryId == mainCategoryId);
         }
 
         async public Task UpdateSubCategoryAsync(int id, SubCategory category)

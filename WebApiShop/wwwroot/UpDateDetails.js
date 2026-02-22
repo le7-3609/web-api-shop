@@ -3,6 +3,10 @@ let oldUser = JSON.parse(sessionStorage.getItem("User"))
 const updatedUserOpen = document.querySelector(".open")
 const updatedUserBox = document.querySelector(".updatedUser")
 
+if (!oldUser) {
+    window.location.href = "index.html";
+}
+
 text.textContent = `שלום ${oldUser.firstName}`
 
  function toggleUpdate() {
@@ -25,8 +29,8 @@ const getDataFromForm = () => {
         Email: document.querySelector("#userName").value || oldUser.email,
         FirstName: document.querySelector("#firstName").value || oldUser.firstName,
         LastName: document.querySelector("#lastName").value || oldUser.lastName,
-        Password: document.querySelector("#password").value || oldUser.password,
-        UserId: oldUser.userId
+        Phone: document.querySelector("#phone").value || oldUser.phone,
+        Password: document.querySelector("#password").value || oldUser.password
     }
     return updatedUser
 }
@@ -34,25 +38,26 @@ const getDataFromForm = () => {
 const updateUserDetails = async () => {
     const updatedUser = getDataFromForm();
     try {
-        const responsePost = await fetch(`api/users/${oldUser.userId}`, {
-            method: 'Put',
+        const responsePost = await fetch(`/api/users/${oldUser.userId}`, {
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(updatedUser)
 
         });
-        if (responsePost.status == 204) {
-            alert("סיסמא מדי קלה או שהשם מייל תפוס ע\"י משתמש אחר, העדכון נכשל")
+        if (responsePost.status == 404) {
+            alert("העדכון נכשל: משתמש לא נמצא, סיסמה חלשה או שהמייל כבר תפוס")
         }
-        else if (responsePost.status  == 400) {
-            alert("שדה הדוא\"ל אינו תקין")
+        else if (responsePost.status == 400) {
+            alert("נתונים לא תקינים, בדוק/י את שדות הטופס")
         }
         else if (!responsePost.ok) {
             throw new Error(`HTTP error! status:${responsePost.status}`)
         }
         else {
-            sessionStorage.setItem("User", JSON.stringify(updatedUser))
+            const serverUser = await responsePost.json();
+            sessionStorage.setItem("User", JSON.stringify(serverUser))
             alert("הפרטים עודכנו בהצלחה")
         }
     }

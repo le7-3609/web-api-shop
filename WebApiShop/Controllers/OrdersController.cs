@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services;
 using System.Text.Json;
 
-namespace WebApiShope.Controllers
+namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,9 +18,8 @@ namespace WebApiShope.Controllers
         }
 
         // GET api/<OrdersController>/5
-        [ActionName("GetCartItemByIdAsync")]
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrderDetailsDTO>> GetByIdAsync([FromBody] int id)
+        public async Task<ActionResult<OrderDetailsDTO>> GetByIdAsync(int id)
         {
             OrderDetailsDTO order = await _orderService.GetByIdAsync(id);
             if (order == null)
@@ -30,21 +29,35 @@ namespace WebApiShope.Controllers
             return Ok(order);
         }
 
-        // POST api/<OrdersController>
-        [HttpPost]
-        public async Task<ActionResult<OrderDetailsDTO>> AddOrderAsync([FromBody] CartDTO cartDto)
+        // GET api/<OrdersController>
+        [HttpGet]
+        public async Task<ActionResult<(IEnumerable<OrderDetailsDTO> Orders, double Total)>> GetOrdersAsync()
         {
-            if (cartDto == null || !cartDto.CartItems.Any())
-                return BadRequest("The cart is empty.");
-
-            OrderDetailsDTO newOrder = await _orderService.AddOrderFromCartAsync(cartDto);
-
-            if (newOrder != null)
+            var orders = await _orderService.GetOrdersAsync();
+            if (orders.Orders == null || orders.Total == 0)
             {
+                return NoContent();
+            }
+            return Ok(orders);
+        }
+
+        // POST api/Orders/carts/5
+        [HttpPost("carts/{cartId}")]
+        public async Task<ActionResult<OrderDetailsDTO>> AddOrderAsync(int cartId)
+        {
+            try
+            {
+                OrderDetailsDTO newOrder = await _orderService.AddOrderFromCartAsync(cartId);
                 return CreatedAtAction(nameof(GetByIdAsync), new { id = newOrder.OrderId }, newOrder);
             }
-
-            return BadRequest("Could not create order.");
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // PUT api/<OrdersController>/5
@@ -83,7 +96,7 @@ namespace WebApiShope.Controllers
         [HttpPut("{orderId}/review")]
         public async Task<ActionResult> UpdateReviewAsync([FromBody] ReviewDTO dto)
         {
-            var existingReview = await _orderService.GetReviewByOrderIdAsync(dto.OrderId);
+            var existingReview = await _orderService.GetReviewByOrderIdAsync((int)dto.OrderId);
             if (existingReview == null)
             {
                 return NotFound($"Review for Order ID {dto.OrderId} not found");

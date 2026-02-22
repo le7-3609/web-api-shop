@@ -5,14 +5,15 @@ using Services;
 using Zxcvbn;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace WebApiShope.Controllers
+namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class SubCategoriesController : ControllerBase
     {
         private readonly ISubCategoryService _subCategoryService;
-        public SubCategoriesController(ISubCategoryService subCategoryService) {
+        public SubCategoriesController(ISubCategoryService subCategoryService)
+        {
             _subCategoryService = subCategoryService;
         }
 
@@ -24,7 +25,7 @@ namespace WebApiShope.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        async public Task<ActionResult<(IEnumerable<SubCategoryDTO>, int TotalCount)>> GetSubCategoryAsync([FromQuery] int position, [FromQuery] int skip, [FromQuery] string? desc, [FromQuery] int?[] mainCategoryIds)
+        async public Task<ActionResult<PaginatedResponse<SubCategoryDTO>>> GetSubCategoryAsync([FromQuery] int position, [FromQuery] int skip, [FromQuery] string? desc, [FromQuery] int?[] mainCategoryIds)
         {
             var (subCategories, totalCount) = await _subCategoryService.GetSubCategoryAsync(position, skip, desc, mainCategoryIds);
 
@@ -34,11 +35,7 @@ namespace WebApiShope.Controllers
             var updatedSubCategories = subCategories
                 .Select(sub => sub with { ImageUrl = MapImageUrl(sub.ImageUrl) })
                 .ToList();
-            return Ok(new
-            {
-                subCategories = updatedSubCategories,
-                totalCount = totalCount
-            });
+            return Ok(new PaginatedResponse<SubCategoryDTO>(updatedSubCategories, totalCount));
         }
 
         // GET api/<CategoryController>/5
@@ -58,9 +55,9 @@ namespace WebApiShope.Controllers
 
         // POST api/<CategoryController>
         [HttpPost]
-       async  public Task<ActionResult<SubCategoryDTO>> AddSubCategoryAsync([FromBody] AddSubCategoryDTO dto)
+        async public Task<ActionResult<SubCategoryDTO>> AddSubCategoryAsync([FromBody] AddSubCategoryDTO dto)
         {
-            SubCategoryDTO subCategory =await _subCategoryService.AddSubCategoryAsync(dto);
+            SubCategoryDTO subCategory = await _subCategoryService.AddSubCategoryAsync(dto);
             return CreatedAtAction(nameof(GetSubCategoryByIdAsync), new { id = subCategory.SubCategoryId }, subCategory);
         }
 
@@ -73,10 +70,10 @@ namespace WebApiShope.Controllers
 
         // DELETE api/<CategoryController>/5
         [HttpDelete("{id}")]
-        async public Task<ActionResult> DeleteSubCategoryAsync(int id )
+        async public Task<ActionResult> DeleteSubCategoryAsync(int id)
         {
-            bool flag=await _subCategoryService.DeleteSubCategoryAsync(id);
-            if(flag)
+            bool flag = await _subCategoryService.DeleteSubCategoryAsync(id);
+            if (flag)
             {
                 return Ok();
             }

@@ -28,22 +28,47 @@ namespace Services
 
         }
 
-        async public Task<MainCategoryDTO> AddMainCategoryAsync(ManegerMainCategoryDTO dto)
+        async public Task<MainCategoryDTO> AddMainCategoryAsync(AdminMainCategoryDTO dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.MainCategoryPrompt))
+            {
+                throw new ArgumentException("MainCategoryPrompt cannot be empty");
+            }
+
             MainCategory mainCategory = _mapper.Map<MainCategory>(dto);
-            //הכנסה של פרומפט ע"י gemini
+            if (string.IsNullOrWhiteSpace(mainCategory.MainCategoryPrompt))
+            {
+                mainCategory.MainCategoryPrompt = "Default prompt for " + mainCategory.MainCategoryName;
+            }
 
             mainCategory = await _mainCategoryRepository.AddMainCategoryAsync(mainCategory);
             return _mapper.Map<MainCategoryDTO>(mainCategory);
         }
 
-        async public Task UpdateMainCategoryAsync(int id, MainCategoryDTO dto)
+        async public Task<bool> UpdateMainCategoryAsync(int id, AdminMainCategoryDTO dto)
         {
+            var existingCategory = await _mainCategoryRepository.GetMainCategoryByIdAsync(id);
+            if (existingCategory == null)
+            {
+                return false; // not found
+            }
 
             MainCategory mainCategory = _mapper.Map<MainCategory>(dto);
-            //הכנסה של פרומפט ע"י gemini
+            mainCategory.MainCategoryId = id;
 
-            await _mainCategoryRepository.UpdateMainCategoryAsync(id, mainCategory);
+            // Preserve existing prompt if not provided
+            if (string.IsNullOrWhiteSpace(dto.MainCategoryPrompt))
+            {
+                mainCategory.MainCategoryPrompt = existingCategory.MainCategoryPrompt;
+            }
+
+            if (string.IsNullOrWhiteSpace(mainCategory.MainCategoryPrompt))
+            {
+                mainCategory.MainCategoryPrompt = "Default prompt for " + mainCategory.MainCategoryName;
+            }
+
+            await _mainCategoryRepository.UpdateMainCategoryAsync(mainCategory);
+            return true;
         }
 
         async public Task<bool> DeleteMainCategoryAsync(int id)

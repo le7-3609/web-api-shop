@@ -12,9 +12,14 @@ namespace Repositories
             _context = context;
         }
 
-        public async Task<Order> GetByIdAsync(int id)
+        public async Task<Order?> GetByIdAsync(int id)
         {
             return await _context.Orders.FirstOrDefaultAsync(order => order.OrderId == id);
+        }
+
+        public async Task<IEnumerable<Order>> GetOrdersAsync()
+        {
+            return await _context.Orders.ToListAsync();
         }
 
         public async Task<Order> AddOrderAsync(Order order)
@@ -37,7 +42,7 @@ namespace Repositories
             return review;  
         }
         
-        public async Task<Review> GetReviewByOrderIdAsync(int orderId)
+        public async Task<Review?> GetReviewByOrderIdAsync(int orderId)
         {
             return await _context.Reviews.FirstOrDefaultAsync(r => r.OrderId == orderId);
         }

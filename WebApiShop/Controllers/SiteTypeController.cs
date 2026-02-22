@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services;
 using System.Text.Json;
 
-namespace WebApiShope.Controllers
+namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -17,7 +17,7 @@ namespace WebApiShope.Controllers
             _siteTypeService = SiteTypeService;
         }
 
-        // GET api/<SiteTypeController>/
+        // GET api/<SiteTypeController>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SiteTypeDTO>?>> GetAllAsync()
         {
@@ -37,7 +37,7 @@ namespace WebApiShope.Controllers
         }
 
         // PUT api/<SiteTypeController>/5
-        [HttpPut("{id}/manager")]
+        [HttpPut("{id}")]
         public async Task<ActionResult> UpdateByMngAsync(int id, SiteTypeDTO dto)
         {
             var updatedSiteType = await _siteTypeService.UpdateByMngAsync(id, dto);

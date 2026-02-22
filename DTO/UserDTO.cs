@@ -7,25 +7,37 @@ using System.Threading.Tasks;
 
 namespace DTO
 {
-    public record RegisterAndUpdateDTO(
-        [Required, EmailAddress] 
-        string Email, 
-        // [StringLength(20, ErrorMessage = "Name can be beteen 2 till 20", MinimumLength = 2)] 
-        string FirstName, 
-        //[StringLength(20, ErrorMessage = "Name can be beteen 2 till 20", MinimumLength = 2)] 
+    public record RegisterDTO(
+        [Required, EmailAddress]
+        string Email,
+        string FirstName,
         string LastName,
         [Phone]
         string Phone,
         [Required]
+        string Password,
+        string Provider
+    );
+    public record UpdateUserDTO(
+        [EmailAddress]
+        string Email,
+        string FirstName,
+        string LastName,
+        [Phone]
+        string Phone,
         string Password
     );
+    public record UpdateExternalUserDTO(
+        string FirstName,
+        string LastName,
+        [Phone]
+        string Phone
+    );
     public record UserProfileDTO(
-        int UserId, 
-        [Required,EmailAddress] 
-        string Email, 
-        //[StringLength(20, ErrorMessage = "Name can be beteen 2 till 20", MinimumLength = 2)] 
-        string FirstName, 
-        //[StringLength(20, ErrorMessage = "Name can be beteen 2 till 20", MinimumLength = 2)] 
+        long UserId,
+        [Required,EmailAddress]
+        string Email,
+        string FirstName,
         string LastName,
         [Phone]
         string Phone
@@ -37,4 +49,37 @@ namespace DTO
         [Required]
         string Password
     );
+
+    public record SocialLoginDTO(
+        [Required]
+        string Token,
+        [Required]
+        string Provider // "Google" or "Microsoft"
+    );
+
+    public record UserDTO(
+       long UserId,
+       [Required,EmailAddress]
+       string Email,
+       string FirstName,
+       string LastName,
+       [Phone]
+       string Phone,
+       [Required]
+       string Provider,
+       DateTime? CreatedAt,
+       DateTime? LastLogin
+   );
+
+    public record ExternalUserInfo
+    {
+        public string ProviderId { get; set; }
+        [Required]
+        public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        [Required]
+        public string Provider { get; set; }// "Google" or "Microsoft"
+    }
+   
 }

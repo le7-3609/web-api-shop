@@ -7,11 +7,11 @@ namespace Entities;
 
 public partial class Cart
 {
-    public int CartId { get; set; }
+    public long CartId { get; set; }
 
-    public int UserId { get; set; }
+    public long UserId { get; set; }
 
-    public int BasicSiteId { get; set; }
+    public long? BasicSiteId { get; set; }
 
     public double? TotalPrice { get; set; }
 

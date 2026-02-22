@@ -7,17 +7,15 @@ namespace Entities;
 
 public partial class OrderItem
 {
-    public int OrderItemId { get; set; }
+    public long OrderItemId { get; set; }
 
-    public int ProductId { get; set; }
+    public long ProductId { get; set; }
 
-    public int OrderId { get; set; }
+    public long OrderId { get; set; }
 
-    public int PlatformId { get; set; }
+    public long PlatformId { get; set; }
 
-    public string UserDescription { get; set; }
-
-    public int? PromptId { get; set; }
+    public long? PromptId { get; set; }
 
     public virtual Order Order { get; set; }
 

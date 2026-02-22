@@ -15,9 +15,13 @@ namespace Repositories
         {
             return await _context.SiteTypes.ToListAsync();
         }
-        public async Task<SiteType> GetByIdAsync(int id)
+        public async Task<SiteType?> GetByIdAsync(int id)
         {
             return await _context.SiteTypes.FirstOrDefaultAsync(u => u.SiteTypeId == id);
+        }
+        public async Task<SiteType?> GetByNameAsync(string name)
+        {
+            return await _context.SiteTypes.FirstOrDefaultAsync(u => u.SiteTypeName == name);
         }
         public async Task<SiteType> UpdateByMngAsync( SiteType siteType)
         {

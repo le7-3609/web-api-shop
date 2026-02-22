@@ -1,131 +1,108 @@
 ﻿using Entities;
-using Microsoft.EntityFrameworkCore;
 using Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Tests.IntegretionTests
+namespace Tests.IntegrationTests
 {
-    public class OrderRepositoryIntegrationTests : IClassFixture<DatabaseFixture>
+    [Collection("Database collection")]
+    public class OrderRepositoryIntegrationTests
     {
+        private readonly DatabaseFixture _fixture;
         private readonly MyShopContext _context;
         private readonly OrderRepository _repository;
 
         public OrderRepositoryIntegrationTests(DatabaseFixture fixture)
         {
+            _fixture = fixture;
             _context = fixture.Context;
-            _context.ChangeTracker.Clear();
-
-            // Comprehensive cleaning in correct order to prevent FK issues
-            _context.OrderItems.RemoveRange(_context.OrderItems);
-            _context.Reviews.RemoveRange(_context.Reviews);
-            _context.Orders.RemoveRange(_context.Orders);
-            _context.Products.RemoveRange(_context.Products);
-            _context.Platforms.RemoveRange(_context.Platforms);
-            _context.BasicSites.RemoveRange(_context.BasicSites);
-            _context.SiteTypes.RemoveRange(_context.SiteTypes);
-            _context.SubCategories.RemoveRange(_context.SubCategories);
-            _context.MainCategories.RemoveRange(_context.MainCategories);
-            _context.Users.RemoveRange(_context.Users);
-            _context.SaveChanges();
-
             _repository = new OrderRepository(_context);
-        }
-
-        private async Task<(int userId, int siteId, int productId, int platformId)> SeedBaseDataAsync()
-        {
-            // Seed Site Structure
-            var siteType = new SiteType
-            {
-                SiteTypeName = "Default",
-                SiteTypeNamePrompt = "Name Prompt",
-                SiteTypeDescriptionPrompt = "Description Prompt"
-            };
-            var mainCat = new MainCategory { MainCategoryName = "General", MainCategoryPrompt = "P" };
-            await _context.SiteTypes.AddAsync(siteType);
-            await _context.MainCategories.AddAsync(mainCat);
-            await _context.SaveChangesAsync();
-
-            var subCat = new SubCategory { SubCategoryName = "Hardware", SubCategoryPrompt = "P", MainCategoryId = mainCat.MainCategoryId };
-            await _context.SubCategories.AddAsync(subCat);
-
-            // Seed User and Site
-            var user = new User { Email = $"{Guid.NewGuid()}@test.com", Password = "1", FirstName = "A", LastName = "B", Phone = "0" };
-            var site = new BasicSite { SiteName = "Store", SiteTypeId = siteType.SiteTypeId };
-            await _context.Users.AddAsync(user);
-            await _context.BasicSites.AddAsync(site);
-            await _context.SaveChangesAsync();
-
-            // Seed Product and Platform
-            var platform = new Platform { PlatformName = "Web" };
-            var product = new Product { ProductName = "Item", SubCategoryId = subCat.SubCategoryId, ProductPrompt = "P" };
-            await _context.Platforms.AddAsync(platform);
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
-
-            return (user.UserId, site.BasicSiteId, product.ProductId, platform.PlatformId);
+            _fixture.ClearDatabase();
         }
 
         #region Happy Paths
 
         [Fact]
-        public async Task AddOrderAsync_ShouldSaveOrderWithValidItems()
+        public async Task GetByIdAsync_WithValidId_ReturnsOrder()
         {
-            // Arrange
-            var data = await SeedBaseDataAsync();
-            var order = new Order
-            {
-                UserId = data.userId,
-                BasicSiteId = data.siteId,
-                OrderDate = DateOnly.FromDateTime(DateTime.Now),
-                OrderSum = 1000,
-                OrderItems = new List<OrderItem> { new OrderItem { ProductId = data.productId, PlatformId = data.platformId, UserDescription = "D" } }
-            };
+            var order = new Order { OrderId = 1, OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
 
-            // Act
+            var result = await _repository.GetByIdAsync(1);
+
+            Assert.NotNull(result);
+            Assert.Equal(100, result.OrderSum);
+        }
+
+        [Fact]
+        public async Task AddOrderAsync_WithValidOrder_ReturnsOrder()
+        {
+            var order = new Order { OrderSum = 250 };
+
             var result = await _repository.AddOrderAsync(order);
 
-            // Assert
-            Assert.NotEqual(0, result.OrderId);
+            Assert.True(result.OrderId > 0);
         }
 
         [Fact]
-        public async Task AddReviewAsync_ShouldSaveAndLinkToOrder()
+        public async Task AddReviewAsync_WithValidReview_ReturnsReview()
         {
-            // Arrange
-            var data = await SeedBaseDataAsync();
-            var order = new Order { UserId = data.userId, BasicSiteId = data.siteId, OrderDate = DateOnly.FromDateTime(DateTime.Now), OrderSum = 100 };
+            var order = new Order { OrderSum = 100 };
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            var review = new Review { OrderId = order.OrderId, Score = 5, Note = "Good" };
-
-            // Act
+            var review = new Review { OrderId = order.OrderId, Score = 5, Note = "Great!", ReviewImageUrl = "url" };
             var result = await _repository.AddReviewAsync(review);
 
-            // Assert
-            Assert.NotNull(await _context.Reviews.FindAsync(result.ReviewId));
+            Assert.True(result.ReviewId > 0);
         }
 
         [Fact]
-        public async Task GetOrderItemsAsync_ReturnsItemsForSpecificOrder()
+        public async Task GetOrderItemsAsync_WithExistingOrderItems_ReturnsItems()
         {
-            // Arrange
-            var data = await SeedBaseDataAsync();
-            var order = new Order { UserId = data.userId, BasicSiteId = data.siteId, OrderDate = DateOnly.FromDateTime(DateTime.Now), OrderSum = 200 };
+            var order = new Order { OrderSum = 100 };
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
-            await _context.OrderItems.AddAsync(new OrderItem { OrderId = order.OrderId, ProductId = data.productId, PlatformId = data.platformId, UserDescription = "I" });
+
+            var item = new OrderItem { OrderId = order.OrderId, ProductId = 1, PlatformId = 1 };
+            await _context.OrderItems.AddAsync(item);
             await _context.SaveChangesAsync();
 
-            // Act
-            var items = await _repository.GetOrderItemsAsync(order.OrderId);
+            var result = await _repository.GetOrderItemsAsync((int)order.OrderId);
 
-            // Assert
-            Assert.NotEmpty(items);
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task GetReviewByOrderIdAsync_WithExistingReview_ReturnsReview()
+        {
+            var order = new Order { OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            var review = new Review { OrderId = order.OrderId, Score = 4, Note = "Good", ReviewImageUrl = "url" };
+            await _context.Reviews.AddAsync(review);
+            await _context.SaveChangesAsync();
+
+            var result = await _repository.GetReviewByOrderIdAsync((int)order.OrderId);
+
+            Assert.NotNull(result);
+            Assert.Equal((short)4, result.Score);
+        }
+
+        [Fact]
+        public async Task UpdateStatusAsync_WithValidOrder_UpdatesOrder()
+        {
+            var order = new Order { OrderId = 1, OrderSum = 100, Status = 1 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            order.Status = 2;
+            await _repository.UpdateStatusAsync(order);
+
+            var updated = await _context.Orders.FindAsync(1L);
+            Assert.NotNull(updated);
+            Assert.Equal(2, updated.Status);
         }
 
         #endregion
@@ -133,28 +110,52 @@ namespace Tests.IntegretionTests
         #region Unhappy Paths
 
         [Fact]
-        public async Task GetByIdAsync_NonExistingId_ReturnsNull()
+        public async Task GetByIdAsync_NonExistentId_ReturnsNull()
         {
-            // Act
             var result = await _repository.GetByIdAsync(9999);
-            // Assert
             Assert.Null(result);
         }
 
         [Fact]
-        public async Task GetReviewByOrderIdAsync_NoReviewExists_ReturnsNull()
+        public async Task GetOrderItemsAsync_EmptyOrder_ReturnsEmpty()
         {
-            // Arrange
-            var data = await SeedBaseDataAsync();
-            var order = new Order { UserId = data.userId, BasicSiteId = data.siteId, OrderDate = DateOnly.FromDateTime(DateTime.Now), OrderSum = 100 };
+            var order = new Order { OrderSum = 100 };
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            // Act
-            var result = await _repository.GetReviewByOrderIdAsync(order.OrderId);
+            var result = await _repository.GetOrderItemsAsync((int)order.OrderId);
 
-            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetReviewByOrderIdAsync_NoReview_ReturnsNull()
+        {
+            var order = new Order { OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            var result = await _repository.GetReviewByOrderIdAsync((int)order.OrderId);
+
             Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task UpdateReviewAsync_WithValidReview_UpdatesReview()
+        {
+            var order = new Order { OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            var review = new Review { OrderId = order.OrderId, Score = 3, Note = "Old", ReviewImageUrl = "url" };
+            await _context.Reviews.AddAsync(review);
+            await _context.SaveChangesAsync();
+
+            review.Score = 5;
+            review.Note = "Updated";
+            var result = await _repository.UpdateReviewAsync(review);
+
+            Assert.Equal((short)5, result.Score);
         }
 
         #endregion

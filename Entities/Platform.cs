@@ -7,9 +7,11 @@ namespace Entities;
 
 public partial class Platform
 {
-    public int PlatformId { get; set; }
+    public long PlatformId { get; set; }
 
     public string PlatformName { get; set; }
+
+    public string PlatformPrompt { get; set; }
 
     public virtual ICollection<BasicSite> BasicSites { get; set; } = new List<BasicSite>();
 

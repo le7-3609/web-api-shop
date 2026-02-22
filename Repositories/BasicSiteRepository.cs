@@ -24,6 +24,16 @@ namespace Repositories
 
         }
 
+        public async Task<double> GetBasicSitePriceAsync(long basicSiteId)
+        {
+            var price = await _context.BasicSites
+                .Where(bs => bs.BasicSiteId == basicSiteId)
+                .Select(bs => (double?)bs.SiteType.Price)
+                .FirstOrDefaultAsync();
+
+            return price ?? 0;
+        }
+
         async public Task UpdateBasicSiteAsync(int id, BasicSite basicSite)
         {
             _context.BasicSites.Update(basicSite);
@@ -34,7 +44,13 @@ namespace Repositories
         {
             await _context.BasicSites.AddAsync(basicSite);
             await _context.SaveChangesAsync();
-            return basicSite;
+
+            var createdBasicSite = await _context.BasicSites
+                .Include(x => x.Platform)
+                .Include(x => x.SiteType)
+                .FirstOrDefaultAsync(x => x.BasicSiteId == basicSite.BasicSiteId);
+
+            return createdBasicSite ?? basicSite;
 
         }
     }

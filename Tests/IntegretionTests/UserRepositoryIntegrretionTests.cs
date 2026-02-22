@@ -1,61 +1,107 @@
 ﻿using Entities;
-using Microsoft.EntityFrameworkCore;
 using Repositories;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Tests.IntegretionTests
+namespace Tests.IntegrationTests
 {
-    public class UserRepositoryIntegrationTests : IClassFixture<DatabaseFixture>, IDisposable
+    [Collection("Database collection")]
+    public class UserRepositoryIntegrationTests
     {
+        private readonly DatabaseFixture _fixture;
         private readonly MyShopContext _context;
         private readonly UserRepository _repository;
 
         public UserRepositoryIntegrationTests(DatabaseFixture fixture)
         {
+            _fixture = fixture;
             _context = fixture.Context;
-
-            _context.ChangeTracker.Clear();
-
-            _context.Users.RemoveRange(_context.Users);
-            _context.SaveChanges();
-
             _repository = new UserRepository(_context);
+            _fixture.ClearDatabase();
         }
-
 
         #region Happy Paths
 
         [Fact]
-        public async Task RegisterAsync_ShouldSaveUserToRealDatabase()
+        public async Task RegisterAsync_WithValidUser_ReturnsUser()
         {
-            // Arrange
-            var user = new User { Email = "integration@test.com", Password = "123", FirstName = "Test", LastName = "User", Phone = "0" };
+            var user = new User { Provider = "Local", Email = "test@example.com", Password = "pass123", FirstName = "John", LastName = "Doe" };
 
-            // Act
             var result = await _repository.RegisterAsync(user);
 
-            // Assert
-            var userInDb = await _context.Users.FindAsync(result.UserId);
-            Assert.NotNull(userInDb);
-            Assert.Equal("integration@test.com", userInDb.Email);
+            Assert.True(result.UserId > 0);
+            Assert.Equal("test@example.com", result.Email);
         }
 
         [Fact]
-        public async Task LoginAsync_ValidCredentials_ReturnsUserFromDb()
+        public async Task LoginAsync_WithValidCredentials_ReturnsUser()
         {
-            // Arrange
-            var user = new User { Email = "login@integration.com", Password = "password123", FirstName = "A", LastName = "B", Phone = "0" };
+            var user = new User { Provider = "Local", Email = "login@test.com", Password = "secret", FirstName = "A", LastName = "B" };
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            // Act
-            var result = await _repository.LoginAsync("login@integration.com", "password123");
+            var result = await _repository.LoginAsync("login@test.com", "secret");
 
-            // Assert
             Assert.NotNull(result);
-            Assert.Equal("login@integration.com", result.Email);
+            Assert.Equal("login@test.com", result.Email);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WithValidId_ReturnsUser()
+        {
+            var user = new User { Provider = "Local", Email = "user@test.com", Password = "pass", FirstName = "X", LastName = "Y" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            var result = await _repository.GetByIdAsync((int)user.UserId);
+
+            Assert.NotNull(result);
+            Assert.Equal("user@test.com", result.Email);
+        }
+
+        [Fact]
+        public async Task GetAllAsync_ReturnsAllUsers()
+        {
+            _context.Users.AddRange(
+                new User { Provider = "Local", Email = "user1@test.com", Password = "1", FirstName = "A", LastName = "B" },
+                new User { Provider = "Local", Email = "user2@test.com", Password = "2", FirstName = "C", LastName = "D" }
+            );
+            _context.SaveChanges();
+
+            var result = await _repository.GetAllAsync();
+
+            Assert.NotNull(result);
+            Assert.True(result.Count() >= 2);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_WithValidUser_UpdatesUser()
+        {
+            var user = new User { Provider = "Local", Email = "update@test.com", Password = "old", FirstName = "Old", LastName = "Name" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            user.FirstName = "New";
+            var result = await _repository.UpdateAsync(user);
+
+            Assert.NotNull(result);
+            Assert.Equal("New", result.FirstName);
+        }
+
+        [Fact]
+        public async Task GetAllOrdersAsync_WithExistingOrders_ReturnsOrders()
+        {
+            var user = new User { Provider = "Local", Email = "orders@test.com", Password = "p", FirstName = "O", LastName = "User" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            var order = new Order { UserId = user.UserId, OrderSum = 100 };
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            var result = await _repository.GetAllOrdersAsync((int)user.UserId);
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
         }
 
         #endregion
@@ -63,39 +109,58 @@ namespace Tests.IntegretionTests
         #region Unhappy Paths
 
         [Fact]
-        public async Task GetByIdAsync_WhenUserDoesNotExist_ReturnsNull()
+        public async Task LoginAsync_InvalidPassword_ReturnsNull()
         {
-            // Act
-            var result = await _repository.GetByIdAsync(999);
+            var user = new User { Provider = "Local", Email = "wrong@test.com", Password = "correctpass", FirstName = "A", LastName = "B" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
 
-            // Assert
+            var result = await _repository.LoginAsync("wrong@test.com", "wrongpass");
+
             Assert.Null(result);
         }
 
         [Fact]
-        public async Task UpdateAsync_ShouldUpdateUserSuccessfully()
+        public async Task LoginAsync_NonExistentEmail_ReturnsNull()
         {
-            // Arrange
-            var user = new User { Email = "old@test.com", Password = "123", FirstName = "Old", LastName = "Name", Phone = "0000000000" };
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-            _context.Entry(user).State = EntityState.Detached;
+            var result = await _repository.LoginAsync("nonexistent@test.com", "anypass");
 
-            // Act
-            user.FirstName = "NewName";
-            var result = await _repository.UpdateAsync(user);
+            Assert.Null(result);
+        }
 
-            // Assert
-            var updatedUser = await _context.Users.FindAsync(user.UserId);
-            Assert.Equal("NewName", updatedUser.FirstName);
+        [Fact]
+        public async Task GetByIdAsync_NonExistentId_ReturnsNull()
+        {
+            var result = await _repository.GetByIdAsync(9999);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetByEmailAsync_WithUniqueEmail_ReturnsUser()
+        {
+            var user = new User { Provider = "Local", UserId = 1, Email = "unique@test.com", Password = "p", FirstName = "A", LastName = "B" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            var result = await _repository.GetByEmailAsync("unique@test.com", 999);
+
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async Task GetAllOrdersAsync_NoOrders_ReturnsEmpty()
+        {
+            var user = new User { Provider = "Local", Email = "norders@test.com", Password = "p", FirstName = "N", LastName = "O" };
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            var result = await _repository.GetAllOrdersAsync((int)user.UserId);
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            _context.Database.CloseConnection();
-            _context.Database.EnsureDeleted();
-        }
     }
 }

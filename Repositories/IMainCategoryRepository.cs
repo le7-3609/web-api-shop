@@ -7,6 +7,7 @@ namespace Repositories
         Task<MainCategory> AddMainCategoryAsync(MainCategory mainCategoryToAdd);
         Task<bool> DeleteMainCategoryAsync(int id);
         Task<IEnumerable<MainCategory>> GetMainCategoriesAsync();
-        Task UpdateMainCategoryAsync(int id, MainCategory mainCategoryToUpdate);
+        Task<MainCategory?> GetMainCategoryByIdAsync(int id);
+        Task UpdateMainCategoryAsync(MainCategory mainCategoryToUpdate);
     }
 }

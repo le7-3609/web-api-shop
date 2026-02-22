@@ -25,16 +25,22 @@ namespace Services
             return _mapper.Map<IEnumerable<SiteTypeDTO>>(siteTypes);
 
         }
-        public async Task<SiteTypeDTO> GetByIdAsync(int id)
+        public async Task<SiteTypeDTO?> GetByIdAsync(int id)
         {
             var siteType = await _siteTypeRepository.GetByIdAsync(id);
             return _mapper.Map<SiteTypeDTO>(siteType);
         }
-        public async Task<SiteTypeDTO> UpdateByMngAsync(int id, SiteTypeDTO dto)
+        public async Task<SiteTypeDTO?> UpdateByMngAsync(int id, SiteTypeDTO dto)
         {
             var siteType = await _siteTypeRepository.GetByIdAsync(id);
             if (siteType == null)
                 return null;
+
+            var existingWithSameName = await _siteTypeRepository.GetByNameAsync(dto.SiteTypeName);
+            if (existingWithSameName != null && existingWithSameName.SiteTypeId != id)
+            {
+                throw new InvalidOperationException($"SiteType with name '{dto.SiteTypeName}' already exists");
+            }
 
             _mapper.Map(dto, siteType);
             var updated = await _siteTypeRepository.UpdateByMngAsync(siteType);

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NLog.Web;
+using Entities;
 using Repositories;
 using Services;
 using System.Text.Json;
@@ -50,6 +51,18 @@ builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IGemini, Gemini>();
 builder.Services.AddScoped<IGeminiPromptsRepository, GeminiPromptsRepository>();
 builder.Services.AddScoped<IGeminiService, GeminiService>();
+builder.Services.AddScoped<IGeminiChatService, GeminiChatService>();
+builder.Services.AddScoped<IChatBotService, ChatBotService>();
+
+builder.Services.Configure<GeminiSettings>(options =>
+{
+    options.ApiKey = builder.Configuration["GeminiSettings:ApiKey"]
+        ?? builder.Configuration["GEMINI_API_KEY"]
+        ?? string.Empty;
+});
+
+// Add Authentication services
+builder.Services.AddAuthentication();
 
 builder.Services.AddControllers(options =>
 {
@@ -60,7 +73,7 @@ builder.Services.AddControllers(options =>
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
 builder.Services.AddOpenApi();
-builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("School")));
+builder.Services.AddDbContext<MyShopContext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Home")));
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddMaps(typeof(Services.Mapper).Assembly);
@@ -98,6 +111,8 @@ app.UseRatingMiddleware();
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAngular");
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

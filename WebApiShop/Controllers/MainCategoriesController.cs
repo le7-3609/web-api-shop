@@ -1,10 +1,10 @@
 ﻿using DTO;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using System.Reflection.Metadata.Ecma335;
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace WebApiShope.Controllers
+namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -31,17 +31,30 @@ namespace WebApiShope.Controllers
 
         // POST api/<MainCategoriesController>
         [HttpPost]
-        async public Task<ActionResult<MainCategoryDTO>> AddMainCategoryAsync([FromBody] ManegerMainCategoryDTO dto)
+        async public Task<ActionResult<MainCategoryDTO>> AddMainCategoryAsync([FromBody] AdminMainCategoryDTO dto)
         {
+            var all = await _mainCategoryService.GetMainCategoryAsync();
+            if (all.Any(m => string.Equals(m.MainCategoryName, dto.MainCategoryName, StringComparison.OrdinalIgnoreCase)))
+            {
+                return Conflict(new { message = "Main category with the same name already exists." });
+            }
+
             MainCategoryDTO mainCategory = await _mainCategoryService.AddMainCategoryAsync(dto);
-            return CreatedAtAction(nameof(GetMainCategoryAsync), new { id = mainCategory.MainCategoryId }, mainCategory); 
+            return CreatedAtAction(nameof(GetMainCategoryAsync), new { id = mainCategory.MainCategoryId }, mainCategory);
         }
 
         // PUT api/<MainCategoriesController>/5
         [HttpPut("{id}")]
-        async public Task Put(int id, [FromBody] MainCategoryDTO dto)
+        async public Task<ActionResult> Put(int id, [FromBody] AdminMainCategoryDTO dto)
         {
-            await _mainCategoryService.UpdateMainCategoryAsync(id, dto);
+            if (id <= 0 || dto == null)
+                return BadRequest();
+
+            var success = await _mainCategoryService.UpdateMainCategoryAsync(id, dto);
+            if (!success)
+                return NotFound();
+
+            return NoContent();
         }
 
         // DELETE api/<MainCategoriesController>/5
