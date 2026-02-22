@@ -15,15 +15,13 @@ namespace Services
         private readonly IPasswordValidityService _passwordService;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
-        private readonly IConfiguration _config;
 
-        public UserService(IUserRepository userRepository, IPasswordValidityService passwordService, IMapper mapper, IConfiguration configuration, IConfiguration config)
+        public UserService(IUserRepository userRepository, IPasswordValidityService passwordService, IMapper mapper, IConfiguration configuration)
         {
             _userRepository = userRepository;
             _passwordService = passwordService;
             _mapper = mapper;
             _configuration = configuration;
-            _config = config;
         }
 
         public async Task<IEnumerable<UserDTO>?> GetAllAsync()
@@ -35,6 +33,7 @@ namespace Services
 
             return _mapper.Map<IEnumerable<UserDTO>>(users);
         }
+
         public async Task<UserProfileDTO?> RegisterAsync(RegisterDTO dto)
         {
             var passwordValidation = _passwordService.PasswordStrength(dto.Password);
@@ -55,7 +54,6 @@ namespace Services
         {
             var user = await _userRepository.LoginAsync(dto.Email, dto.Password);
             return user == null ? null : _mapper.Map<UserProfileDTO>(user);
-
         }
 
         public async Task<UserProfileDTO?> UpdateAsync(int id, UpdateUserDTO dto)
@@ -66,7 +64,8 @@ namespace Services
             if (!string.IsNullOrEmpty(dto.Email) && dto.Email != user.Email)
             {
                 var existing = await _userRepository.GetByEmailAsync(dto.Email, id);
-                if (existing != null) return null; 
+                if (existing != null)
+                    return null;
                 user.Email = dto.Email;
             }
 
@@ -75,12 +74,15 @@ namespace Services
                 var passwordValidation = _passwordService.PasswordStrength(dto.Password);
                 if (passwordValidation == null || passwordValidation.Strength < 2)
                     return null;
-                user.Password = dto.Password; 
+                user.Password = dto.Password;
             }
 
-            if (!string.IsNullOrEmpty(dto.FirstName)) user.FirstName = dto.FirstName;
-            if (!string.IsNullOrEmpty(dto.LastName)) user.LastName = dto.LastName;
-            if (!string.IsNullOrEmpty(dto.Phone)) user.Phone = dto.Phone;
+            if (!string.IsNullOrEmpty(dto.FirstName))
+                user.FirstName = dto.FirstName;
+            if (!string.IsNullOrEmpty(dto.LastName))
+                user.LastName = dto.LastName;
+            if (!string.IsNullOrEmpty(dto.Phone))
+                user.Phone = dto.Phone;
 
             var updated = await _userRepository.UpdateAsync(user);
             return _mapper.Map<UserProfileDTO>(updated);
@@ -98,12 +100,12 @@ namespace Services
 
         public async Task<IEnumerable<OrderSummaryDTO>?> GetAllOrdersAsync(int userId)
         {
-            var UserOrders = await _userRepository.GetAllOrdersAsync(userId);
+            var userOrders = await _userRepository.GetAllOrdersAsync(userId);
 
-            if (UserOrders == null)
+            if (userOrders == null)
                 return null;
 
-            return _mapper.Map<IEnumerable<OrderSummaryDTO>>(UserOrders);
+            return _mapper.Map<IEnumerable<OrderSummaryDTO>>(userOrders);
         }
 
         public async Task<UserProfileDTO?> SocialLoginAsync(SocialLoginDTO dto)
@@ -140,7 +142,7 @@ namespace Services
         {
             if (provider.Equals("Google", StringComparison.OrdinalIgnoreCase))
             {
-                var googleClientId = _config["Authentication:Google:ClientId"];
+                var googleClientId = _configuration["Authentication:Google:ClientId"];
 
                 var settings = new GoogleJsonWebSignature.ValidationSettings()
                 {

@@ -17,7 +17,7 @@ namespace Services
         private readonly ICartService _cartService;
         private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository orderRepository,IMapper mapper, ICartService cartService, ILogger<OrderService> logger, IProductRepository productRepository)
+        public OrderService(IOrderRepository orderRepository, IMapper mapper, ICartService cartService, ILogger<OrderService> logger, IProductRepository productRepository)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;

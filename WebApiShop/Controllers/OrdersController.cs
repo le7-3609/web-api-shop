@@ -1,8 +1,6 @@
 ﻿using DTO;
-using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
-using System.Text.Json;
 
 namespace WebApiShop.Controllers
 {
@@ -82,7 +80,7 @@ namespace WebApiShop.Controllers
 
         // GET api/<OrdersController>/5/review
         [HttpGet("{orderId}/review")]
-        public async Task<ActionResult<ReviewDTO>> GetReviewByOrderIdAsync([FromBody] int orderId)
+        public async Task<ActionResult<ReviewDTO>> GetReviewByOrderIdAsync(int orderId)
         {
             ReviewDTO review = await _orderService.GetReviewByOrderIdAsync(orderId);
             if (review == null)
@@ -107,7 +105,7 @@ namespace WebApiShop.Controllers
 
         // GET api/<OrdersController>/5/items
         [HttpGet("{orderId}/orderItems")]
-        public async Task<ActionResult<IEnumerable<OrderItemDTO>>> GetOrderItemsAsync([FromBody] int orderId)
+        public async Task<ActionResult<IEnumerable<OrderItemDTO>>> GetOrderItemsAsync(int orderId)
         {
             var orderItems = await _orderService.GetOrderItemsAsync(orderId);
             if (orderItems == null || !orderItems.Any())
