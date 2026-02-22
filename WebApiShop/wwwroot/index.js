@@ -21,7 +21,9 @@ const getNewUser = () => {
         Email: document.querySelector("#userName").value,
         FirstName: document.querySelector("#firstName").value,
         LastName: document.querySelector("#lastName").value,
-        Password: document.querySelector("#password").value
+        Phone: document.querySelector("#phone").value,
+        Password: document.querySelector("#password").value,
+        Provider: "Local"
     };
     return user;
 }
@@ -38,7 +40,7 @@ async function createUser() {
     console.log("wellcome")
     const newUser = getNewUser()
     try {
-        const responsePost = await fetch('api/Users', {
+        const responsePost = await fetch('/api/users/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +73,7 @@ async function login() {
             },
             body: JSON.stringify(existUser)
         });
-        if (responsePost.status == 204) {
+        if (responsePost.status == 401) {
             alert("שם המשתמש או הסיסמה שגויים. נסה שוב")
         }
         else if (Math.floor(responsePost.status /100) == 4) {

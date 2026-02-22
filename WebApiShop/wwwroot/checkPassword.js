@@ -10,7 +10,7 @@ const colorTheBar = (dataPost) => {
 async function checkPassword() {
     const password = document.querySelector("#password").value
     try {
-        const responsePost = await fetch('api/PasswordValidity/PasswordStrength', {
+        const responsePost = await fetch('/api/passwordvalidity/passwordstrength', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

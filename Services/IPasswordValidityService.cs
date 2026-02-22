@@ -1,9 +1,10 @@
-﻿using Entities;
+﻿using DTO;
+using Entities;
 
 namespace Services
 {
     public interface IPasswordValidityService
     {
-        PasswordValidity PasswordStrength(string password);
+        PasswordDTO? PasswordStrength(string password);
     }
 }

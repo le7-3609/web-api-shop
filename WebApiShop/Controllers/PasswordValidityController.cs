@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using DTO;
+using Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -7,14 +8,20 @@ namespace WebApiShop.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PasswordValidityController : Controller
+    public class PasswordValidityController : ControllerBase
     {
-        PasswordValidityService _passwordValidityService = new PasswordValidityService();
+        private readonly IPasswordValidityService _passwordValidityService;
+        
+        public PasswordValidityController(IPasswordValidityService passwordValidityService)
+        {
+            _passwordValidityService = passwordValidityService;
+        }
+        
         // POST api/<PasswordValidityController>/("passwordStrength")
         [HttpPost("passwordStrength")]
-        public ActionResult<PasswordValidity> PasswordStrength([FromBody] string password)
+        public ActionResult<PasswordDTO> PasswordStrength([FromBody] string password)
         {
-            PasswordValidity passwordValidity = _passwordValidityService.PasswordStrength(password);
+            PasswordDTO passwordValidity = _passwordValidityService.PasswordStrength(password);
             if (passwordValidity != null)
             {
                 return Ok(passwordValidity);
