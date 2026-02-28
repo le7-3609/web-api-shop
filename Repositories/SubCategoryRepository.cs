@@ -71,19 +71,22 @@ namespace Repositories
             return category;
         }
 
+        async public Task<bool> HasProductsAsync(int subCategoryId)
+        {
+            return await _context.Products.AnyAsync(x => x.SubCategoryId == subCategoryId);
+        }
+
         async public Task<bool> DeleteSubCategoryAsync(int id)
         {
             var Category = await _context.SubCategories.FirstOrDefaultAsync(x => x.SubCategoryId == id);
-
-            var listOfForginKeyObjects = await _context.Products.Where(x => x.SubCategoryId == id).ToListAsync();
-            if (listOfForginKeyObjects.Count == 0 && Category != null)
+            if (Category == null)
             {
-                _context.SubCategories.Remove(Category);
-                await _context.SaveChangesAsync();
-                return true;
+                return false;
             }
-            return false;
 
+            _context.SubCategories.Remove(Category);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

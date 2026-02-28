@@ -51,17 +51,22 @@ namespace Repositories
 
         }
 
+        async public Task<bool> HasSubCategoriesAsync(int mainCategoryId)
+        {
+            return await _context.SubCategories.AnyAsync(x => x.MainCategoryId == mainCategoryId);
+        }
+
         async public Task<bool> DeleteMainCategoryAsync(int id)
         {
             var mainCategory = await _context.MainCategories.FirstOrDefaultAsync(x => x.MainCategoryId == id);
-            var listOfForginKeyObjects = await _context.SubCategories.Where(x => x.MainCategoryId == id).ToListAsync();
-            if (listOfForginKeyObjects.Count == 0 && mainCategory != null)
+            if (mainCategory == null)
             {
-                _context.MainCategories.Remove(mainCategory);
-                await _context.SaveChangesAsync();
-                return true;
+                return false;
             }
-            return false;
+
+            _context.MainCategories.Remove(mainCategory);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

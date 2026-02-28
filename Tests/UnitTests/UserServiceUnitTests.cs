@@ -19,9 +19,8 @@ namespace Tests.UnitTests
             var passwordService = new Mock<IPasswordValidityService>();
             var mapper = new Mock<IMapper>();
             var configuration = new Mock<IConfiguration>();
-            var config = new Mock<IConfiguration>();
 
-            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object, config.Object);
+            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object);
 
             await Assert.ThrowsAsync<NotSupportedException>(() =>
                 service.SocialLoginAsync(new SocialLoginDTO("fake-token", "GitHub")));
@@ -34,7 +33,6 @@ namespace Tests.UnitTests
             var passwordService = new Mock<IPasswordValidityService>();
             var mapper = new Mock<IMapper>();
             var configuration = new Mock<IConfiguration>();
-            var config = new Mock<IConfiguration>();
 
             var token = BuildMicrosoftJwt("oid-123", "microsoft.user@contoso.com", "Jane Doe");
             var existingUser = new User
@@ -57,7 +55,7 @@ namespace Tests.UnitTests
             mapper.Setup(m => m.Map<UserProfileDTO>(existingUser))
                 .Returns(expectedProfile);
 
-            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object, config.Object);
+            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object);
             var result = await service.SocialLoginAsync(new SocialLoginDTO(token, "Microsoft"));
 
             Assert.NotNull(result);
@@ -75,10 +73,9 @@ namespace Tests.UnitTests
             var passwordService = new Mock<IPasswordValidityService>();
             var mapper = new Mock<IMapper>();
             var configuration = new Mock<IConfiguration>();
-            var config = new Mock<IConfiguration>();
 
             passwordService.Setup(p => p.PasswordStrength("weak")).Returns(new PasswordDTO { Password = "weak", Strength = 1 });
-            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object, config.Object);
+            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object);
 
             var result = await service.RegisterAsync(new RegisterDTO("a@a.com", "A", "B", "050", "weak", "Local"));
 
@@ -93,7 +90,6 @@ namespace Tests.UnitTests
             var passwordService = new Mock<IPasswordValidityService>();
             var mapper = new Mock<IMapper>();
             var configuration = new Mock<IConfiguration>();
-            var config = new Mock<IConfiguration>();
 
             var dto = new RegisterDTO("x@x.com", "X", "Y", "050", "Strong-123!", "Local");
             var user = new User { UserId = 10, Email = "x@x.com", FirstName = "X", LastName = "Y", Phone = "050", Password = "Strong-123!" };
@@ -105,7 +101,7 @@ namespace Tests.UnitTests
             repository.Setup(r => r.RegisterAsync(user)).ReturnsAsync(user);
             mapper.Setup(m => m.Map<UserProfileDTO>(user)).Returns(profile);
 
-            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object, config.Object);
+            var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object);
 
             var result = await service.RegisterAsync(dto);
 

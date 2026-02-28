@@ -28,10 +28,21 @@ namespace WebApiShop.Controllers
             return Ok(MainCategoriesList);
         }
 
+        // GET: api/<MainCategoriesController>/5
+        [HttpGet("{id}")]
+        async public Task<ActionResult<AddMainCategoryDTO>> GetMainCategoryByIdAsync(int id)
+        {
+            AddMainCategoryDTO MainCategory = await _mainCategoryService.GetMainCategoryByIdAsync(id);
+            if (MainCategory == null)
+            {
+                return NoContent();
+            }
+            return Ok(MainCategory);
+        }
 
         // POST api/<MainCategoriesController>
         [HttpPost]
-        async public Task<ActionResult<MainCategoryDTO>> AddMainCategoryAsync([FromBody] AdminMainCategoryDTO dto)
+        async public Task<ActionResult<MainCategoryDTO>> AddMainCategoryAsync([FromBody] AddMainCategoryDTO dto)
         {
             var all = await _mainCategoryService.GetMainCategoryAsync();
             if (all.Any(m => string.Equals(m.MainCategoryName, dto.MainCategoryName, StringComparison.OrdinalIgnoreCase)))
@@ -45,7 +56,7 @@ namespace WebApiShop.Controllers
 
         // PUT api/<MainCategoriesController>/5
         [HttpPut("{id}")]
-        async public Task<ActionResult> Put(int id, [FromBody] AdminMainCategoryDTO dto)
+        async public Task<ActionResult> Put(int id, [FromBody] AddMainCategoryDTO dto)
         {
             if (id <= 0 || dto == null)
                 return BadRequest();
@@ -61,12 +72,19 @@ namespace WebApiShop.Controllers
         [HttpDelete("{id}")]
         async public Task<ActionResult> DeleteMainCategoryAsync(int id)
         {
-            bool flag = await _mainCategoryService.DeleteMainCategoryAsync(id);
-            if (flag)
+            try
             {
-                return Ok();
+                bool flag = await _mainCategoryService.DeleteMainCategoryAsync(id);
+                if (flag)
+                {
+                    return NoContent();
+                }
+                return NotFound();
             }
-            return BadRequest();
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

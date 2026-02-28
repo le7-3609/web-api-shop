@@ -59,32 +59,12 @@ namespace Tests.UnitTests
         #region Unhappy Paths
 
         [Fact]
-        public async Task DeleteProductAsync_ProductInOrder_ReturnsFalse()
+        public async Task DeleteProductAsync_NonExistentProduct_ReturnsFalse()
         {
-            // Arrange: 
-            var product = CreateValidProduct(1);
-            var orderItem = new OrderItem { PlatformId = 1 };
-            MockDbSets(new List<Product> { product }, new List<CartItem>(), new List<OrderItem> { orderItem });
+            MockDbSets(new List<Product>(), new List<CartItem>(), new List<OrderItem>());
 
-            // Act
-            var result = await _repo.DeleteProductAsync(1);
+            var result = await _repo.DeleteProductAsync(999);
 
-            // Assert
-            Assert.False(result); 
-            _mockContext.Verify(m => m.SaveChangesAsync(default), Times.Never);
-        }
-
-        [Fact]
-        public async Task DeleteProductAsync_ProductInCart_ReturnsFalse()
-        {
-            var product = CreateValidProduct(1);
-            var cartItem = new CartItem { PlatformId = 1 };
-            MockDbSets(new List<Product> { product }, new List<CartItem> { cartItem }, new List<OrderItem>());
-
-            // Act
-            var result = await _repo.DeleteProductAsync(1);
-
-            // Assert
             Assert.False(result);
             _mockContext.Verify(m => m.SaveChangesAsync(default), Times.Never);
         }

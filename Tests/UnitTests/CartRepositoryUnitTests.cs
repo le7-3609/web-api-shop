@@ -143,6 +143,32 @@ namespace Tests.UnitTests
             Assert.False(result);
         }
 
+        [Fact]
+        public async Task ClearCartItemsAsync_OnlyDeletesActiveItems()
+        {
+            var ctx = CreateInMemoryContext(nameof(ClearCartItemsAsync_OnlyDeletesActiveItems));
+            var repo = new CartRepository(ctx);
+
+            // Seed data
+            var cart = new Cart { CartId = 1, UserId = 1 };
+            var activeItem = new CartItem { CartItemId = 1, CartId = 1, ProductId = 1, IsActive = true};
+            var inactiveItem = new CartItem { CartItemId = 2, CartId = 1, ProductId = 2, IsActive = false };
+
+            ctx.Carts.Add(cart);
+            ctx.CartItems.Add(activeItem);
+            ctx.CartItems.Add(inactiveItem);
+            await ctx.SaveChangesAsync();
+
+            // Act
+            var result = await repo.ClearCartItemsAsync(1);
+
+            // Assert
+            Assert.True(result);
+            var remainingItems = await ctx.CartItems.Where(ci => ci.CartId == 1).ToListAsync();
+            Assert.Single(remainingItems);
+            Assert.False(remainingItems.First().IsActive);
+        }
+
         #endregion
     }
 }

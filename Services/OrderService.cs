@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Repositories;
 using System.Text.Json;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace Services
 {
@@ -16,14 +18,18 @@ namespace Services
         private readonly IMapper _mapper;
         private readonly ICartService _cartService;
         private readonly ILogger<OrderService> _logger;
+        private readonly IHostEnvironment _hostEnvironment;
+        private readonly IOrderPromptBuilder _promptBuilder;
 
-        public OrderService(IOrderRepository orderRepository, IMapper mapper, ICartService cartService, ILogger<OrderService> logger, IProductRepository productRepository)
+        public OrderService(IOrderRepository orderRepository, IMapper mapper, ICartService cartService, ILogger<OrderService> logger, IProductRepository productRepository, IHostEnvironment hostEnvironment, IOrderPromptBuilder promptBuilder)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _cartService = cartService;
             _logger = logger;
             _productRepository = productRepository;
+            _hostEnvironment = hostEnvironment;
+            _promptBuilder = promptBuilder;
         }
         private async Task<double> CalculateRealSumAsync(List<CartItemDTO> items, double basicSitePrice)
         {
@@ -56,6 +62,13 @@ namespace Services
             }
             var orderDtos = _mapper.Map<IEnumerable<OrderDetailsDTO>>(orders);
             return (orderDtos, total);
+        }
+
+        public async Task<IEnumerable<StatusesDTO>> GetStatusesAsync()
+        {
+            var statuses = await _orderRepository.GetStatusesAsync();
+            return _mapper.Map<IEnumerable<StatusesDTO>>(statuses);
+
         }
 
         public async Task<OrderDetailsDTO> AddOrderFromCartAsync(int cartId)
@@ -128,6 +141,7 @@ namespace Services
 
         private async Task<OrderDetailsDTO> SaveOrderAndClearCartAsync(Order order, int cartId)
         {
+            order.Orderprompt = await _promptBuilder.BuildPromptAsync(order.BasicSiteId, order.OrderItems);
             var createdOrder = await _orderRepository.AddOrderAsync(order);
             await _cartService.ClearCartAsync(cartId);
             return _mapper.Map<OrderDetailsDTO>(createdOrder);
@@ -145,20 +159,51 @@ namespace Services
        
         public async Task UpdateStatusAsync(OrderSummaryDTO dto)
         {
-            var order = _mapper.Map<Order>(dto);
+            var order = await _orderRepository.GetByIdAsync((int)dto.OrderId);
+            var statuses = await _orderRepository.GetStatusesAsync();
+            var status = statuses.FirstOrDefault(s =>
+            string.Equals(s.StatusName, dto.StatusName, StringComparison.OrdinalIgnoreCase));
+            order.Status = status.StatusId;
             await _orderRepository.UpdateStatusAsync(order);
         }
         public async Task<ReviewDTO?> AddReviewAsync(int orderId, AddReviewDTO dto)
         {
             var existingReview = await _orderRepository.GetReviewByOrderIdAsync(orderId);
-            if (existingReview != null)
+            if (existingReview != null) return null;
+
+            if (dto.Score < 1 || dto.Score > 5)
             {
-                return null;
+                throw new ArgumentException("Review score must be between 1 and 5.");
             }
-            var reviewDto = dto with { OrderId = orderId };
-            var review = _mapper.Map<Review>(reviewDto);
-            review = await _orderRepository.AddReviewAsync(review);
-            return _mapper.Map<ReviewDTO>(review);
+
+            string? relativePath = dto.Image != null ? await saveImageToFileSystem(dto.Image) : null;
+
+            var review = _mapper.Map<Review>(dto);
+            review.OrderId = orderId;
+            review.ReviewImageUrl = relativePath; 
+
+            var savedReview = await _orderRepository.AddReviewAsync(review);
+            return _mapper.Map<ReviewDTO>(savedReview);
+        }
+        private async Task<string?> saveImageToFileSystem(IFormFile image)
+        {
+            if (image != null && image.Length > 0)
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                var uploadsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "uploads");
+
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                return "/uploads/" + fileName;
+            }
+            return null;
         }
 
         public async Task<ReviewDTO?> GetReviewByOrderIdAsync(int orderId)
@@ -183,6 +228,18 @@ namespace Services
                 return null;
 
             return _mapper.Map<IEnumerable<OrderItemDTO>>(orderItems);
+        }
+
+        public async Task<string?> GetOrderPromptAsync(int orderId)
+        {
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            return order?.Orderprompt;
+        }
+
+        public async Task<IEnumerable<ReviewSummaryDTO>> GetAllReviewsAsync()
+        {
+            var reviews = await _orderRepository.GetAllReviewsAsync();
+            return _mapper.Map<IEnumerable<ReviewSummaryDTO>>(reviews);
         }
     }
 }

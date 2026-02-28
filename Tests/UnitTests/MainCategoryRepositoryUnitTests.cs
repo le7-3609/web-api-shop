@@ -107,9 +107,9 @@ namespace Tests.UnitTests
         }
 
         [Fact]
-        public async Task DeleteMainCategoryAsync_WithLinkedSubCategories_ReturnsFalse()
+        public async Task HasSubCategoriesAsync_WithLinkedSubCategories_ReturnsTrue()
         {
-            var ctx = CreateInMemoryContext(nameof(DeleteMainCategoryAsync_WithLinkedSubCategories_ReturnsFalse));
+            var ctx = CreateInMemoryContext(nameof(HasSubCategoriesAsync_WithLinkedSubCategories_ReturnsTrue));
             var repo = new MainCategoryRepository(ctx);
 
             var cat = new MainCategory { MainCategoryId = 1, MainCategoryName = "Test", MainCategoryPrompt = "P" };
@@ -118,7 +118,22 @@ namespace Tests.UnitTests
             await ctx.SubCategories.AddAsync(subCat);
             await ctx.SaveChangesAsync();
 
-            var result = await repo.DeleteMainCategoryAsync(1);
+            var result = await repo.HasSubCategoriesAsync(1);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task HasSubCategoriesAsync_WithNoSubCategories_ReturnsFalse()
+        {
+            var ctx = CreateInMemoryContext(nameof(HasSubCategoriesAsync_WithNoSubCategories_ReturnsFalse));
+            var repo = new MainCategoryRepository(ctx);
+
+            var cat = new MainCategory { MainCategoryId = 1, MainCategoryName = "Test", MainCategoryPrompt = "P" };
+            await ctx.MainCategories.AddAsync(cat);
+            await ctx.SaveChangesAsync();
+
+            var result = await repo.HasSubCategoriesAsync(1);
 
             Assert.False(result);
         }

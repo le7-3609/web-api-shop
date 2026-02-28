@@ -43,5 +43,72 @@ namespace Tests.UnitTests
             mockRepo.Verify(r => r.AddProductAsync(It.IsAny<Product>()), Times.Once);
             Assert.Equal(outDto.ProductId, res.ProductId);
         }
+
+        [Fact]
+        public async Task DeleteProductAsync_WhenNotFound_ReturnsFalse()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            var mockMapper = new Mock<IMapper>();
+            mockRepo.Setup(r => r.GetProductByIdAsync(99)).ReturnsAsync((Product)null!);
+
+            var svc = new ProductService(mockRepo.Object, mockMapper.Object);
+
+            var result = await svc.DeleteProductAsync(99);
+
+            Assert.False(result);
+            mockRepo.Verify(r => r.DeleteProductAsync(It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteProductAsync_WithOrders_ThrowsInvalidOperationException()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            var mockMapper = new Mock<IMapper>();
+            mockRepo.Setup(r => r.GetProductByIdAsync(1)).ReturnsAsync(new Product { ProductId = 1, ProductName = "P" });
+            mockRepo.Setup(r => r.HasOrderItemsByProductIdAsync(1)).ReturnsAsync(true);
+
+            var svc = new ProductService(mockRepo.Object, mockMapper.Object);
+
+            var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => svc.DeleteProductAsync(1));
+            Assert.Contains("orders", ex.Message, StringComparison.OrdinalIgnoreCase);
+            mockRepo.Verify(r => r.DeleteProductAsync(It.IsAny<int>()), Times.Never);
+            mockRepo.Verify(r => r.RemoveCartItemsByProductIdAsync(It.IsAny<int>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task DeleteProductAsync_WithCartItems_RemovesCartItemsThenDeletes()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            var mockMapper = new Mock<IMapper>();
+            mockRepo.Setup(r => r.GetProductByIdAsync(1)).ReturnsAsync(new Product { ProductId = 1, ProductName = "P" });
+            mockRepo.Setup(r => r.HasOrderItemsByProductIdAsync(1)).ReturnsAsync(false);
+            mockRepo.Setup(r => r.RemoveCartItemsByProductIdAsync(1)).Returns(Task.CompletedTask);
+            mockRepo.Setup(r => r.DeleteProductAsync(1)).ReturnsAsync(true);
+
+            var svc = new ProductService(mockRepo.Object, mockMapper.Object);
+
+            var result = await svc.DeleteProductAsync(1);
+
+            Assert.True(result);
+            mockRepo.Verify(r => r.RemoveCartItemsByProductIdAsync(1), Times.Once);
+            mockRepo.Verify(r => r.DeleteProductAsync(1), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteProductAsync_NoOrdersNoCartItems_DeletesSuccessfully()
+        {
+            var mockRepo = new Mock<IProductRepository>();
+            var mockMapper = new Mock<IMapper>();
+            mockRepo.Setup(r => r.GetProductByIdAsync(1)).ReturnsAsync(new Product { ProductId = 1, ProductName = "P" });
+            mockRepo.Setup(r => r.HasOrderItemsByProductIdAsync(1)).ReturnsAsync(false);
+            mockRepo.Setup(r => r.RemoveCartItemsByProductIdAsync(1)).Returns(Task.CompletedTask);
+            mockRepo.Setup(r => r.DeleteProductAsync(1)).ReturnsAsync(true);
+
+            var svc = new ProductService(mockRepo.Object, mockMapper.Object);
+
+            var result = await svc.DeleteProductAsync(1);
+
+            Assert.True(result);
+        }
     }
 }

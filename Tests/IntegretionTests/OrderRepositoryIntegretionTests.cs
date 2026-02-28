@@ -64,6 +64,12 @@ namespace Tests.IntegrationTests
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
+            await _context.MainCategories.AddAsync(new MainCategory { MainCategoryId = 1, MainCategoryName = "M", MainCategoryPrompt = "P" });
+            await _context.SubCategories.AddAsync(new SubCategory { SubCategoryId = 1, MainCategoryId = 1, SubCategoryName = "S", SubCategoryPrompt = "P" });
+            await _context.Products.AddAsync(new Product { ProductId = 1, SubCategoryId = 1, ProductName = "Prod", ProductPrompt = "P" });
+            await _context.Platforms.AddAsync(new Platform { PlatformId = 1, PlatformName = "Plat" });
+            await _context.SaveChangesAsync();
+
             var item = new OrderItem { OrderId = order.OrderId, ProductId = 1, PlatformId = 1 };
             await _context.OrderItems.AddAsync(item);
             await _context.SaveChangesAsync();

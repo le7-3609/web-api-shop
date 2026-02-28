@@ -125,13 +125,13 @@ namespace Repositories
             {
                 return false;
             }
-
-            var items = await _context.CartItems.Where(ci => ci.CartId == cartId).ToListAsync();
+            var items = await _context.CartItems
+                .Where(ci => ci.CartId == cartId && ci.IsActive == true)
+                .ToListAsync();
             if (items.Count == 0)
             {
                 return false;
             }
-
             _context.CartItems.RemoveRange(items);
             await _context.SaveChangesAsync();
             return true;

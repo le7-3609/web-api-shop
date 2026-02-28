@@ -15,6 +15,12 @@ namespace WebApiShop.Controllers
             _orderService = orderService;
         }
 
+        private string? MapReviewImageUrl(string? fileName)
+        {
+            if (string.IsNullOrEmpty(fileName)) return null;
+            return $"{Request.Scheme}://{Request.Host}/images/reviews/{fileName}";
+        }
+
         // GET api/<OrdersController>/5
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDetailsDTO>> GetByIdAsync(int id)
@@ -29,14 +35,33 @@ namespace WebApiShop.Controllers
 
         // GET api/<OrdersController>
         [HttpGet]
-        public async Task<ActionResult<(IEnumerable<OrderDetailsDTO> Orders, double Total)>> GetOrdersAsync()
+        public async Task<ActionResult<IEnumerable<OrdersResponseDTO>>> GetOrdersAsync()
         {
             var orders = await _orderService.GetOrdersAsync();
-            if (orders.Orders == null || orders.Total == 0)
+            if (orders.Orders == null || !orders.Orders.Any())
             {
                 return NoContent();
             }
-            return Ok(orders);
+
+            var response = new OrdersResponseDTO
+            {
+                Orders = orders.Orders,
+                Total = orders.Total
+            };
+
+            return Ok(response);
+        }
+
+        // GET api/<OrdersController>/statuses
+        [HttpGet("statuses")]
+        public async Task<ActionResult<IEnumerable<StatusesDTO>>> GetStatusesAsync()
+        {
+            var statuses = await _orderService.GetStatusesAsync();
+            if (statuses == null || !statuses.Any())
+            {
+                return NoContent();
+            }
+            return Ok(statuses);
         }
 
         // POST api/Orders/carts/5
@@ -68,14 +93,14 @@ namespace WebApiShop.Controllers
 
         // POST api/<OrdersController>/5/review   
         [HttpPost("{orderId}/review")]
-        public async Task<ActionResult<ReviewDTO>> AddReviewAsync(int orderId, AddReviewDTO dto)
+        public async Task<ActionResult<ReviewDTO>> AddReviewAsync(int orderId, [FromForm] AddReviewDTO dto)
         {
             ReviewDTO newReview = await _orderService.AddReviewAsync(orderId, dto);
             if (newReview != null)
             {
                 return Ok(newReview);
             }
-            return BadRequest("Can't create new review");
+            return BadRequest("Can't create new review or review already exists");
         }
 
         // GET api/<OrdersController>/5/review
@@ -113,6 +138,33 @@ namespace WebApiShop.Controllers
                 return NotFound($"No order items found for Order ID {orderId}");
             }
             return Ok(orderItems);
+        }
+
+        // GET api/<OrdersController>/5/prompt
+        [HttpGet("{orderId}/prompt")]
+        public async Task<ActionResult<string>> GetOrderPromptAsync(int orderId)
+        {
+            var prompt = await _orderService.GetOrderPromptAsync(orderId);
+            if (prompt == null)
+            {
+                return NotFound($"Order {orderId} not found or has no prompt.");
+            }
+            return Ok(prompt);
+        }
+
+        // GET api/<OrdersController>/reviews
+        [HttpGet("reviews")]
+        public async Task<ActionResult<IEnumerable<ReviewSummaryDTO>>> GetAllReviewsAsync()
+        {
+            var reviews = await _orderService.GetAllReviewsAsync();
+            if (reviews == null || !reviews.Any())
+            {
+                return NoContent();
+            }
+            var updatedReviews = reviews
+                .Select(r => r with { ReviewImageUrl = MapReviewImageUrl(r.ReviewImageUrl) })
+                .ToList();
+            return Ok(updatedReviews);
         }
     }
 }

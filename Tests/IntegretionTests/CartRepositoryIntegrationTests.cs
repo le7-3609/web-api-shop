@@ -22,7 +22,7 @@ namespace Tests.IntegrationTests
         [Fact]
         public async Task CreateUserCartAsync_CreatesCart()
         {
-            var user = new User { Email = "cartuser@test.com", Password = "p", FirstName = "A", LastName = "B" };
+            var user = new User { Email = "cartuser@test.com", Password = "p", FirstName = "A", LastName = "B", Provider = "Local" };
             _context.Users.Add(user);
 
             var site = new BasicSite { SiteName = "S1", SiteTypeId = 1, UserDescreption = "d" };
@@ -41,15 +41,15 @@ namespace Tests.IntegrationTests
         public async Task AddCartItemAsync_AddsItem()
         {
             // seed minimal dependencies
-            var user = new User { Email = "itemuser@test.com", Password = "p", FirstName = "A", LastName = "B" };
+            var user = new User { Email = "itemuser@test.com", Password = "p", FirstName = "A", LastName = "B", Provider = "Local" };
             _context.Users.Add(user);
             _context.SiteTypes.Add(new SiteType { SiteTypeId = 2, SiteTypeName = "t2", Price = 1 });
             var site = new BasicSite { SiteName = "S2", SiteTypeId = 2, UserDescreption = "d" };
             _context.BasicSites.Add(site);
 
-            var product = new Product { ProductName = "Prod", SubCategoryId = 1 };
-            _context.SubCategories.Add(new SubCategory { SubCategoryId = 1, SubCategoryName = "SC", MainCategoryId = 1 });
-            _context.MainCategories.Add(new MainCategory { MainCategoryId = 1, MainCategoryName = "M" });
+            var product = new Product { ProductName = "Prod", SubCategoryId = 1, ProductPrompt = "P" };
+            _context.SubCategories.Add(new SubCategory { SubCategoryId = 1, SubCategoryName = "SC", MainCategoryId = 1, SubCategoryPrompt = "P" });
+            _context.MainCategories.Add(new MainCategory { MainCategoryId = 1, MainCategoryName = "M", MainCategoryPrompt = "P" });
             _context.SaveChanges();
 
             var cart = new Cart { UserId = user.UserId, BasicSiteId = site.BasicSiteId };

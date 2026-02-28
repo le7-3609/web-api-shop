@@ -44,6 +44,7 @@ builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderPromptBuilder, OrderPromptBuilder>();
 
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();

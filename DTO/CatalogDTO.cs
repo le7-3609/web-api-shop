@@ -11,7 +11,8 @@ namespace DTO
        long MainCategoryId,
         string MainCategoryName
     );
-    public record AdminMainCategoryDTO(
+
+    public record AddMainCategoryDTO(
         [Required]
         string MainCategoryName,
         [Required]

@@ -61,12 +61,19 @@ namespace WebApiShop.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteProductAsync(int id)
         {
-            bool flag = await _productService.DeleteProductAsync(id);
-            if (flag)
+            try
             {
-                return Ok();
+                bool flag = await _productService.DeleteProductAsync(id);
+                if (flag)
+                {
+                    return NoContent();
+                }
+                return NotFound();
             }
-            return BadRequest();
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

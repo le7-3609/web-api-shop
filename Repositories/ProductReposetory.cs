@@ -55,23 +55,40 @@ namespace Repositories
 
         async public Task<bool> DeleteProductAsync(int id)
         {
-            if (await HasRelatedCartItemAsync(id))
-            {
-                return false;
-            }
-
-            if (await HasRelatedOrderItemAsync(id))
-            {
-                return false;
-            }
-
-            var productObjectToDelete = await GetProductToDeleteAsync(id);
+            var productObjectToDelete = await _context.Products.FirstOrDefaultAsync(product => product.ProductId == id);
             if (productObjectToDelete == null)
             {
                 return false;
             }
 
-            return await RemoveProductAsync(productObjectToDelete);
+            _context.Products.Remove(productObjectToDelete);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<IEnumerable<Product>> GetProductsByIdsWithCategoriesAsync(IEnumerable<long> productIds)
+        {
+            var ids = productIds.ToList();
+            return await _context.Products
+                .Where(p => ids.Contains(p.ProductId))
+                .Include(p => p.SubCategory)
+                    .ThenInclude(sc => sc.MainCategory)
+                .ToListAsync();
+        }
+
+        public async Task<bool> HasOrderItemsByProductIdAsync(int productId)
+        {
+            return await _context.OrderItems.AnyAsync(oi => oi.ProductId == productId);
+        }
+
+        public async Task RemoveCartItemsByProductIdAsync(int productId)
+        {
+            var cartItems = await _context.CartItems.Where(ci => ci.ProductId == productId).ToListAsync();
+            if (cartItems.Count > 0)
+            {
+                _context.CartItems.RemoveRange(cartItems);
+                await _context.SaveChangesAsync();
+            }
         }
 
         private static long[] GetSubCategoryIds(int?[] subCategoryIds)
@@ -108,28 +125,5 @@ namespace Repositories
                 .ToListAsync();
         }
 
-        private async Task<bool> HasRelatedCartItemAsync(int id)
-        {
-            var cartItem = await _context.CartItems.FirstOrDefaultAsync(p => p.PlatformId == id);
-            return cartItem != null;
-        }
-
-        private async Task<bool> HasRelatedOrderItemAsync(int id)
-        {
-            var orderItem = await _context.OrderItems.FirstOrDefaultAsync(p => p.PlatformId == id);
-            return orderItem != null;
-        }
-
-        private Task<Product?> GetProductToDeleteAsync(int id)
-        {
-            return _context.Products.FirstOrDefaultAsync(product => product.ProductId == id);
-        }
-
-        private async Task<bool> RemoveProductAsync(Product product)
-        {
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
-            return true;
-        }
     }
 }

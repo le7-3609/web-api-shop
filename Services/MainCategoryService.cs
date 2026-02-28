@@ -25,10 +25,17 @@ namespace Services
             var MainCategories = await _mainCategoryRepository.GetMainCategoriesAsync();
             var dto = _mapper.Map<IEnumerable<MainCategoryDTO>>(MainCategories);
             return dto;
-
         }
 
-        async public Task<MainCategoryDTO> AddMainCategoryAsync(AdminMainCategoryDTO dto)
+        async public Task<AddMainCategoryDTO> GetMainCategoryByIdAsync(int id)
+        {
+            var MainCategory = await _mainCategoryRepository.GetMainCategoryByIdAsync(id);
+            var dto = _mapper.Map<AddMainCategoryDTO>(MainCategory);
+            return dto;
+        }
+
+
+        async public Task<MainCategoryDTO> AddMainCategoryAsync(AddMainCategoryDTO dto)
         {
             if (string.IsNullOrWhiteSpace(dto.MainCategoryPrompt))
             {
@@ -45,7 +52,7 @@ namespace Services
             return _mapper.Map<MainCategoryDTO>(mainCategory);
         }
 
-        async public Task<bool> UpdateMainCategoryAsync(int id, AdminMainCategoryDTO dto)
+        async public Task<bool> UpdateMainCategoryAsync(int id, AddMainCategoryDTO dto)
         {
             var existingCategory = await _mainCategoryRepository.GetMainCategoryByIdAsync(id);
             if (existingCategory == null)
@@ -73,6 +80,17 @@ namespace Services
 
         async public Task<bool> DeleteMainCategoryAsync(int id)
         {
+            var existing = await _mainCategoryRepository.GetMainCategoryByIdAsync(id);
+            if (existing == null)
+            {
+                return false;
+            }
+
+            if (await _mainCategoryRepository.HasSubCategoriesAsync(id))
+            {
+                throw new InvalidOperationException("Cannot delete main category that has subcategories.");
+            }
+
             return await _mainCategoryRepository.DeleteMainCategoryAsync(id);
         }
     }

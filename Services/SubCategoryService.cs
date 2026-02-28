@@ -73,6 +73,16 @@ namespace Services
         }
         async public Task<bool> DeleteSubCategoryAsync(int id)
         {
+            var existing = await _subCategoryRepository.GetSubCategoryByIdAsync(id);
+            if (existing == null)
+            {
+                return false;
+            }
+
+            if (await _subCategoryRepository.HasProductsAsync(id))
+            {
+                throw new InvalidOperationException("Cannot delete subcategory that has products.");
+            }
 
             return await _subCategoryRepository.DeleteSubCategoryAsync(id);
         }

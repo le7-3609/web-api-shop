@@ -48,6 +48,10 @@ namespace Repositories
         {
             return await _context.Orders
                 .Where(o=>o.UserId == userId)
+                .Include(o => o.StatusNavigation)
+                .Include(o => o.BasicSite)
+                    .ThenInclude(bs => bs.SiteType)
+                .Include(o => o.Reviews)
                 .ToListAsync();
         }
 

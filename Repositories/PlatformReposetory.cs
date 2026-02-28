@@ -58,31 +58,31 @@ namespace Repositories
             return true;
         }
 
+        public async Task ReassignPlatformReferencesAsync(int platformId, int defaultPlatformId)
+        {
+            var cartItems = await _context.CartItems.Where(ci => ci.PlatformId == platformId).ToListAsync();
+            foreach (var ci in cartItems)
+                ci.PlatformId = defaultPlatformId;
+
+            var orderItems = await _context.OrderItems.Where(oi => oi.PlatformId == platformId).ToListAsync();
+            foreach (var oi in orderItems)
+                oi.PlatformId = defaultPlatformId;
+
+            var basicSites = await _context.BasicSites.Where(bs => bs.PlatformId == platformId).ToListAsync();
+            foreach (var bs in basicSites)
+                bs.PlatformId = defaultPlatformId;
+
+            await _context.SaveChangesAsync();
+        }
+
         async public Task<bool> DeletePlatformAsync(int id)
         {
             var platformObjectToDelete = await _context.Platforms.FirstOrDefaultAsync(x => x.PlatformId == id);
-
-            //var BasicSite = await _context.BasicSites.FirstOrDefaultAsync(x => x.BasicSitesPlatforms == id);
-            //if (BasicSite != null)
-            //{
-            //    return false;
-            //}
-
-            //var cartItem = await _context.CartItems.FirstOrDefaultAsync(x => x.BasicSitesPlatform == id);
-            //if (cartItem != null)
-            //{
-            //    return false;
-            //}
-
-            //var orederItem = await _context.OrderItems.FirstOrDefaultAsync(x => x.BasicSitesPlatform == id);
-            //if (orederItem != null)
-            //{
-            //    return false;
-            //}
             if (platformObjectToDelete == null)
             {
                 return false;
             }
+
             _context.Platforms.Remove(platformObjectToDelete);
             await _context.SaveChangesAsync();
             return true;

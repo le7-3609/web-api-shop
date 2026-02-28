@@ -61,6 +61,18 @@ namespace Services
 
         async public Task<bool> DeleteProductAsync(int id)
         {
+            var product = await _productRepository.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return false;
+            }
+
+            if (await _productRepository.HasOrderItemsByProductIdAsync(id))
+            {
+                throw new InvalidOperationException("Cannot delete product that has existing orders.");
+            }
+
+            await _productRepository.RemoveCartItemsByProductIdAsync(id);
             return await _productRepository.DeleteProductAsync(id);
         }
     }

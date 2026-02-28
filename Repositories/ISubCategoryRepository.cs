@@ -6,6 +6,7 @@ namespace Repositories
     {
         Task<SubCategory> AddSubCategoryAsync(SubCategory category);
         Task<bool> DeleteSubCategoryAsync(int id);
+        Task<bool> HasProductsAsync(int subCategoryId);
         Task<SubCategory?> GetSubCategoryByIdAsync(int id);
         Task<SubCategory?> GetByNameAsync(string name);
         Task<bool> MainCategoryExistsAsync(int mainCategoryId);

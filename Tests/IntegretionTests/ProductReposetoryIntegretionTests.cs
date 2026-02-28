@@ -138,6 +138,108 @@ namespace Tests.IntegrationTests
             Assert.Empty(result);
         }
 
+        [Fact]
+        public async Task HasOrderItemsByProductIdAsync_WithOrders_ReturnsTrue()
+        {
+            SeedMainAndSubCategory();
+            var product = new Product { ProductId = 30, ProductName = "P", ProductPrompt = "P", SubCategoryId = 1 };
+            _context.Products.Add(product);
+
+            var platform = new Platform { PlatformId = 1, PlatformName = "Plat" };
+            _context.Platforms.Add(platform);
+
+            var siteType = new SiteType { SiteTypeId = 1, SiteTypeName = "T" };
+            _context.SiteTypes.Add(siteType);
+
+            var basicSite = new BasicSite { BasicSiteId = 1, SiteName = "S", SiteTypeId = 1 };
+            _context.BasicSites.Add(basicSite);
+
+            var user = new User
+            {
+                UserId = 1,
+                Email = "u@u.com",
+                Password = "p",
+                FirstName = "U",
+                LastName = "L",
+                Phone = "0500000000",
+                Provider = "Local",
+                ProviderId = "1"
+            };
+            _context.Users.Add(user);
+
+            var order = new Order { OrderId = 1, BasicSiteId = 1, UserId = 1, Status = 1 };
+            _context.Orders.Add(order);
+
+            var orderItem = new OrderItem { OrderItemId = 1, ProductId = 30, OrderId = 1, PlatformId = 1 };
+            _context.OrderItems.Add(orderItem);
+            _context.SaveChanges();
+
+            var result = await _repository.HasOrderItemsByProductIdAsync(30);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task HasOrderItemsByProductIdAsync_WithNoOrders_ReturnsFalse()
+        {
+            SeedMainAndSubCategory();
+            var product = new Product { ProductId = 31, ProductName = "P", ProductPrompt = "P", SubCategoryId = 1 };
+            _context.Products.Add(product);
+            _context.SaveChanges();
+
+            var result = await _repository.HasOrderItemsByProductIdAsync(31);
+
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task RemoveCartItemsByProductIdAsync_RemovesMatchingCartItems()
+        {
+            SeedMainAndSubCategory();
+            var product = new Product { ProductId = 40, ProductName = "P", ProductPrompt = "P", SubCategoryId = 1 };
+            _context.Products.Add(product);
+
+            var user = new User
+            {
+                UserId = 1,
+                Email = "u@u.com",
+                Password = "p",
+                FirstName = "U",
+                LastName = "L",
+                Phone = "0500000000",
+                Provider = "Local",
+                ProviderId = "1"
+            };
+            _context.Users.Add(user);
+
+            var cart = new Cart { CartId = 1, UserId = 1 };
+            _context.Carts.Add(cart);
+
+            _context.CartItems.AddRange(
+                new CartItem { CartItemId = 1, CartId = 1, ProductId = 40 },
+                new CartItem { CartItemId = 2, CartId = 1, ProductId = 40 }
+            );
+            _context.SaveChanges();
+
+            await _repository.RemoveCartItemsByProductIdAsync(40);
+
+            var remaining = _context.CartItems.Where(ci => ci.ProductId == 40).ToList();
+            Assert.Empty(remaining);
+        }
+
+        [Fact]
+        public async Task RemoveCartItemsByProductIdAsync_NoCartItems_CompletesWithoutError()
+        {
+            SeedMainAndSubCategory();
+            var product = new Product { ProductId = 41, ProductName = "P", ProductPrompt = "P", SubCategoryId = 1 };
+            _context.Products.Add(product);
+            _context.SaveChanges();
+
+            await _repository.RemoveCartItemsByProductIdAsync(41);
+
+            // Should complete without error
+        }
+
         #endregion
     }
 }

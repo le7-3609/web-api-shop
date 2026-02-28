@@ -28,14 +28,25 @@ namespace Tests.IntegrationTests
         }
 
         [Fact]
-        public async Task DeleteMainCategoryAsync_Fails_WhenHasSubcategories()
+        public async Task HasSubCategoriesAsync_ReturnsTrue_WhenHasSubcategories()
         {
             var mc = new MainCategory { MainCategoryId = 200, MainCategoryName = "X" };
             _context.MainCategories.Add(mc);
             _context.SubCategories.Add(new SubCategory { SubCategoryId = 300, MainCategoryId = 200, SubCategoryName = "S" });
             _context.SaveChanges();
 
-            var result = await _repository.DeleteMainCategoryAsync(200);
+            var result = await _repository.HasSubCategoriesAsync(200);
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task HasSubCategoriesAsync_ReturnsFalse_WhenNoSubcategories()
+        {
+            var mc = new MainCategory { MainCategoryId = 202, MainCategoryName = "Z" };
+            _context.MainCategories.Add(mc);
+            _context.SaveChanges();
+
+            var result = await _repository.HasSubCategoriesAsync(202);
             Assert.False(result);
         }
 

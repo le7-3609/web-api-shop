@@ -147,30 +147,30 @@ namespace Tests.UnitTests
         #region Unhappy Paths
 
         [Fact]
-        public async Task GetSubCategoryByIdAsync_NonExistingId_ReturnsNull()
+        public async Task DeleteSubCategoryAsync_NonExistingId_ReturnsFalse()
         {
             // Arrange
             var repo = new SubCategoryRepository(_context);
 
             // Act
-            var result = await repo.GetSubCategoryByIdAsync(999);
+            var result = await repo.DeleteSubCategoryAsync(999);
 
             // Assert
-            Assert.Null(result);
+            Assert.False(result);
         }
 
         [Fact]
-        public async Task DeleteSubCategoryAsync_WithLinkedProducts_ReturnsFalse()
+        public async Task HasProductsAsync_WithLinkedProducts_ReturnsTrue()
         {
             // Arrange
             var mainCat = new MainCategory { MainCategoryId = 1, MainCategoryName = "Main", MainCategoryPrompt = "P" };
             _context.MainCategories.Add(mainCat);
-            
+
             var subId = 1;
             var sub = new SubCategory { SubCategoryId = subId, SubCategoryName = "Test", MainCategoryId = 1, SubCategoryPrompt = "P" };
             _context.SubCategories.Add(sub);
             await _context.SaveChangesAsync();
-            
+
             var product = new Product { ProductId = 10, SubCategoryId = subId, ProductName = "P", ProductPrompt = "P" };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
@@ -178,7 +178,27 @@ namespace Tests.UnitTests
             var repo = new SubCategoryRepository(_context);
 
             // Act
-            var result = await repo.DeleteSubCategoryAsync(subId);
+            var result = await repo.HasProductsAsync(subId);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task HasProductsAsync_WithNoProducts_ReturnsFalse()
+        {
+            // Arrange
+            var mainCat = new MainCategory { MainCategoryId = 1, MainCategoryName = "Main", MainCategoryPrompt = "P" };
+            _context.MainCategories.Add(mainCat);
+
+            var sub = new SubCategory { SubCategoryId = 1, SubCategoryName = "Empty", MainCategoryId = 1, SubCategoryPrompt = "P" };
+            _context.SubCategories.Add(sub);
+            await _context.SaveChangesAsync();
+
+            var repo = new SubCategoryRepository(_context);
+
+            // Act
+            var result = await repo.HasProductsAsync(1);
 
             // Assert
             Assert.False(result);

@@ -70,10 +70,17 @@ namespace WebApiShop.Controllers
             if (id <= 0)
                 return BadRequest();
 
-            bool flag = await _platformService.DeletePlatformAsync(id);
-            if (flag)
-                return NoContent();
-            return NotFound();
+            try
+            {
+                bool flag = await _platformService.DeletePlatformAsync(id);
+                if (flag)
+                    return NoContent();
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

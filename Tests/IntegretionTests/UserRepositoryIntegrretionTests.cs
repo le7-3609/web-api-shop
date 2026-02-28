@@ -92,9 +92,12 @@ namespace Tests.IntegrationTests
         {
             var user = new User { Provider = "Local", Email = "orders@test.com", Password = "p", FirstName = "O", LastName = "User" };
             _context.Users.Add(user);
+            _context.Statuses.Add(new Status { StatusId = 1, StatusName = "New" });
+            _context.SiteTypes.Add(new SiteType { SiteTypeId = 1, SiteTypeName = "Landing", Price = 10 });
+            _context.BasicSites.Add(new BasicSite { BasicSiteId = 1, SiteName = "Site", SiteTypeId = 1, UserDescreption = "desc" });
             _context.SaveChanges();
 
-            var order = new Order { UserId = user.UserId, OrderSum = 100 };
+            var order = new Order { UserId = user.UserId, BasicSiteId = 1, Status = 1, OrderSum = 100 };
             _context.Orders.Add(order);
             _context.SaveChanges();
 

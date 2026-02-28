@@ -161,6 +161,34 @@ namespace Tests.IntegretionTests
             Assert.False(result);
         }
 
+        [Fact]
+        public async Task HasProductsAsync_WithLinkedProducts_ReturnsTrue()
+        {
+            SeedMainCategory();
+            var subCat = new SubCategory { SubCategoryId = 30, SubCategoryName = "HasProducts", SubCategoryPrompt = "P", MainCategoryId = 1 };
+            _context.SubCategories.Add(subCat);
+            var product = new Product { ProductId = 1, SubCategoryId = 30, ProductName = "P", ProductPrompt = "P" };
+            _context.Products.Add(product);
+            _context.SaveChanges();
+
+            var result = await _repository.HasProductsAsync(30);
+
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task HasProductsAsync_WithNoProducts_ReturnsFalse()
+        {
+            SeedMainCategory();
+            var subCat = new SubCategory { SubCategoryId = 31, SubCategoryName = "Empty", SubCategoryPrompt = "P", MainCategoryId = 1 };
+            _context.SubCategories.Add(subCat);
+            _context.SaveChanges();
+
+            var result = await _repository.HasProductsAsync(31);
+
+            Assert.False(result);
+        }
+
         #endregion
     }
 }

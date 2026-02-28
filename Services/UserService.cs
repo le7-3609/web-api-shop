@@ -144,6 +144,13 @@ namespace Services
             {
                 var googleClientId = _configuration["Authentication:Google:ClientId"];
 
+                if (string.IsNullOrWhiteSpace(googleClientId) || 
+                    googleClientId.StartsWith("YOUR_") || 
+                    googleClientId.Equals("Secret_Stored_Locally", StringComparison.OrdinalIgnoreCase) ||
+                    !googleClientId.EndsWith(".apps.googleusercontent.com", StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException(
+                        "Google ClientId is not configured. Set Authentication:Google:ClientId in appsettings or user secrets.");
+
                 var settings = new GoogleJsonWebSignature.ValidationSettings()
                 {
                     Audience = new[] { googleClientId }

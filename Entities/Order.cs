@@ -19,7 +19,7 @@ public partial class Order
 
     public long UserId { get; set; }
 
-    public string OrderPromt { get; set; }
+    public string Orderprompt { get; set; }
 
     public virtual BasicSite BasicSite { get; set; }
 

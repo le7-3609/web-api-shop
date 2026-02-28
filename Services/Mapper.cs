@@ -31,12 +31,18 @@ namespace Services
                 .ForMember(dest => dest.PromptId, opt => opt.MapFrom(src => src.PromptId));
 
             CreateMap<Order, OrderSummaryDTO>()
-                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.StatusNavigation.StatusName));
+                .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.StatusNavigation.StatusName))
+                .ForMember(dest => dest.SiteName, opt => opt.MapFrom(src => src.BasicSite.SiteName))
+                .ForMember(dest => dest.SiteTypeName, opt => opt.MapFrom(src => src.BasicSite.SiteType.SiteTypeName))
+                .ForMember(dest => dest.ReviewImageUrl, opt => opt.MapFrom(src => src.Reviews.Select(r => r.ReviewImageUrl).FirstOrDefault() ?? string.Empty));
             CreateMap<Order, OrderDetailsDTO>()
                 .IncludeBase<Order, OrderSummaryDTO>() 
                 .ForMember(dest => dest.SiteName, opt => opt.MapFrom(src => src.BasicSite.SiteName))
                 .ForMember(dest => dest.SiteTypeName, opt => opt.MapFrom(src => src.BasicSite.SiteType.SiteTypeName))
                 .ForMember(dest => dest.SiteDescription, opt => opt.MapFrom(src => src.BasicSite.UserDescreption))
+                .ForMember(dest => dest.OrderItemsCount, opt => opt.MapFrom(src => src.OrderItems.Count))
+                .ForMember(dest => dest.ReviewId, opt => opt.MapFrom(src => src.Reviews.Select(r => r.ReviewId).FirstOrDefault()))
+                .ForMember(dest => dest.Score, opt => opt.MapFrom(src => src.Reviews.Select(r => r.Score).FirstOrDefault()))
                 .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.OrderItems));
             CreateMap<OrderItem, OrderItemDTO>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.ProductName))
@@ -47,8 +53,8 @@ namespace Services
                 .ForMember(dest => dest.UserDescription, opt => opt.MapFrom(src => src.Prompt != null ? src.Prompt.Prompt : string.Empty));
 
             CreateMap<MainCategory, MainCategoryDTO>().ReverseMap();
-            CreateMap<AdminMainCategoryDTO, MainCategory>();
-            CreateMap<MainCategory, AdminMainCategoryDTO>();
+            CreateMap<AddMainCategoryDTO, MainCategory>();
+            CreateMap<MainCategory, AddMainCategoryDTO>();
 
             CreateMap<SubCategory, SubCategoryDTO>().ReverseMap();
             CreateMap<AddSubCategoryDTO, SubCategory>();
@@ -83,11 +89,19 @@ namespace Services
 
             CreateMap<SiteType, SiteTypeDTO>().ReverseMap();
 
-            CreateMap<AddReviewDTO, Review>();
+            CreateMap<AddReviewDTO, Review>()
+                .ForMember(dest => dest.ReviewImageUrl, opt => opt.MapFrom(src => src.ReviewImageUrl))
+                .ForSourceMember(src => src.Image, opt => opt.DoNotValidate());
             CreateMap<Review, ReviewDTO>();
+            CreateMap<Review, ReviewSummaryDTO>()
+                .ForMember(dest => dest.SiteName, opt => opt.MapFrom(src => src.Order.BasicSite.SiteName))
+                .ForMember(dest => dest.SiteTypeName, opt => opt.MapFrom(src => src.Order.BasicSite.SiteType.SiteTypeName));
 
             CreateMap<GeminiPrompt, GeminiPromptDTO>().ReverseMap();
             CreateMap<AddGeminiPromptDTO, GeminiPrompt>();
+
+            CreateMap<StatusesDTO, Status>();
+            CreateMap<Status, StatusesDTO>();
         }
     }
 }

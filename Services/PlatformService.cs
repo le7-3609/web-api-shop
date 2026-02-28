@@ -73,6 +73,18 @@ namespace  Services
 
         async public Task<bool> DeletePlatformAsync(int id)
         {
+            if (id == 1)
+            {
+                throw new InvalidOperationException("Cannot delete the default platform.");
+            }
+
+            var platform = await _platformRepository.GetPlatformByIdAsync(id);
+            if (platform == null)
+            {
+                return false;
+            }
+
+            await _platformRepository.ReassignPlatformReferencesAsync(id, 1);
             return await _platformRepository.DeletePlatformAsync(id);
         }
     }
