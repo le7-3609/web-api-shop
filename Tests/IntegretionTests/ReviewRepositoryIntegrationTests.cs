@@ -72,7 +72,17 @@ namespace Tests.IntegrationTests
         [Fact]
         public async Task GetAllReviewsAsync_WithReviews_ReturnsAll()
         {
-            var order = new Order { OrderSum = 100 };
+            var siteType = new SiteType { SiteTypeName = "T" };
+            await _context.SiteTypes.AddAsync(siteType);
+            var platform = new Platform { PlatformName = "P" };
+            await _context.Platforms.AddAsync(platform);
+            await _context.SaveChangesAsync();
+
+            var basicSite = new BasicSite { SiteTypeId = siteType.SiteTypeId, PlatformId = platform.PlatformId };
+            await _context.BasicSites.AddAsync(basicSite);
+            await _context.SaveChangesAsync();
+
+            var order = new Order { OrderSum = 100, BasicSiteId = basicSite.BasicSiteId };
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 

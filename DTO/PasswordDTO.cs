@@ -8,12 +8,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DTO
 {
-    //public record PasswordDTO 
-    //{
-    //    [Required]
-    //    public string Password { get; set; }
-    //    public int Strength { get; set; }
-    //}
+    public record PasswordDTO 
+    {
+        [Required]
+        public string Password { get; set; }
+        public int Strength { get; set; }
+    }
 
     public record PasswordStrengthDTO
     {
