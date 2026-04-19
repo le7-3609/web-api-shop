@@ -14,9 +14,9 @@ namespace DTO
     );
 
     public record MngSiteTypeDTO(
-         long SiteTypeId,
+       long SiteTypeId,
        string SiteTypeName,
-         double Price,
+       double Price,
        string SiteTypeDescription,
        string SiteTypeNamePrompt,
        string SiteTypeDescriptionPrompt

@@ -13,18 +13,14 @@ namespace Services
 {
     public class PasswordValidityService : IPasswordValidityService
     {
-        public PasswordDTO? PasswordStrength(string password)
+        public PasswordStrengthDTO? PasswordStrength(string password)
         {
             if (password != null && password != "")
             {
                 var result = Zxcvbn.Core.EvaluatePassword(password);
                 if (result != null)
                 {
-                    int score = result.Score;
-                    PasswordDTO dto = new PasswordDTO();
-                    dto.Password = password;
-                    dto.Strength = score;
-                    return dto;
+                    return new PasswordStrengthDTO { Strength = result.Score };
                 }
             }
             return null;

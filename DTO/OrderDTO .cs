@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,42 +41,13 @@ namespace DTO
 
     public record OrdersResponseDTO
     {
-        public IEnumerable<OrderDetailsDTO> Orders { get; init; } = Enumerable.Empty<OrderDetailsDTO>();
+        public IEnumerable<OrderDetailsDTO> Orders { get; init; } 
         public double Total { get; init; }
     }
-
-    public record AddReviewDTO
-    (
-        long OrderId,
-        [Range(1, 5, ErrorMessage = "Review score must be between 1 and 5.")]
-        short Score,
-        string? Note,
-        IFormFile? Image,
-        string? ReviewImageUrl = null
-    );
-
-    public record ReviewDTO
-    (
-        long ReviewId,
-        long OrderId,
-        short Score,
-        string Note,
-        string ReviewImageUrl
-    );
 
     public record StatusesDTO
     (
         long StatusId,
         string StatusName
     );
-
-    public record ReviewSummaryDTO
-    {
-        public long ReviewId { get; init; }
-        public string? ReviewImageUrl { get; init; }
-        public string? Note { get; init; }
-        public short Score { get; init; }
-        public string SiteName { get; init; }
-        public string SiteTypeName { get; init; }
-    }
 }

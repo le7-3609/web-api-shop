@@ -87,7 +87,7 @@
    "UseDatabaseNamesForRoutines": true,
    "UseDateOnlyTimeOnly": true,
    "UseDbContextSplitting": false,
-   "UseDecimalDataAnnotationForSprocResult": true,
+   "UsedoubleDataAnnotationForSprocResult": true,
    "UseFluentApiOnly": true,
    "UseHandleBars": false,
    "UseHierarchyId": false,

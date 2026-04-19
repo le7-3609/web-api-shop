@@ -9,11 +9,7 @@ namespace Repositories
         Task<IEnumerable<Order>> GetOrdersAsync();
         Task<IEnumerable<Status>> GetStatusesAsync();
         Task<Order> AddOrderAsync(Order order);
-        Task UpdateStatusAsync(Order order); 
-        Task<Review> AddReviewAsync(Review review);
-        Task<Review?> GetReviewByOrderIdAsync(int orderId);
-        Task<Review> UpdateReviewAsync(Review review);
+        Task UpdateStatusAsync(Order order);
         Task<IEnumerable<OrderItem>> GetOrderItemsAsync(int orderId);
-        Task<IEnumerable<Review>> GetAllReviewsAsync();
     }
 }

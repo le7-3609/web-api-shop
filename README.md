@@ -38,25 +38,6 @@ The server is built using **ASP.NET Core 9 (Web API)** following modern software
 
 ---
 
-## 🔗 API Endpoints
-
-| Category | Method | Endpoint | Description |
-| :--- | :--- | :--- | :--- |
-| **Carts** | `GET` | `/api/Carts/{cartId}/items` | Retrieve all items in a specific cart |
-| | `POST` | `/api/Carts/users/{userId}/items` | Preferred: create/reuse user cart and add item if not already in cart |
-| | `POST` | `/api/Carts/users/{userId}/import-guest` | Import guest cart items into user cart (skip duplicates) |
-| | `DELETE` | `/api/Carts/{cartId}/clear` | Remove all items from the cart |
-| **Users** | `POST` | `/api/Users/register` | Register a new user |
-| | `POST` | `/api/Users/login` | Secure user authentication |
-| | `GET` | `/api/Users/{userId}/orders` | Fetch full order history for a user |
-| **Products** | `GET` | `/api/Products` | Get all available website components/prompts |
-| | `GET` | `/api/Products/{id}` | Get detailed information for a specific product |
-| **Orders** | `POST` | `/api/Orders` | Process and finalize a new order |
-| | `POST` | `/api/Orders/{id}/review` | Submit a rating/review for a purchase |
-| **Security** | `POST` | `/api/PasswordValidity/passwordStrength` | Server-side password strength validation |
-
----
-
 ## 🛡️ Reliability & Monitoring
 
 ### Quality Assurance (Testing)

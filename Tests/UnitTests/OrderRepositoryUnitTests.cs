@@ -66,40 +66,6 @@ namespace Tests.UnitTests
         }
 
         [Fact]
-        public async Task AddReviewAsync_ValidReview_ReturnsAddedReview()
-        {
-            // Arrange
-            var mockContext = new Mock<MyShopContext>();
-            mockContext.Setup(x => x.Reviews).ReturnsDbSet(new List<Review>());
-            var repo = new OrderRepository(mockContext.Object);
-            var review = new Review { OrderId = 1, Note = "Great product!", Score = 5 };
-
-            // Act
-            var result = await repo.AddReviewAsync(review);
-
-            // Assert
-            Assert.Equal("Great product!", result.Note);
-            mockContext.Verify(m => m.SaveChangesAsync(default), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetReviewByOrderIdAsync_ExistingOrder_ReturnsReview()
-        {
-            // Arrange
-            var reviews = new List<Review> { new Review { OrderId = 1, Note = "Nice" } };
-            var mockContext = new Mock<MyShopContext>();
-            mockContext.Setup(x => x.Reviews).ReturnsDbSet(reviews);
-            var repo = new OrderRepository(mockContext.Object);
-
-            // Act
-            var result = await repo.GetReviewByOrderIdAsync(1);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(1, result.OrderId);
-        }
-
-        [Fact]
         public async Task GetOrderItemsAsync_ExistingOrder_ReturnsItems()
         {
             // Arrange
@@ -134,21 +100,6 @@ namespace Tests.UnitTests
 
             // Act
             var result = await repo.GetByIdAsync(999);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public async Task GetReviewByOrderIdAsync_NoReview_ReturnsNull()
-        {
-            // Arrange
-            var mockContext = new Mock<MyShopContext>();
-            mockContext.Setup(x => x.Reviews).ReturnsDbSet(new List<Review>());
-            var repo = new OrderRepository(mockContext.Object);
-
-            // Act
-            var result = await repo.GetReviewByOrderIdAsync(5);
 
             // Assert
             Assert.Null(result);

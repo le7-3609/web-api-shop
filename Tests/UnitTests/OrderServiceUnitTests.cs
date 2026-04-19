@@ -8,7 +8,6 @@ using Moq;
 using Repositories;
 using Services;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Tests.UnitTests
@@ -20,12 +19,11 @@ namespace Tests.UnitTests
         private readonly Mock<IMapper> _mockMapper = new();
         private readonly Mock<ICartService> _mockCartService = new();
         private readonly Mock<ILogger<OrderService>> _mockLogger = new();
-        private readonly Mock<IHostEnvironment> _mockHostEnvironment = new();
         private readonly Mock<IOrderPromptBuilder> _mockPromptBuilder = new();
 
         private OrderService CreateService() => new(
             _mockOrderRepo.Object, _mockMapper.Object, _mockCartService.Object,
-            _mockLogger.Object, _mockProductRepo.Object, _mockHostEnvironment.Object,
+            _mockLogger.Object, _mockProductRepo.Object,
             _mockPromptBuilder.Object);
 
         [Fact]

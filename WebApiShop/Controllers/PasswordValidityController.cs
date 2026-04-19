@@ -19,14 +19,14 @@ namespace WebApiShop.Controllers
         
         // POST api/<PasswordValidityController>/("passwordStrength")
         [HttpPost("passwordStrength")]
-        public ActionResult<PasswordDTO> PasswordStrength([FromBody] string password)
+        public ActionResult<PasswordStrengthDTO> PasswordStrength([FromBody] string password)
         {
-            PasswordDTO passwordValidity = _passwordValidityService.PasswordStrength(password);
+            PasswordStrengthDTO passwordValidity = _passwordValidityService.PasswordStrength(password);
             if (passwordValidity != null)
             {
                 return Ok(passwordValidity);
             }
-            return BadRequest(passwordValidity);
+            return BadRequest();
         }
     }
 }

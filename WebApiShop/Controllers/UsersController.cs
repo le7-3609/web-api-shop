@@ -57,12 +57,12 @@ namespace WebApiShop.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserProfileDTO>> RegisterAsync([FromBody] RegisterDTO dto)
         {
-            UserProfileDTO newUser = await _userService.RegisterAsync(dto);
+            var (newUser, error) = await _userService.RegisterAsync(dto);
             if (newUser != null)
             {
                 return CreatedAtAction(nameof(GetByIdAsync), new { id = newUser.UserId }, newUser);
             }
-            return BadRequest("Too weak password or email already in use by another dto.");
+            return BadRequest(error);
         }
 
         // POST api/<UsersController>

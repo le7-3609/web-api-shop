@@ -34,20 +34,20 @@ namespace Services
             return _mapper.Map<IEnumerable<UserDTO>>(users);
         }
 
-        public async Task<UserProfileDTO?> RegisterAsync(RegisterDTO dto)
+        public async Task<(UserProfileDTO? User, string? Error)> RegisterAsync(RegisterDTO dto)
         {
             var passwordValidation = _passwordService.PasswordStrength(dto.Password);
             if (passwordValidation == null || passwordValidation.Strength < 2)
-                return null;
+                return (null, "Password is too weak.");
 
             var existing = await _userRepository.GetByEmailAsync(dto.Email, -1);
             if (existing != null)
-                return null;
+                return (null, "Email is already in use.");
 
             User user = _mapper.Map<User>(dto);
             var created = await _userRepository.RegisterAsync(user);
 
-            return _mapper.Map<UserProfileDTO>(created);
+            return (_mapper.Map<UserProfileDTO>(created), null);
         }
 
         public async Task<UserProfileDTO?> LoginAsync(LoginDTO dto)
