@@ -77,3 +77,8 @@ While this repository contains the Back-end, it is designed to serve a modern **
     ```bash
     dotnet run
     ```
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
