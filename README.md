@@ -114,3 +114,9 @@ docker exec -it redis redis-cli -a dev-password-change-me
 # DBSIZE                  — total number of keys
 # FLUSHDB                 — clear all keys (dev only)
 ```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
