@@ -10,12 +10,14 @@ namespace Tests.IntegrationTests
         private readonly DatabaseFixture _fixture;
         private readonly MyShopContext _context;
         private readonly OrderRepository _repository;
+        private readonly ReviewRepository _reviewRepository;
 
         public OrderRepositoryIntegrationTests(DatabaseFixture fixture)
         {
             _fixture = fixture;
             _context = fixture.Context;
             _repository = new OrderRepository(_context);
+            _reviewRepository = new ReviewRepository(_context);
             _fixture.ClearDatabase();
         }
 
@@ -52,7 +54,7 @@ namespace Tests.IntegrationTests
             await _context.SaveChangesAsync();
 
             var review = new Review { OrderId = order.OrderId, Score = 5, Note = "Great!", ReviewImageUrl = "url" };
-            var result = await _repository.AddReviewAsync(review);
+            var result = await _reviewRepository.AddReviewAsync(review);
 
             Assert.True(result.ReviewId > 0);
         }
@@ -90,7 +92,7 @@ namespace Tests.IntegrationTests
             await _context.Reviews.AddAsync(review);
             await _context.SaveChangesAsync();
 
-            var result = await _repository.GetReviewByOrderIdAsync((int)order.OrderId);
+            var result = await _reviewRepository.GetReviewByOrderIdAsync((int)order.OrderId);
 
             Assert.NotNull(result);
             Assert.Equal((short)4, result.Score);
@@ -141,7 +143,7 @@ namespace Tests.IntegrationTests
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            var result = await _repository.GetReviewByOrderIdAsync((int)order.OrderId);
+            var result = await _reviewRepository.GetReviewByOrderIdAsync((int)order.OrderId);
 
             Assert.Null(result);
         }
@@ -159,7 +161,7 @@ namespace Tests.IntegrationTests
 
             review.Score = 5;
             review.Note = "Updated";
-            var result = await _repository.UpdateReviewAsync(review);
+            var result = await _reviewRepository.UpdateReviewAsync(review);
 
             Assert.Equal((short)5, result.Score);
         }

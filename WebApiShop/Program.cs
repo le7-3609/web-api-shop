@@ -6,6 +6,7 @@ using NLog.Web;
 using Entities;
 using Repositories;
 using Services;
+using StackExchange.Redis;
 using System.Text.Json;
 using WebApiShop;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -14,6 +15,21 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Host.UseNLog();
+
+// Redis
+var redisConnectionString = builder.Configuration["Redis:ConnectionString"] ?? string.Empty;
+if (!string.IsNullOrWhiteSpace(redisConnectionString))
+{
+    builder.Services.AddSingleton<IConnectionMultiplexer>(
+        ConnectionMultiplexer.Connect(redisConnectionString));
+}
+else
+{
+    // Provide a no-op multiplexer substitute via a disabled connection so the app starts without Redis
+    builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+        ConnectionMultiplexer.Connect("localhost:6380,abortConnect=false,connectTimeout=500"));
+}
+builder.Services.AddScoped<IProductCacheService, ProductCacheService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -45,6 +61,9 @@ builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderPromptBuilder, OrderPromptBuilder>();
+
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();

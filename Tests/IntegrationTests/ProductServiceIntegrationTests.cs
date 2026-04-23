@@ -5,6 +5,7 @@ using Services;
 using AutoMapper;
 using DTO;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace Tests.IntegrationTests
 {
@@ -23,12 +24,21 @@ namespace Tests.IntegrationTests
             _fixture.ClearDatabase();
 
             var services = new ServiceCollection();
+            services.AddLogging();
             services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Services.Mapper).Assembly));
             var serviceProvider = services.BuildServiceProvider();
             _mapper = serviceProvider.GetRequiredService<IMapper>();
 
             var productRepo = new ProductRepository(_context);
-            _productService = new ProductService(productRepo, _mapper);
+            var mockCache = new Mock<IProductCacheService>();
+            mockCache.Setup(c => c.GetProductAsync(It.IsAny<long>())).ReturnsAsync((ProductDTO?)null);
+            mockCache.Setup(c => c.GetProductListAsync(It.IsAny<string>())).ReturnsAsync(((IEnumerable<ProductDTO>?)null, 0));
+            mockCache.Setup(c => c.BuildListCacheKeyAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>(), It.IsAny<int?[]>())).ReturnsAsync("test-key");
+            mockCache.Setup(c => c.SetProductAsync(It.IsAny<long>(), It.IsAny<ProductDTO>())).Returns(Task.CompletedTask);
+            mockCache.Setup(c => c.SetProductListAsync(It.IsAny<string>(), It.IsAny<IEnumerable<ProductDTO>>(), It.IsAny<int>())).Returns(Task.CompletedTask);
+            mockCache.Setup(c => c.InvalidateProductAsync(It.IsAny<long>())).Returns(Task.CompletedTask);
+            mockCache.Setup(c => c.InvalidateProductListsAsync()).Returns(Task.CompletedTask);
+            _productService = new ProductService(productRepo, _mapper, mockCache.Object);
         }
 
         [Fact]
@@ -66,6 +76,7 @@ namespace Tests.IntegrationTests
             var product = new Product { ProductId = 1, SubCategoryId = 1, ProductName = "OldName", ProductPrompt = "P", Price = 50 };
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
+            _context.Entry(product).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
 
             var dto = new AdminProductDTO(1, 1, "UpdatedName", 150, "UpdatedPrompt");
 

@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using DTO;
 using Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Repositories;
-using System.Text.Json;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
 
 namespace Services
 {
@@ -166,60 +163,7 @@ namespace Services
             order.Status = status.StatusId;
             await _orderRepository.UpdateStatusAsync(order);
         }
-        public async Task<ReviewDTO?> AddReviewAsync(int orderId, AddReviewDTO dto)
-        {
-            var existingReview = await _orderRepository.GetReviewByOrderIdAsync(orderId);
-            if (existingReview != null) return null;
 
-            if (dto.Score < 1 || dto.Score > 5)
-            {
-                throw new ArgumentException("Review score must be between 1 and 5.");
-            }
-
-            string? relativePath = dto.Image != null ? await saveImageToFileSystem(dto.Image) : null;
-
-            var review = _mapper.Map<Review>(dto);
-            review.OrderId = orderId;
-            review.ReviewImageUrl = relativePath; 
-
-            var savedReview = await _orderRepository.AddReviewAsync(review);
-            return _mapper.Map<ReviewDTO>(savedReview);
-        }
-        private async Task<string?> saveImageToFileSystem(IFormFile image)
-        {
-            if (image != null && image.Length > 0)
-            {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                var uploadsFolder = Path.Combine(_hostEnvironment.ContentRootPath, "uploads");
-
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await image.CopyToAsync(stream);
-                }
-
-                return "/uploads/" + fileName;
-            }
-            return null;
-        }
-
-        public async Task<ReviewDTO?> GetReviewByOrderIdAsync(int orderId)
-        {
-            var review = await _orderRepository.GetReviewByOrderIdAsync(orderId);
-            if (review == null)
-            {
-                return null;
-            }
-            return _mapper.Map<ReviewDTO>(review);
-        }
-        public async Task UpdateReviewAsync(ReviewDTO dto)
-        {
-            var review = _mapper.Map<Review>(dto);
-            await _orderRepository.UpdateReviewAsync(review);
-        }
         public async Task<IEnumerable<OrderItemDTO>?> GetOrderItemsAsync(int orderId)
         {
             var orderItems = await _orderRepository.GetOrderItemsAsync(orderId);
@@ -234,12 +178,6 @@ namespace Services
         {
             var order = await _orderRepository.GetByIdAsync(orderId);
             return order?.Orderprompt;
-        }
-
-        public async Task<IEnumerable<ReviewSummaryDTO>> GetAllReviewsAsync()
-        {
-            var reviews = await _orderRepository.GetAllReviewsAsync();
-            return _mapper.Map<IEnumerable<ReviewSummaryDTO>>(reviews);
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Tests.UnitTests
             var result = service.PasswordStrength("A-Strong_Password-2026!");
 
             Assert.NotNull(result);
-            Assert.Equal("A-Strong_Password-2026!", result.Password);
             Assert.InRange(result.Strength, 0, 4);
         }
     }

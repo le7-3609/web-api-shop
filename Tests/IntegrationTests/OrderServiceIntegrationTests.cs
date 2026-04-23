@@ -25,6 +25,7 @@ namespace Tests.IntegrationTests
             _fixture.ClearDatabase();
 
             var services = new ServiceCollection();
+            services.AddLogging();
             services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Services.Mapper).Assembly));
             var serviceProvider = services.BuildServiceProvider();
             _mapper = serviceProvider.GetRequiredService<IMapper>();

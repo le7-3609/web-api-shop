@@ -51,25 +51,6 @@ namespace Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Review> AddReviewAsync(Review review)
-        {
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-            return review;  
-        }
-        
-        public async Task<Review?> GetReviewByOrderIdAsync(int orderId)
-        {
-            return await _context.Reviews.FirstOrDefaultAsync(r => r.OrderId == orderId);
-        }
-
-        public async Task<Review> UpdateReviewAsync(Review review)
-        {
-            _context.Reviews.Update(review);
-            await _context.SaveChangesAsync();
-            return review;
-        }
-        
         public async Task<IEnumerable<OrderItem>> GetOrderItemsAsync(int orderId)
         {
             return await _context.OrderItems
@@ -77,15 +58,6 @@ namespace Repositories
                 .Include(oi => oi.Product)
                 .Include(oi => oi.Platform)
                 .Include(oi => oi.Prompt)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Review>> GetAllReviewsAsync()
-        {
-            return await _context.Reviews
-                .Include(r => r.Order)
-                    .ThenInclude(o => o.BasicSite)
-                        .ThenInclude(bs => bs.SiteType)
                 .ToListAsync();
         }
     }

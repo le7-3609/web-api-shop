@@ -23,6 +23,7 @@ The server is built using **ASP.NET Core 9 (Web API)** following modern software
 * **Language:** C#
 * **Framework:** .NET 9 (REST API)
 * **ORM:** Entity Framework Core (Database-First approach)
+* **Caching:** Redis (via Docker Compose) + StackExchange.Redis
 * **Logging:** nLog
 * **Mapping:** AutoMapper
 
@@ -36,24 +37,18 @@ The server is built using **ASP.NET Core 9 (Web API)** following modern software
 * **Data Transfer Objects (DTO):** Implemented using **C# Records** for immutable, concise data handling. This prevents circular dependencies and separates internal entities from API contracts.
 * **Configuration:** Managed externally via `appsettings.json` for environment flexibility.
 
----
+### Caching Strategy (Products)
+Product reads are served through a **cache-aside** pattern backed by Redis:
 
-## 🔗 API Endpoints
+| Operation | Cache behavior |
+| :--- | :--- |
+| `GET /api/Products/{id}` | Read from `product:{id}` key; on miss, fetch from DB and populate cache (TTL 10 min) |
+| `GET /api/Products` | Read from a versioned list key `products:v{n}:{params}`; on miss, fetch and cache (TTL 5 min) |
+| `POST /api/Products` | Write to DB, then increment `products:version` counter — all old list keys become unreachable and expire by TTL |
+| `PUT /api/Products/{id}` | Write to DB, then delete `product:{id}` and increment version counter |
+| `DELETE /api/Products/{id}` | Write to DB, then delete `product:{id}` and increment version counter |
 
-| Category | Method | Endpoint | Description |
-| :--- | :--- | :--- | :--- |
-| **Carts** | `GET` | `/api/Carts/{cartId}/items` | Retrieve all items in a specific cart |
-| | `POST` | `/api/Carts/users/{userId}/items` | Preferred: create/reuse user cart and add item if not already in cart |
-| | `POST` | `/api/Carts/users/{userId}/import-guest` | Import guest cart items into user cart (skip duplicates) |
-| | `DELETE` | `/api/Carts/{cartId}/clear` | Remove all items from the cart |
-| **Users** | `POST` | `/api/Users/register` | Register a new user |
-| | `POST` | `/api/Users/login` | Secure user authentication |
-| | `GET` | `/api/Users/{userId}/orders` | Fetch full order history for a user |
-| **Products** | `GET` | `/api/Products` | Get all available website components/prompts |
-| | `GET` | `/api/Products/{id}` | Get detailed information for a specific product |
-| **Orders** | `POST` | `/api/Orders` | Process and finalize a new order |
-| | `POST` | `/api/Orders/{id}/review` | Submit a rating/review for a purchase |
-| **Security** | `POST` | `/api/PasswordValidity/passwordStrength` | Server-side password strength validation |
+Redis errors are caught and logged — the application always falls back to the database and **never crashes due to a cache failure**.
 
 ---
 
@@ -81,18 +76,41 @@ While this repository contains the Back-end, it is designed to serve a modern **
 ### Prerequisites
 * .NET 9 SDK
 * SQL Server
+* Docker Desktop (for Redis)
 
 ### Installation & Setup
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/le7-3609/web-api-shop
     ```
-2.  **Configuration:** Update the connection string in `appsettings.json` to point to your SQL Server instance.
-3.  **Restore Dependencies:**
+2.  **Configuration:** Update the connection string in `appsettings.Development.json` to point to your SQL Server instance.
+3.  **Start Redis** (requires Docker Desktop running):
+    ```bash
+    docker compose up -d
+    ```
+    Redis will be available on `localhost:6380`. The default dev password is in `.env` (not committed to git — copy `.env.example` if provided, or set `REDIS_PASSWORD` directly).
+4.  **Restore Dependencies:**
     ```bash
     dotnet restore
     ```
-4.  **Run the Project:**
+5.  **Run the Project:**
     ```bash
-    dotnet run
+    dotnet run --project WebApiShop
     ```
+
+### Verifying Redis
+```bash
+# Confirm the container is up
+docker ps --filter name=redis
+
+# Open an interactive redis-cli session inside the container
+docker exec -it redis redis-cli -a dev-password-change-me
+
+# Useful commands once inside redis-cli:
+# KEYS *                  — list all keys
+# GET product:1           — read a cached product
+# TTL product:1           — seconds until expiry
+# GET products:version    — current list cache version counter
+# DBSIZE                  — total number of keys
+# FLUSHDB                 — clear all keys (dev only)
+```

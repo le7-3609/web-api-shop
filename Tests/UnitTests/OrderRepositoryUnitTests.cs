@@ -71,7 +71,7 @@ namespace Tests.UnitTests
             // Arrange
             var mockContext = new Mock<MyShopContext>();
             mockContext.Setup(x => x.Reviews).ReturnsDbSet(new List<Review>());
-            var repo = new OrderRepository(mockContext.Object);
+            var repo = new ReviewRepository(mockContext.Object);
             var review = new Review { OrderId = 1, Note = "Great product!", Score = 5 };
 
             // Act
@@ -89,7 +89,7 @@ namespace Tests.UnitTests
             var reviews = new List<Review> { new Review { OrderId = 1, Note = "Nice" } };
             var mockContext = new Mock<MyShopContext>();
             mockContext.Setup(x => x.Reviews).ReturnsDbSet(reviews);
-            var repo = new OrderRepository(mockContext.Object);
+            var repo = new ReviewRepository(mockContext.Object);
 
             // Act
             var result = await repo.GetReviewByOrderIdAsync(1);
@@ -145,7 +145,7 @@ namespace Tests.UnitTests
             // Arrange
             var mockContext = new Mock<MyShopContext>();
             mockContext.Setup(x => x.Reviews).ReturnsDbSet(new List<Review>());
-            var repo = new OrderRepository(mockContext.Object);
+            var repo = new ReviewRepository(mockContext.Object);
 
             // Act
             var result = await repo.GetReviewByOrderIdAsync(5);

@@ -74,12 +74,12 @@ namespace Tests.UnitTests
             var mapper = new Mock<IMapper>();
             var configuration = new Mock<IConfiguration>();
 
-            passwordService.Setup(p => p.PasswordStrength("weak")).Returns(new PasswordDTO { Password = "weak", Strength = 1 });
+            passwordService.Setup(p => p.PasswordStrength("weak")).Returns(new PasswordStrengthDTO { Strength = 1 });
             var service = new UserService(repository.Object, passwordService.Object, mapper.Object, configuration.Object);
 
             var result = await service.RegisterAsync(new RegisterDTO("a@a.com", "A", "B", "050", "weak", "Local"));
 
-            Assert.Null(result);
+            Assert.Null(result.User);
             repository.Verify(r => r.RegisterAsync(It.IsAny<User>()), Times.Never);
         }
 
@@ -95,7 +95,7 @@ namespace Tests.UnitTests
             var user = new User { UserId = 10, Email = "x@x.com", FirstName = "X", LastName = "Y", Phone = "050", Password = "Strong-123!" };
             var profile = new UserProfileDTO(10, "x@x.com", "X", "Y", "050");
 
-            passwordService.Setup(p => p.PasswordStrength("Strong-123!")).Returns(new PasswordDTO { Password = "Strong-123!", Strength = 3 });
+            passwordService.Setup(p => p.PasswordStrength("Strong-123!")).Returns(new PasswordStrengthDTO { Strength = 3 });
             repository.Setup(r => r.GetByEmailAsync("x@x.com", -1)).ReturnsAsync((User)null!);
             mapper.Setup(m => m.Map<User>(dto)).Returns(user);
             repository.Setup(r => r.RegisterAsync(user)).ReturnsAsync(user);
@@ -106,7 +106,8 @@ namespace Tests.UnitTests
             var result = await service.RegisterAsync(dto);
 
             Assert.NotNull(result);
-            Assert.Equal(10, result.UserId);
+            Assert.NotNull(result.User);
+            Assert.Equal(10, result.User!.UserId);
             repository.Verify(r => r.RegisterAsync(user), Times.Once);
         }
 

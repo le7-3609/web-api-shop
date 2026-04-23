@@ -14,4 +14,9 @@ namespace DTO
         public string Password { get; set; }
         public int Strength { get; set; }
     }
+
+    public record PasswordStrengthDTO
+    {
+        public int Strength { get; set; }
+    }
 }
