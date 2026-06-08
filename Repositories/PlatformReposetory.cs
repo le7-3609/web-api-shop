@@ -45,14 +45,12 @@ namespace Repositories
                 return false;
             }
 
-            // check for name conflict with other records
             var conflict = await _context.Platforms.FirstOrDefaultAsync(p => p.PlatformName == platform.PlatformName && p.PlatformId != id);
             if (conflict != null)
             {
                 return false;
             }
 
-            // apply changes to the tracked entity
             _context.Entry(existing).CurrentValues.SetValues(platform);
             await _context.SaveChangesAsync();
             return true;

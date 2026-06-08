@@ -32,9 +32,9 @@ namespace Repositories
             return user;
         }
 
-        public async Task<User?> LoginAsync(string email, string password)
+        public async Task<User?> GetByEmailForAuthAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<User?> UpdateAsync(User user)
@@ -58,6 +58,21 @@ namespace Repositories
         public async Task<User?> GetByProviderIdAsync(string provider, string providerId)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Provider == provider && u.ProviderId == providerId);
+        }
+
+        public async Task<User?> GetByRefreshTokenAsync(string refreshTokenHash)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshTokenHash);
+        }
+
+        public async Task SaveRefreshTokenAsync(long userId, string? refreshTokenHash, DateTime? expiry)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null) return;
+
+            user.RefreshToken = refreshTokenHash;
+            user.RefreshTokenExpiry = expiry;
+            await _context.SaveChangesAsync();
         }
     }
 }

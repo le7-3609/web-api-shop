@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DTO
 {
-    public record PasswordDTO 
+    public record PasswordDTO : IEquatable<PasswordDTO>
     {
         [Required]
         public string Password { get; set; }

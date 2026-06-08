@@ -20,7 +20,10 @@ namespace Services
                 var result = Zxcvbn.Core.EvaluatePassword(password);
                 if (result != null)
                 {
-                    return new PasswordStrengthDTO { Strength = result.Score };
+                    int score = result.Score;
+                    PasswordStrengthDTO dto = new PasswordStrengthDTO();
+                    dto.Strength = score;
+                    return dto;
                 }
             }
             return null;
