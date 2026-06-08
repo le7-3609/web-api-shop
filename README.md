@@ -166,7 +166,7 @@ dotnet run --project BillingWorker
 docker ps --filter name=redis
 
 # Open an interactive redis-cli session inside the container
-docker exec -it redis redis-cli -a dev-password-change-me
+docker exec -it redis redis-cli -a $REDIS_PASSWORD
 
 # Useful commands once inside redis-cli:
 # KEYS *                  — list all keys
