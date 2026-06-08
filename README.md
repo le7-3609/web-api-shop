@@ -119,7 +119,9 @@ While this repository contains the Back-end, it is designed to serve a modern **
     ```bash
     dotnet user-secrets init --project WebApiShop
     dotnet user-secrets set "Jwt:SecretKey" "<your-strong-secret>" --project WebApiShop
+    dotnet user-secrets set "Redis:ConnectionString" "localhost:6380,password=<your-redis-password>" --project WebApiShop
     ```
+    For NLog email alerts, set `NLOG_SMTP_USER` and `NLOG_SMTP_PASSWORD` environment variables (never commit SMTP credentials).
 3.  **Start infrastructure** (Redis + Kafka + Kafka UI — requires Docker Desktop running):
     ```bash
     docker compose up -d
