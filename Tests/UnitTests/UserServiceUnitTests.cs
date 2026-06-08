@@ -92,12 +92,12 @@ namespace Tests.UnitTests
             var mapper = new Mock<IMapper>();
             var configuration = new Mock<IConfiguration>();
 
-            var dto = new RegisterDTO("x@x.com", "X", "Y", "050", "Strong-123!", "Local");
+            var dto = new RegisterDTO("x@x.com", "X", "Y", "050", "Input-2", "Local");
             var mappedUser = new User { UserId = 10, Email = "x@x.com", FirstName = "X", LastName = "Y", Phone = "050" };
             var profile = new UserProfileDTO(10, "x@x.com", "X", "Y", "050");
             User? capturedUser = null;
 
-            passwordService.Setup(p => p.PasswordStrength("Strong-123!")).Returns(new PasswordStrengthDTO { Strength = 3 });
+            passwordService.Setup(p => p.PasswordStrength("Input-2")).Returns(new PasswordStrengthDTO { Strength = 3 });
             repository.Setup(r => r.GetByEmailAsync("x@x.com", -1)).ReturnsAsync((User)null!);
             mapper.Setup(m => m.Map<User>(dto)).Returns(mappedUser);
             repository.Setup(r => r.RegisterAsync(It.IsAny<User>()))
@@ -114,8 +114,8 @@ namespace Tests.UnitTests
             Assert.Equal(10, result.User!.UserId);
             // Password must be stored as a BCrypt hash — never plain text
             Assert.NotNull(capturedUser);
-            Assert.NotEqual("Strong-123!", capturedUser!.Password);
-            Assert.True(BCrypt.Net.BCrypt.Verify("Strong-123!", capturedUser.Password));
+            Assert.NotEqual("Input-2", capturedUser!.Password);
+            Assert.True(BCrypt.Net.BCrypt.Verify("Input-2", capturedUser.Password));
             repository.Verify(r => r.RegisterAsync(It.IsAny<User>()), Times.Once);
         }
 

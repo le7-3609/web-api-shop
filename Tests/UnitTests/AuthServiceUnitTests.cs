@@ -32,7 +32,7 @@ namespace Tests.UnitTests
 
             var jwtSettings = Options.Create(new JwtSettings
             {
-                SecretKey = "test-secret",
+                SecretKey = Guid.NewGuid().ToString("N"),
                 Issuer = "test",
                 Audience = "test",
                 AccessTokenExpiryMinutes = 15,
@@ -45,7 +45,7 @@ namespace Tests.UnitTests
             return (repo, userService, jwt, passwordService, mapper, sut);
         }
 
-        private static User MakeUser(string email = "user@test.com", string plainPassword = "Secret-1!") =>
+        private static User MakeUser(string email = "user@test.com", string plainPassword = "Input-1") =>
             new User
             {
                 UserId = 1,
@@ -67,7 +67,7 @@ namespace Tests.UnitTests
         {
             var (repo, _, jwt, _, mapper, sut) = BuildSut();
             var user = MakeUser();
-            var dto = new LoginDTO(user.Email, "Secret-1!");
+            var dto = new LoginDTO(user.Email, "Input-1");
             var authResponse = new AuthResponseDTO(user.UserId, user.Email, user.FirstName, user.LastName, user.Role);
 
             repo.Setup(r => r.GetByEmailForAuthAsync(user.Email)).ReturnsAsync(user);
@@ -89,12 +89,12 @@ namespace Tests.UnitTests
         public async Task RegisterAsync_ValidData_HashesPasswordAndReturnsAuthResult()
         {
             var (repo, _, jwt, passwordService, mapper, sut) = BuildSut();
-            var dto = new RegisterDTO("new@test.com", "New", "User", "050", "Strong-123!", "Local");
+            var dto = new RegisterDTO("new@test.com", "New", "User", "050", "Input-2", "Local");
             User? capturedUser = null;
             var savedUser = new User { UserId = 5, Email = "new@test.com", Role = "User" };
             var authResponse = new AuthResponseDTO(5, "new@test.com", "New", "User", "User");
 
-            passwordService.Setup(p => p.PasswordStrength("Strong-123!"))
+            passwordService.Setup(p => p.PasswordStrength("Input-2"))
                 .Returns(new PasswordStrengthDTO { Strength = 3 });
             repo.Setup(r => r.GetByEmailAsync("new@test.com", -1)).ReturnsAsync((User?)null);
             mapper.Setup(m => m.Map<User>(dto)).Returns(new User { Email = "new@test.com" });
@@ -114,8 +114,8 @@ namespace Tests.UnitTests
             Assert.NotNull(result);
             // Password must be hashed — plain text must never reach the repository
             Assert.NotNull(capturedUser);
-            Assert.NotEqual("Strong-123!", capturedUser!.Password);
-            Assert.True(BCrypt.Net.BCrypt.Verify("Strong-123!", capturedUser.Password));
+            Assert.NotEqual("Input-2", capturedUser!.Password);
+            Assert.True(BCrypt.Net.BCrypt.Verify("Input-2", capturedUser.Password));
         }
 
         #endregion
@@ -168,13 +168,13 @@ namespace Tests.UnitTests
         public async Task RegisterAsync_DuplicateEmail_ReturnsError()
         {
             var (repo, _, _, passwordService, _, sut) = BuildSut();
-            passwordService.Setup(p => p.PasswordStrength("Strong-123!"))
+            passwordService.Setup(p => p.PasswordStrength("Input-2"))
                 .Returns(new PasswordStrengthDTO { Strength = 3 });
             repo.Setup(r => r.GetByEmailAsync("taken@test.com", -1))
                 .ReturnsAsync(new User { Email = "taken@test.com" });
 
             var (result, error) = await sut.RegisterAsync(
-                new RegisterDTO("taken@test.com", "A", "B", "050", "Strong-123!", "Local"));
+                new RegisterDTO("taken@test.com", "A", "B", "050", "Input-2", "Local"));
 
             Assert.Null(result);
             Assert.Equal("Email is already in use.", error);
