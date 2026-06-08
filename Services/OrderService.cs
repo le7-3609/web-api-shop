@@ -3,7 +3,7 @@ using DTO;
 using Entities;
 using Microsoft.Extensions.Logging;
 using Repositories;
-using System.Text.Json;
+using Microsoft.Extensions.Hosting;
 
 namespace Services
 {
@@ -15,16 +15,20 @@ namespace Services
         private readonly IMapper _mapper;
         private readonly ICartService _cartService;
         private readonly ILogger<OrderService> _logger;
+        private readonly IHostEnvironment _hostEnvironment;
         private readonly IOrderPromptBuilder _promptBuilder;
+        private readonly IOrderEventPublisher _orderEventPublisher;
 
-        public OrderService(IOrderRepository orderRepository, IMapper mapper, ICartService cartService, ILogger<OrderService> logger, IProductRepository productRepository, IOrderPromptBuilder promptBuilder)
+        public OrderService(IOrderRepository orderRepository, IMapper mapper, ICartService cartService, ILogger<OrderService> logger, IProductRepository productRepository, IHostEnvironment hostEnvironment, IOrderPromptBuilder promptBuilder, IOrderEventPublisher orderEventPublisher)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _cartService = cartService;
             _logger = logger;
             _productRepository = productRepository;
+            _hostEnvironment = hostEnvironment;
             _promptBuilder = promptBuilder;
+            _orderEventPublisher = orderEventPublisher;
         }
         private async Task<double> CalculateRealSumAsync(List<CartItemDTO> items, double basicSitePrice)
         {
@@ -44,7 +48,7 @@ namespace Services
 
         private bool IsCartTotalConsistent(CartDTO cartDto, double expectedSum)
         {
-            return Math.Abs(cartDto.TotalPrice - expectedSum) < (double)0.01;
+            return Math.Abs(cartDto.TotalPrice - expectedSum) < 0.01;
         }
 
         public async Task<(IEnumerable<OrderDetailsDTO> Orders, double Total)> GetOrdersAsync()
@@ -139,7 +143,9 @@ namespace Services
             order.Orderprompt = await _promptBuilder.BuildPromptAsync(order.BasicSiteId, order.OrderItems);
             var createdOrder = await _orderRepository.AddOrderAsync(order);
             await _cartService.ClearCartAsync(cartId);
-            return _mapper.Map<OrderDetailsDTO>(createdOrder);
+            var orderDto = _mapper.Map<OrderDetailsDTO>(createdOrder);
+            await _orderEventPublisher.PublishOrderCreatedAsync(orderDto);
+            return orderDto;
         }
 
         public async Task<OrderDetailsDTO?> GetByIdAsync(int id)

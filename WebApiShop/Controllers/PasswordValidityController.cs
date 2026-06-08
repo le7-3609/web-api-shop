@@ -26,7 +26,7 @@ namespace WebApiShop.Controllers
             {
                 return Ok(passwordValidity);
             }
-            return BadRequest();
+            return BadRequest(passwordValidity);
         }
     }
 }

@@ -10,12 +10,14 @@ namespace Tests.IntegrationTests
         private readonly DatabaseFixture _fixture;
         private readonly MyShopContext _context;
         private readonly OrderRepository _repository;
+        private readonly ReviewRepository _reviewRepository;
 
         public OrderRepositoryIntegrationTests(DatabaseFixture fixture)
         {
             _fixture = fixture;
             _context = fixture.Context;
             _repository = new OrderRepository(_context);
+            _reviewRepository = new ReviewRepository(_context);
             _fixture.ClearDatabase();
         }
 
@@ -45,6 +47,19 @@ namespace Tests.IntegrationTests
         }
 
         [Fact]
+        public async Task AddReviewAsync_WithValidReview_ReturnsReview()
+        {
+            var order = new Order { OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            var review = new Review { OrderId = order.OrderId, Score = 5, Note = "Great!", ReviewImageUrl = "url" };
+            var result = await _reviewRepository.AddReviewAsync(review);
+
+            Assert.True(result.ReviewId > 0);
+        }
+
+        [Fact]
         public async Task GetOrderItemsAsync_WithExistingOrderItems_ReturnsItems()
         {
             var order = new Order { OrderSum = 100 };
@@ -64,6 +79,23 @@ namespace Tests.IntegrationTests
             var result = await _repository.GetOrderItemsAsync((int)order.OrderId);
 
             Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task GetReviewByOrderIdAsync_WithExistingReview_ReturnsReview()
+        {
+            var order = new Order { OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            var review = new Review { OrderId = order.OrderId, Score = 4, Note = "Good", ReviewImageUrl = "url" };
+            await _context.Reviews.AddAsync(review);
+            await _context.SaveChangesAsync();
+
+            var result = await _reviewRepository.GetReviewByOrderIdAsync((int)order.OrderId);
+
+            Assert.NotNull(result);
+            Assert.Equal((short)4, result.Score);
         }
 
         [Fact]
@@ -102,6 +134,36 @@ namespace Tests.IntegrationTests
             var result = await _repository.GetOrderItemsAsync((int)order.OrderId);
 
             Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetReviewByOrderIdAsync_NoReview_ReturnsNull()
+        {
+            var order = new Order { OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            var result = await _reviewRepository.GetReviewByOrderIdAsync((int)order.OrderId);
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task UpdateReviewAsync_WithValidReview_UpdatesReview()
+        {
+            var order = new Order { OrderSum = 100 };
+            await _context.Orders.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            var review = new Review { OrderId = order.OrderId, Score = 3, Note = "Old", ReviewImageUrl = "url" };
+            await _context.Reviews.AddAsync(review);
+            await _context.SaveChangesAsync();
+
+            review.Score = 5;
+            review.Note = "Updated";
+            var result = await _reviewRepository.UpdateReviewAsync(review);
+
+            Assert.Equal((short)5, result.Score);
         }
 
         #endregion

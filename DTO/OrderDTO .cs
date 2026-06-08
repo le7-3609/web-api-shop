@@ -41,7 +41,7 @@ namespace DTO
 
     public record OrdersResponseDTO
     {
-        public IEnumerable<OrderDetailsDTO> Orders { get; init; } 
+        public IEnumerable<OrderDetailsDTO> Orders { get; init; }
         public double Total { get; init; }
     }
 

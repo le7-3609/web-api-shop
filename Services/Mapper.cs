@@ -11,6 +11,7 @@ namespace Services
             CreateMap<RegisterDTO, User>();
             CreateMap<User, UserProfileDTO>();
             CreateMap<User, UserDTO>();
+            CreateMap<User, AuthResponseDTO>();
 
 
             CreateMap<Cart, CartDTO>()
@@ -71,7 +72,7 @@ namespace Services
             CreateMap<AddProductDTO, Product>()
                 .ForMember(dest => dest.SubCategoryId, opt => opt.MapFrom(src => src.SubCategoryId));
             CreateMap<UpdateProductDTO, Product>()
-                .ForMember(dest => dest.ProductId, opt => opt.Ignore());  // Ignore ProductId during update
+                .ForMember(dest => dest.ProductId, opt => opt.Ignore());  
             CreateMap<AdminProductDTO, Product>()
                 .ForMember(dest => dest.ProductId, opt => opt.Condition(src => src.ProductId.HasValue))
                 .ForMember(dest => dest.ProductPrompt, opt => opt.MapFrom(src => src.ProductPrompt));

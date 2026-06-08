@@ -1,5 +1,4 @@
-﻿using DTO;
-using Entities;
+﻿using Entities;
 
 namespace Repositories
 {
